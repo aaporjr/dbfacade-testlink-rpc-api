@@ -1,4 +1,4 @@
-#summary The content on this page will give users an idea that not only wil. TestLink methods be supported but also methods that are useful by providing additional functionality.
+#summary The content on this page will give users an idea that not only will TestLink methods be supported but also methods that are useful by providing additional functionality.
 
 = Introduction =
 
