@@ -50,7 +50,7 @@ public class TestLinkAPIJunitTest implements TestLinkAPIConst {
 	private final String userKey="fc7eaf2092095e912af73ce44c26080b";
 	
 	// The api instance
-	private TestLinkAPI api;
+	private TestLinkAPIClient api;
 	
 
 
@@ -67,7 +67,7 @@ public class TestLinkAPIJunitTest implements TestLinkAPIConst {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		api = new TestLinkAPI(userKey, apiURL);
+		api = new TestLinkAPIClient(userKey, apiURL);
 	}
 
 	/**

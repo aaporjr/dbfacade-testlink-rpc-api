@@ -38,12 +38,12 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
  * @author Daniel Padilla
  *
  */
-public class TestLinkAPI implements TestLinkAPIConst
+public class TestLinkAPIClient implements TestLinkAPIConst
 {
 	public static String DEV_KEY; 
 	public static String SERVER_URL; 
 	
-	public TestLinkAPI(String devKey, String url)
+	public TestLinkAPIClient(String devKey, String url)
 	{
 		DEV_KEY = devKey;
 		SERVER_URL = url;

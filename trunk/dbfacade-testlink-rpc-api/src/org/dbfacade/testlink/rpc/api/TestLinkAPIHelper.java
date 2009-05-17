@@ -2,7 +2,7 @@ package org.dbfacade.testlink.rpc.api;
 
 public class TestLinkAPIHelper implements TestLinkAPIConst {
 
-	public static Integer getProjectIDByName(TestLinkAPI apiClient, String projectName) 
+	public static Integer getProjectIDByName(TestLinkAPIClient apiClient, String projectName) 
 		throws TestLinkAPIException
 	{
 		Integer projectID = null;
