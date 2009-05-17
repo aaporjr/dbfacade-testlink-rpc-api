@@ -20,13 +20,13 @@
  */
 package org.dbfacade.testlink.rpc.api;
 
+
 import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 
 
 /**
@@ -41,32 +41,31 @@ import org.junit.Test;
  * @author Daniel Padilla
  *
  */
-public class TestLinkAPIJunitTest implements TestLinkAPIConst {
+public class TestLinkAPIJunitTest implements TestLinkAPIConst
+{
 	
 	// The URL path to testing TestLink application instance. You want to avoid production.
-	private final String apiURL= "http://localhost/testlink/lib/api/xmlrpc.php";
+	private final String apiURL = "http://localhost/testlink/lib/api/xmlrpc.php";
 	
 	// The user script_key value
-	private final String userKey="fc7eaf2092095e912af73ce44c26080b";
+	private final String userKey = "fc7eaf2092095e912af73ce44c26080b";
 	
 	// The api instance
 	private TestLinkAPIClient api;
 	
-
-
-
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
+	public static void setUpBeforeClass() throws Exception
+	{}
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception
+	{
 		api = new TestLinkAPIClient(userKey, apiURL);
 	}
 
@@ -74,20 +73,22 @@ public class TestLinkAPIJunitTest implements TestLinkAPIConst {
 	 * @throws java.lang.Exception
 	 */
 	@After
-	public void tearDown() throws Exception {
-	}
+	public void tearDown() throws Exception
+	{}
 
 	/**
 	 * Test method create project
 	 */
 	@Test
-	public void testCreateProject() {
+	public void testCreateProject()
+	{
 		try {
-			Integer id = api.createTestProject(junitProject, junitPrefix, junitProject + " created by JUnit test.");
+			Integer id = api.createTestProject(junitProject, junitPrefix,
+				junitProject + " created by JUnit test.");
 			if ( id == null ) {
 				throw new Exception("Unable to create project.");
 			}
-		} catch (Exception e) {
+		} catch ( Exception e ) {
 			fail("Failed to create a project.");
 		}
 	}
@@ -96,13 +97,15 @@ public class TestLinkAPIJunitTest implements TestLinkAPIConst {
 	 * Test method that gets the created projects
 	 */
 	@Test
-	public void testGetProjects() {
+	public void testGetProjects()
+	{
 		try {
 			TestLinkAPIResults results = api.getProjects();
 			if ( results == null || results.size() == 0 ) {
-				throw new Exception("Failed to get at least the project that would have been created by the test.");
+				throw new Exception(
+					"Failed to get at least the project that would have been created by the test.");
 			}
-		} catch (Exception e) {
+		} catch ( Exception e ) {
 			fail("Establishing a connection caused a failure");
 		}
 	}
@@ -111,14 +114,44 @@ public class TestLinkAPIJunitTest implements TestLinkAPIConst {
 	 * Test method create test suite
 	 */
 	@Test
-	public void testCreateTestSuite() {
+	public void testCreateTestSuite()
+	{
 		try {
-			Integer id = api.createTestSuite(junitProject, junitSuite, "This suite was created by a JUnit test.");
+			Integer id = api.createTestSuite(junitProject, junitSuite,
+				"This suite was created by a JUnit test.");
 			if ( id == null ) {
-				throw new Exception("Failed to create a test suite for project " + junitProject); 
+				throw new Exception(
+					"Failed to create a test suite for project " + junitSuite); 
 			}
-		} catch (Exception e) {
-			fail("Establishing a connection caused a failure");
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to create a test suite.");
+		}
+	}
+	
+	/**
+	 * Test method create test case
+	 */
+	@Test
+	public void testCreateTestCase()
+	{
+		try {
+			Integer id = api.createTestCase(
+				"admin",
+				junitProject, 
+				junitSuite,
+				junitCase, 
+				"JUnit created summary.",
+				"JUnit created steps.",
+				"JUnit created expected results.", 
+				HIGH);
+			if ( id == null ) {
+				throw new Exception(
+					"Failed to create a test case for project " + junitCase); 
+			}
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to create a test suite.");
 		}
 	}
 	

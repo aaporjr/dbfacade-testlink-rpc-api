@@ -24,6 +24,7 @@ package org.dbfacade.testlink.rpc.api;
 import java.util.ArrayList;
 import java.util.Map;
 
+
 /**
  * Used to return unparsed results from an XML-RPC call
  * to the TestLink API.
@@ -31,27 +32,66 @@ import java.util.Map;
  * @author Daniel Padilla
  *
  */
-public class TestLinkAPIResults implements TestLinkAPIConst {
+public class TestLinkAPIResults implements TestLinkAPIConst
+{
 	ArrayList<Map> results = new ArrayList<Map>();
 
-	public void add(Map item) {
+	/**
+	 * Add a result to the list.
+	 * 
+	 * @param item
+	 */
+	public void add(
+		Map item)
+	{
 		results.add(item);
 	}
 	
-	public void remove(int index) {
+	/**
+	 * Remove a result from the list
+	 * 
+	 * @param index
+	 */
+	public void remove(
+		int index)
+	{
 		results.remove(index);
 	}
 	
-	public Map getData(int index) {
+	/**
+	 * Get the result data in the list
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public Map getData(
+		int index)
+	{
 		return (Map) results.get(index);
 	}
 	
-	public Object getValue(int index, String name) {
-		Map result = (Map) results.get(index);
+	/**
+	 * Get the values within the result data by name
+	 * 
+	 * @param index
+	 * @param name
+	 * @return
+	 */
+	public Object getValueByName(
+		int index,
+		String name)
+	{
+		Map result = getData(index);
 		return result.get(name);
 	}
 	
-	public int size() {
+	/**
+	 * Get the size of the results list.
+	 * 
+	 * @return
+	 */
+	public int size()
+	{
 		return results.size();
 	}
 }
