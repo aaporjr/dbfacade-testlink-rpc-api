@@ -7,16 +7,48 @@ The following is a listing of the methods the TestLink API Java Client supports 
 
 = Details =
 
+Automated Test Results Recording
+
+||*Method*||*Supported*||*Development Status*||*Priority*||
+||tl.reportTCResult||No||Planned||A||
+
+
 Utility methods
 
-||*Method*||*Supported*||*Development Status*||
-||tl.about||No||Planned||
-||tl.ping||No||Planned||
+||*Method*||*Supported*||*Development Status*||*Priority||
+||tl.about||No||Planned||C||
+||tl.ping||No||Planned||C||
 
 Create Methods
 
 ||*Method*||*Supported*||*Development Status*||
-||tl.createTestProject||Yes||Minimal Unit Test||
-||tl.createTestSuite||Yes||Minimal Unit Test||
-||tl.createTestCase||Yes||Minimal Unit Test||
+||tl.createTestProject||Yes||Completed||
+||tl.createTestSuite||Yes||Completed||
+||tl.createTestCase||Yes||Unit Test in progress||
 ||tl.createBuild||No||Planned||
+
+Getter Methods
+
+||*Method*||*Supported*||*Development Status*||
+||tl.getProjects||Yes||Completed||
+||tl.getFirstLevelTestSuitesForTestProjects||Yes||Completed||
+||tl.getProjectTestPlans||No||Planned||
+||tl.getBuildsForTestPlan||No||Planned||
+||tl.getLatestBuildForTestPlan||No||Planned||
+||tl.getTestSuitesForTestPlan||No||Planned||
+||tl.getTestCasesForTestPlan||No||Planned||
+||tl.getTestCaseIDByName||No||Planned||
+||tl.getTestCasesForTestSuite||No||Planned||
+||tl.getTestCasesForTestSuite||No||Planned||
+||tl.getLastExecutionResult||No||Planned||
+||tl.getTestCaseCustomFieldDesignValue||No||Not scheduled for support at this time||
+||tl.getTestCaseAttachments||No||Not scheduled for support at this time||
+
+Setter Methods
+
+||*Method*||*Supported*||*Development Status*||
+||tl.setTestMode||No||Planned||
+||tl.addTestCaseToTestPlan||No||Planned||
+||tl.assignRequirements||No||Not scheduled for support at this time||
+
+
