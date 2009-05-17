@@ -1,4 +1,4 @@
-Listing of TestLink API methods supported by the Java Client.
+#summary Listing of TestLink API methods supported by the Java Client.
 
 = Introduction =
 
