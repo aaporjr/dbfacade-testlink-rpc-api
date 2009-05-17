@@ -51,7 +51,7 @@ public class TestLinkAPI implements TestLinkAPIConst
 	
 	/**
 	 * Report test execution results to TestLink 
-	 * application using the TestLink API 
+     * application using the TestLink API 
 	 * 
 	 * @param int testCaseID 
 	 * @param int testPlanID
@@ -61,15 +61,16 @@ public class TestLinkAPI implements TestLinkAPIConst
 		throws TestLinkAPIException
 	{ 
 		Hashtable<String, Object> params = new Hashtable<String, Object>();				
-		params.put(API_PARAM_DEV_KEY, DEV_KEY);
-		params.put(API_PARAM_TEST_CASE_ID, testCaseID);
-		params.put(API_PARAM_TEST_PLAN_ID, testPlanID);
-		params.put(API_PARAM_STATUS, status);
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		setParam(params, REQUIRED, API_PARAM_TEST_CASE_ID, testCaseID);
+		setParam(params, REQUIRED, API_PARAM_TEST_PLAN_ID, testPlanID);
+		setParam(params, REQUIRED, API_PARAM_STATUS, status);
 		executeRpcMethod(API_METHOD_REPORT_TEST_RESULT, params);
 	}
 	
 	/**
-	 * Create a new project in TestLink
+	 * Create a new project in TestLink. The method returns the id of
+	 * the project if it successfully created otherwise it returns null.
 	 * 
 	 * @param projectName
 	 * @param testCasePrefix
@@ -80,10 +81,10 @@ public class TestLinkAPI implements TestLinkAPIConst
 	{ 
 		Integer projectID = null;
 		Hashtable<String, Object> params = new Hashtable<String, Object>();				
-		params.put(API_PARAM_DEV_KEY, DEV_KEY);
-		params.put(API_PARAM_TEST_PROJECT_NAME, projectName);
-		params.put(API_PARAM_TEST_CASE_PREFIX, testCasePrefix);
-		params.put(API_PARAM_NOTES, description);
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		setParam(params, REQUIRED, API_PARAM_TEST_PROJECT_NAME, projectName);
+		setParam(params, REQUIRED, API_PARAM_TEST_CASE_PREFIX, testCasePrefix);
+		setParam(params, REQUIRED, API_PARAM_NOTES, description);
 		TestLinkAPIResults results = executeRpcMethod(API_METHOD_CREATE_PROJECT, params);
 		if ( results.size() == 1 ) {
 			Object id = results.getValue(0, API_RESULT_IDENTIFIER);
@@ -165,28 +166,61 @@ public class TestLinkAPI implements TestLinkAPIConst
 		Boolean check)
 		throws TestLinkAPIException
 	{
+		Integer suiteID=null;
 		Hashtable<String, Object> params = new Hashtable<String, Object>();				
-		params.put(API_PARAM_DEV_KEY, DEV_KEY);
-		params.put(API_PARAM_TEST_PROJECT_ID, projectID.toString());
-		params.put(API_PARAM_TEST_SUITE_NAME, suiteName);
-		params.put(API_PARAM_DETAILS, description);
-		if ( parentID != null ) {
-			params.put(API_PARAM_PARENT_ID, parentID.toString());
-		}
-		if ( order != null ) {
-			params.put(API_PARAM_ORDER, order.toString());
-		}
-		if ( check != null ) {
-			params.put(API_PARAM_CHECK_DUP_NAMES, check.toString());
-		}
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		setParam(params, REQUIRED, API_PARAM_TEST_PROJECT_ID, projectID.toString());
+		setParam(params, REQUIRED, API_PARAM_TEST_SUITE_NAME, suiteName);
+		setParam(params, REQUIRED, API_PARAM_DETAILS, description);
+			setParam(params, OPTIONAL, API_PARAM_PARENT_ID, parentID.toString());
+			setParam(params, OPTIONAL, API_PARAM_ORDER, order.toString());
+			setParam(params, OPTIONAL, API_PARAM_CHECK_DUP_NAMES, check.toString());
 		TestLinkAPIResults results = executeRpcMethod(API_METHOD_CREATE_SUITE, params);
 		if ( results.size() == 1 ) {
 			Object id = results.getValue(0, API_RESULT_IDENTIFIER);
 			if ( id != null ) {
-				projectID = new Integer(id.toString());
+				suiteID = new Integer(id.toString());
 			}
 		}
-		return projectID;
+		return suiteID;
+	}
+	
+	public Integer createTestCase(
+			Integer suiteID,
+            String caseName,
+            String description,
+            String steps,
+            String expectedResults,
+            String order,
+            Integer internalID,
+            Boolean checkDuplicatedName,                        
+            String actionOnDuplicatedName,
+            String executionType,
+            String importance) 
+		throws TestLinkAPIException
+	{
+		Integer testCaseID=null;
+		Hashtable<String, Object> params = new Hashtable<String, Object>();	
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		setParam(params, REQUIRED, API_PARAM_TEST_SUITE_ID, suiteID);
+		setParam(params, REQUIRED, API_PARAM_TEST_CASE_NAME, caseName);
+		setParam(params, REQUIRED, API_PARAM_SUMMARY, description);
+		setParam(params, REQUIRED, API_PARAM_STEPS, steps);
+		setParam(params, REQUIRED, API_PARAM_EXPECTED_RESULTS, expectedResults);
+		setParam(params, OPTIONAL, API_PARAM_ORDER, order);
+		setParam(params, OPTIONAL, API_PARAM_INTERNAL_ID, internalID);
+		setParam(params, OPTIONAL, API_PARAM_CHECK_DUP_NAMES, checkDuplicatedName);
+		setParam(params, OPTIONAL, API_PARAM_ACTION_DUP_NAME, actionOnDuplicatedName);
+		setParam(params, OPTIONAL, API_PARAM_EXEC_TYPE, executionType);
+		setParam(params, OPTIONAL, API_PARAM_IMPORTANCE, importance);
+		TestLinkAPIResults results = executeRpcMethod(API_METHOD_CREATE_TEST_CASE, params);
+		if ( results.size() == 1 ) {
+			Object id = results.getValue(0, API_RESULT_IDENTIFIER);
+			if ( id != null ) {
+				testCaseID = new Integer(id.toString());
+			}
+		}
+		return testCaseID;
 	}
 
 	/**
@@ -196,7 +230,7 @@ public class TestLinkAPI implements TestLinkAPIConst
 		throws TestLinkAPIException
 	{
 		Hashtable<String, Object> params = new Hashtable<String, Object>();	
-		params.put(API_PARAM_DEV_KEY, DEV_KEY);
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
 		return executeRpcMethod(API_METHOD_GET_PROJECTS, params);
 	}
 	
@@ -211,8 +245,8 @@ public class TestLinkAPI implements TestLinkAPIConst
 		throws TestLinkAPIException
 	{ 
 		Hashtable<String, Object> params = new Hashtable<String, Object>();				
-		params.put(API_PARAM_DEV_KEY, DEV_KEY);
-		params.put(API_PARAM_TEST_CASE_NAME, testCaseName);
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		setParam(params, REQUIRED, API_PARAM_TEST_CASE_NAME, testCaseName);
 		return executeRpcMethod(API_METHOD_GET_TEST_CASE_IDS_BY_NAME, params);
 	}
 	
@@ -227,11 +261,11 @@ public class TestLinkAPI implements TestLinkAPIConst
 		throws TestLinkAPIException
 	{ 
 		Hashtable<String, Object> params = new Hashtable<String, Object>();				
-		params.put(API_PARAM_DEV_KEY, DEV_KEY);
-		params.put(API_PARAM_TEST_PROJECT_ID, testProjectID);
-		params.put(API_PARAM_TEST_SUITE_ID, testSuiteID);
-		params.put(API_PARAM_DEPTH_FLAG, true);
-		params.put(API_PARAM_DETAILS, "full");
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		setParam(params, REQUIRED, API_PARAM_TEST_PROJECT_ID, testProjectID);
+		setParam(params, REQUIRED, API_PARAM_TEST_SUITE_ID, testSuiteID);
+		setParam(params, REQUIRED, API_PARAM_DEPTH_FLAG, true);
+		setParam(params, REQUIRED, API_PARAM_DETAILS, "full");
 		return executeRpcMethod(API_METHOD_GET_TEST_CASES_FOR_SUITE, params);
 	}
 	
@@ -282,6 +316,30 @@ public class TestLinkAPI implements TestLinkAPIConst
 		}
 		
 		return rpcClient;		
+	}
+	
+	/**
+	 * Assign the parameter
+	 */
+	private void setParam(
+			Hashtable<String, Object> params, 
+			boolean isRequired, 
+			String paramName, 
+			Object value)
+		throws TestLinkAPIException
+	{
+		// If the value is required and it is null return exception
+		if ( isRequired && value == null ) {
+			throw new TestLinkAPIException("The required parameter " + paramName + " was not provided by the caller.");
+		}
+		
+		// If the value is not required and it is null then return without assignment
+		if ( !isRequired && value == null ) {
+			return;
+		}
+		
+		// Set the parameter for the XML-RPC call
+		params.put(paramName, value);
 	}
 }
 

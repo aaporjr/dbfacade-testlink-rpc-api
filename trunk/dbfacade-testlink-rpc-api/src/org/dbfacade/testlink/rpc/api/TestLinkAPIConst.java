@@ -103,9 +103,9 @@ public interface TestLinkAPIConst {
     public static final String API_PARAM_CUST_FIELD_NAME="customfieldname";
     public static final String API_PARAM_SUMMARY="summary";
     public static final String API_PARAM_STEPS="steps";
-    public static final String API_PARAM_EXPECT_RESULTS="expectedresults";
+    public static final String API_PARAM_EXPECTED_RESULTS="expectedresults";
     public static final String API_PARAM_AUTHOR_LOGIN="authorlogin";
-    public static final String API_PARAM_EXCEPTION_TYPE="executiontype";
+    public static final String API_PARAM_EXEC_TYPE="executiontype";
     public static final String API_PARAM_IMPORTANCE="importance";
     public static final String API_PARAM_ORDER="order";
     public static final String API_PARAM_INTERNAL_ID="internalid";
@@ -125,6 +125,12 @@ public interface TestLinkAPIConst {
      */
     public static final String API_RESULT_IDENTIFIER="id";
     public static final String API_RESULT_NAME="name";
+    
+    /*
+     * Readability constants
+     */
+    public static final boolean REQUIRED=true;
+    public static final boolean OPTIONAL=false;
     
     
     /*
