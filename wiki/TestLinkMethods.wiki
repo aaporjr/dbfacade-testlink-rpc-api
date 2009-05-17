@@ -1,0 +1,22 @@
+Listing of TestLink API methods supported by the Java Client.
+
+= Introduction =
+
+The following is a listing of the methods the TestLink API Java Client supports or is scheduled to support.
+
+
+= Details =
+
+Utility methods
+
+||*Method*||*Supported*||*Development Status*||
+||tl.about||No||Planned||
+||tl.ping||No||Planned||
+
+Create Methods
+
+||*Method*||*Supported*||*Development Status*||
+||tl.createTestProject||Yes||Minimal Unit Test||
+||tl.createTestSuite||Yes||Minimal Unit Test||
+||tl.createTestCase||Yes||Minimal Unit Test||
+||tl.createBuild||No||Planned||
