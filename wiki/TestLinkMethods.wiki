@@ -15,40 +15,37 @@ Automated Test Results Recording
 
 Utility methods
 
-||*Method*||*Supported*||*Development Status*||*Priority||
+||*Method*||*Supported*||*Development Status*||*Priority*||
 ||tl.about||No||Planned||C||
 ||tl.ping||No||Planned||C||
 
 Create Methods
 
-||*Method*||*Supported*||*Development Status*||
-||tl.createTestProject||Yes||Completed||
-||tl.createTestSuite||Yes||Completed||
-||tl.createTestCase||Yes||Unit Test in progress||
-||tl.createBuild||No||Planned||
+||*Method*||*Supported*||*Development Status*||*Priority*||
+||tl.createTestProject||Yes||Completed||-||
+||tl.createTestSuite||Yes||Completed||-||
+||tl.createTestCase||Yes||Unit Test in progress||A||
+||tl.createBuild||No||Planned||A||
 
 Getter Methods
 
-||*Method*||*Supported*||*Development Status*||
-||tl.getProjects||Yes||Completed||
-||tl.getFirstLevelTestSuitesForTestProjects||Yes||Completed||
-||tl.getProjectTestPlans||No||Planned||
-||tl.getBuildsForTestPlan||No||Planned||
-||tl.getLatestBuildForTestPlan||No||Planned||
-||tl.getTestSuitesForTestPlan||No||Planned||
-||tl.getTestCasesForTestPlan||No||Planned||
-||tl.getTestCaseIDByName||No||Planned||
-||tl.getTestCasesForTestSuite||No||Planned||
-||tl.getTestCasesForTestSuite||No||Planned||
-||tl.getLastExecutionResult||No||Planned||
-||tl.getTestCaseCustomFieldDesignValue||No||Not scheduled for support at this time||
-||tl.getTestCaseAttachments||No||Not scheduled for support at this time||
+||*Method*||*Supported*||*Development Status*||*Priority*||
+||tl.getProjects||Yes||Completed||-||
+||tl.getFirstLevelTestSuitesForTestProjects||Yes||Completed||-||
+||tl.getProjectTestPlans||No||Planned||B||
+||tl.getBuildsForTestPlan||No||Planned||B||
+||tl.getLatestBuildForTestPlan||No||Planned||A||
+||tl.getTestSuitesForTestPlan||No||Planned||A||
+||tl.getTestCasesForTestPlan||No||Planned||A||
+||tl.getTestCaseIDByName||No||Planned||C||
+||tl.getTestCasesForTestSuite||No||Planned||C||
+||tl.getLastExecutionResult||No||Planned||D||
+||tl.getTestCaseCustomFieldDesignValue||No||Not scheduled for support at this time||E||
+||tl.getTestCaseAttachments||No||Not scheduled for support at this time||E||
 
 Setter Methods
 
-||*Method*||*Supported*||*Development Status*||
-||tl.setTestMode||No||Planned||
-||tl.addTestCaseToTestPlan||No||Planned||
-||tl.assignRequirements||No||Not scheduled for support at this time||
-
-
+||*Method*||*Supported*||*Development Status*||*Priority*||
+||tl.setTestMode||No||Planned||D||
+||tl.addTestCaseToTestPlan||No||Planned||C||
+||tl.assignRequirements||No||Not scheduled for support at this time||E||
