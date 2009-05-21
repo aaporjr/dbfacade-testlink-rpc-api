@@ -220,7 +220,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		String summary,
 		String steps,
 		String expectedResults,
-		String order,
+		Integer order,
 		Integer internalID,
 		Boolean checkDuplicatedName,                        
 		String actionOnDuplicatedName,
@@ -245,6 +245,59 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		TestLinkAPIResults results = executeRpcMethod(API_METHOD_CREATE_TEST_CASE, params);
 		return getCreatedRecordIdentifier(results, API_RESULT_IDENTIFIER);
 	}
+	
+	/*
+	 * This method is not supported by the TestLink API. It is
+	 * needed so that JUnit test could be run without human
+	 * intervention but right now manual creation in the only
+	 * way to get to all the other test.
+	 * 
+	 * 
+	 * @param projectName
+	 * @param planName
+	 * @param description
+	 * @throws TestLinkAPIException
+	 *
+	public Integer createTestPlan(
+		String projectName,
+		String planName,
+		String description) throws TestLinkAPIException
+	{
+		Integer projectID = TestLinkAPIHelper.getProjectID(this, projectName);
+		if ( projectID != null ) {
+			return createTestPlan(projectID, planName, description);
+		} else {
+			throw new TestLinkAPIException("The project " + projectName + " was not found and the test plan " + planName + " could not be created.");
+		}
+	}
+	*/
+	
+	/*
+	 * This method is not supported by the TestLink API. It is
+	 * needed so that JUnit test could be run without human
+	 * intervention but right now manual creation in the only
+	 * way to get to all the other test.
+	 * 
+	 * @param projectName
+	 * @param planName
+	 * @param description
+	 * @throws TestLinkAPIException
+	 *
+	public Integer createTestPlan(
+		Integer projectID,
+		String planName,
+		String description) throws TestLinkAPIException
+	{
+		Hashtable params = new Hashtable();				
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		setParam(params, REQUIRED, API_PARAM_TEST_PROJECT_ID, projectID.toString());
+		setParam(params, REQUIRED, "testplanname", planName); // not suppirted by TestLink
+		setParam(params, REQUIRED, API_PARAM_NOTES, description);
+		TestLinkAPIResults results = executeRpcMethod(API_METHOD_CREATE_TEST_PLAN, params);
+		return getCreatedRecordIdentifier(results, API_RESULT_IDENTIFIER);
+	}
+	*/
+
 
 	/**
 	 * Get all the test projects
@@ -255,6 +308,22 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
 		return executeRpcMethod(API_METHOD_GET_PROJECTS, params);
 	}
+	
+	public TestLinkAPIResults getProjectTestPlans(String projectName) throws TestLinkAPIException
+	{
+		Integer projectID = TestLinkAPIHelper.getProjectID(this, projectName);
+		return getProjectTestPlans(projectID);
+	}
+	
+	
+	public TestLinkAPIResults getProjectTestPlans(Integer projectID) throws TestLinkAPIException
+	{
+		Hashtable params = new Hashtable();	
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		setParam(params, REQUIRED, API_PARAM_TEST_PROJECT_ID, projectID);
+		return executeRpcMethod(API_METHOD_GET_PROJECT_TEST_PLANS, params);
+	}
+	
 	
 	/**
 	 * Get all the first level project test suites by project name
@@ -308,12 +377,10 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 * 
 	 * @param int testCaseID 
 	 * @param int testPlanID
-	 * @param String status 
 	 */ 
 	public TestLinkAPIResults getCasesForTestSuite(
 		int testProjectID,
-		int testSuiteID,
-		String status) throws TestLinkAPIException
+		int testSuiteID) throws TestLinkAPIException
 	{ 
 		Hashtable params = new Hashtable();				
 		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);

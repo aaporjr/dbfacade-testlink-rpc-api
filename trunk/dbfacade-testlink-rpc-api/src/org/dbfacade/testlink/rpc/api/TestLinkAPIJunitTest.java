@@ -83,8 +83,8 @@ public class TestLinkAPIJunitTest implements TestLinkAPIConst
 	public void testCreateProject()
 	{
 		try {
-			Integer id = api.createTestProject(junitProject, junitPrefix,
-				junitProject + " created by JUnit test.");
+			Integer id = api.createTestProject(JUNIT_PROJECT, JUNIT_PREFIX,
+				JUNIT_PROJECT + " created by JUnit test.");
 			if ( id == null ) {
 				throw new Exception("Unable to create project.");
 			}
@@ -117,11 +117,11 @@ public class TestLinkAPIJunitTest implements TestLinkAPIConst
 	public void testCreateTestSuite()
 	{
 		try {
-			Integer id = api.createTestSuite(junitProject, junitSuite,
+			Integer id = api.createTestSuite(JUNIT_PROJECT, JUNIT_SUITE,
 				"This suite was created by a JUnit test.");
 			if ( id == null ) {
 				throw new Exception(
-					"Failed to create a test suite for project " + junitSuite); 
+					"Failed to create a test suite for project " + JUNIT_SUITE); 
 			}
 		} catch ( Exception e ) {
 			e.printStackTrace();
@@ -138,16 +138,136 @@ public class TestLinkAPIJunitTest implements TestLinkAPIConst
 		try {
 			Integer id = api.createTestCase(
 				"admin",
-				junitProject, 
-				junitSuite,
-				junitCase, 
+				JUNIT_PROJECT, 
+				JUNIT_SUITE,
+				JUNIT_CASE, 
 				"JUnit created summary.",
 				"JUnit created steps.",
 				"JUnit created expected results.", 
 				HIGH);
+			if ( id == null || id.intValue() == 0 ) {
+				throw new Exception(
+					"Failed to create a test case for project " + JUNIT_CASE); 
+			}
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to create a test suite.");
+		}
+	}
+	
+	/**
+	 * Test method create test case with all parameters
+	 */
+	@Test
+	public void testCreateTestCaseWithAllParameters()
+	{
+		try {
+			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_PROJECT);
+			Integer suiteID = TestLinkAPIHelper.getSuiteID(api, JUNIT_PROJECT, JUNIT_SUITE);
+			Integer id = api.createTestCase(
+				"admin",
+				projectID, 
+				suiteID,
+				JUNIT_CASE, 
+				"JUnit created summary.",
+				"JUnit created steps.",
+				"JUnit created expected results.", 
+				new Integer(2),
+				null,
+				new Boolean(true),
+				ACTION_BLOCK_ON_DUP,
+				TESTCASE_EXECUTION_TYPE_MANUAL,
+				HIGH);
 			if ( id == null ) {
 				throw new Exception(
-					"Failed to create a test case for project " + junitCase); 
+					"Failed to create a test case for project " + JUNIT_CASE); 
+			}
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to create a test suite.");
+		}
+	}
+	
+	/**
+	 * Test method create test case with all parameters
+	 */
+	@Test
+	public void testCreateTestCaseWithAllParametersAuto()
+	{
+		try {
+			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_PROJECT);
+			Integer suiteID = TestLinkAPIHelper.getSuiteID(api, JUNIT_PROJECT, JUNIT_SUITE);
+			Integer id = api.createTestCase(
+				"admin",
+				projectID, 
+				suiteID,
+				JUNIT_CASE, 
+				"JUnit created summary.",
+				"JUnit created steps.",
+				"JUnit created expected results.", 
+				new Integer(3),
+				null,
+				new Boolean(true),
+				ACTION_GEN_NEW_ON_DUP,
+				TESTCASE_EXECUTION_TYPE_AUTO,
+				MEDIUM);
+			if ( id == null ) {
+				throw new Exception(
+					"Failed to create a test case for project " + JUNIT_CASE); 
+			}
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to create a test suite.");
+		}
+	}
+	
+	/**
+	 * Test method create test plan. 
+	 * 
+	 * TestLink does not offer a createTestPlan procedure at
+	 * this time so it will need to be created manually. This
+	 * procedure will test of the project, suite and cases so
+	 * that the test plan can be setup.
+	 * 
+	 */
+	@Test
+	public void testCreateTestPlan()
+	{
+		try {
+
+			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_PLAN_PROJECT);
+			if ( projectID == null ) {
+				projectID = api.createTestProject(JUNIT_PLAN_PROJECT, "mytest",
+						JUNIT_PLAN_PROJECT + " created by JUnit test.");
+			} 
+			
+			Integer suiteID = TestLinkAPIHelper.getSuiteID(api, JUNIT_PLAN_PROJECT, JUNIT_PLAN_SUITE);
+			if ( suiteID == null ) {
+				suiteID = api.createTestSuite(JUNIT_PLAN_PROJECT, JUNIT_PLAN_SUITE,
+				"This suite was created by a JUnit test.");
+			}
+			
+			Integer caseID = TestLinkAPIHelper.getCaseID(api, projectID, suiteID, JUNIT_PLAN_CASE);
+			
+			if ( caseID == null ) {
+				caseID = api.createTestCase(
+					"admin",
+					JUNIT_PLAN_PROJECT, 
+					JUNIT_PLAN_SUITE,
+					JUNIT_PLAN_CASE, 
+					"JUnit created summary.",
+					"JUnit created steps.",
+					"JUnit created expected results.", 
+					HIGH);
+			}
+			
+			/*
+			 * TestLink API does not offer test plan creation so check that
+			 * the test plan has been manually created for future testing.
+			 */
+			Integer planID = TestLinkAPIHelper.getPlanID(api, projectID, JUNIT_PLAN_NAME);
+			if ( planID == null || planID.intValue() == 0 ) {
+				throw new TestLinkAPIException("The JUnit test plan was not found.");
 			}
 		} catch ( Exception e ) {
 			e.printStackTrace();

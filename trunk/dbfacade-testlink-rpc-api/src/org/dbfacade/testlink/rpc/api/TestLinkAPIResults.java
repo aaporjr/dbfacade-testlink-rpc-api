@@ -22,6 +22,7 @@ package org.dbfacade.testlink.rpc.api;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 
 
@@ -82,7 +83,35 @@ public class TestLinkAPIResults implements TestLinkAPIConst
 		String name)
 	{
 		Map result = getData(index);
-		return result.get(name);
+		return getValueByName(result, name);
+	}
+	
+	/**
+	 * Recurse the structure for the results.
+	 * 
+	 * @param result
+	 * @param name
+	 * @return
+	 */
+	public Object getValueByName(Map result, String name) {
+		Object value = result.get(name);
+		if ( value == null ) {
+			Iterator mapKeys = result.keySet().iterator();
+			while ( mapKeys.hasNext() ) {
+				Object internalKey = mapKeys.next();
+				Object internalData = result.get(internalKey);
+				if ( internalData instanceof Map ) {
+					Map internalMap = (Map) internalData;
+					value = internalMap.get(name);
+					if ( value != null ) {
+						return value;
+					} else {
+						getValueByName(internalMap, name);
+					}
+				}
+			}
+		}
+		return value;
 	}
 	
 	/**

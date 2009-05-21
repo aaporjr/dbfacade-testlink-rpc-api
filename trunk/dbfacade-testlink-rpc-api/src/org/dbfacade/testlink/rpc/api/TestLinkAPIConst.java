@@ -70,6 +70,10 @@ public interface TestLinkAPIConst
 	public static final String API_METHOD_SET_TEST_MODE = "tl.setTestMode";
 	public static final String API_METHOD_REPORT_TEST_RESULT = "tl.reportTCResult";
 	
+	// Add for junit but not supported by TestLinkAPI
+	public static final String API_METHOD_CREATE_TEST_PLAN = "tl.createTestPlan";
+	
+	
 	/*
 	 * Parameter names supported by TestLink 1.8.2 based
 	 * on PHP sample implementation of TestLinkAPI
@@ -117,6 +121,8 @@ public interface TestLinkAPIConst
 	public static final String API_PARAM_REQUIREMENTS = "requirements";
 	public static final String API_PARAM_BUG_ID = "bugid";		
 	public static final String API_PARAM_PARENT_ID = "parentid";
+	
+	
     
 	/*
 	 * Values being returned in the map based on inspection and
@@ -124,26 +130,39 @@ public interface TestLinkAPIConst
 	 */
 	public static final String API_RESULT_IDENTIFIER = "id";
 	public static final String API_RESULT_NAME = "name";
+	
+	
     
 	/*
-	 * Readability constants
+	 * Readability constants. TestLink can change any of these
+	 * variables at their discretion but this is what they
+	 * seem to currently use for their API values.
 	 */
 	public static final boolean REQUIRED = true;
 	public static final boolean OPTIONAL = false;
-	
-	// This could be changed by TestLink but these are these
-	// are values they seem to use for importance
 	public static final String HIGH="3";
 	public static final String MEDIUM="2";
 	public static final String LOW="1";
+	public static final String ACTION_BLOCK_ON_DUP="block";
+	public static final String ACTION_GEN_NEW_ON_DUP="generate_new";
+	public static final String TESTCASE_EXECUTION_TYPE_MANUAL="1";
+	public static final String TESTCASE_EXECUTION_TYPE_AUTO="2";
+
+
+
     
 	/*
-	 * Variables used for testing
+	 * Variables used for JUnit testing
 	 */
-	public static final String junitID = new Long(new Date().getTime()).toString();
-	public static final String junitProject = "Test Project " + junitID;
-	public static final String junitSuite = "Test Suite " + junitID;
-	public static final String junitCase = "Test Case " + junitID;
-	public static final String junitPrefix = junitID;
+	public static final String JUNIT_ID = new Long(new Date().getTime()).toString();
+	public static final String JUNIT_PROJECT = "Test Project " + JUNIT_ID;
+	public static final String JUNIT_SUITE = "Test Suite " + JUNIT_ID;
+	public static final String JUNIT_CASE = "Test Case " + JUNIT_ID;
+	public static final String JUNIT_PLAN = "Test Plan " + JUNIT_ID;
+	public static final String JUNIT_PREFIX = JUNIT_ID;
+	public static final String JUNIT_PLAN_PROJECT = "My Test Plan Project";
+	public static final String JUNIT_PLAN_SUITE = "My Test Plan Suite";
+	public static final String JUNIT_PLAN_CASE = "My Test Plan Case";
+	public static final String JUNIT_PLAN_NAME = "My Test Plan";
     
 }
