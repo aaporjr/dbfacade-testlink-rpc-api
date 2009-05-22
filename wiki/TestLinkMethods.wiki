@@ -31,7 +31,7 @@ Getter Methods
 
 ||*Method*||*Supported*||*Development Status*||*Priority*||
 ||tl.getProjects||Yes||Completed||-||
-||tl.getFirstLevelTestSuitesForTestProjects||Yes||Completed||-||
+||tl.getFirstLevelTestSuitesForTestProject||Yes||Completed||-||
 ||tl.getProjectTestPlans||Yes||Completed||-||
 ||tl.getBuildsForTestPlan||No||Planned||B||
 ||tl.getLatestBuildForTestPlan||No||Planned||A||
