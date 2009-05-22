@@ -25,20 +25,20 @@ Create Methods
 ||tl.createTestProject||Yes||Completed||-||
 ||tl.createTestSuite||Yes||Completed||-||
 ||tl.createTestCase||Yes||Completed||-||
-||tl.createBuild||No||Planned||A||
+||tl.createBuild||Yes||Completed||-||
 
 Getter Methods
 
 ||*Method*||*Supported*||*Development Status*||*Priority*||
 ||tl.getProjects||Yes||Completed||-||
 ||tl.getFirstLevelTestSuitesForTestProjects||Yes||Completed||-||
-||tl.getProjectTestPlans||No||Unit testing in progress||B||
+||tl.getProjectTestPlans||Yes||Completed||-||
 ||tl.getBuildsForTestPlan||No||Planned||B||
 ||tl.getLatestBuildForTestPlan||No||Planned||A||
 ||tl.getTestSuitesForTestPlan||No||Planned||A||
 ||tl.getTestCasesForTestPlan||No||Planned||A||
 ||tl.getTestCaseIDByName||No||Planned||C||
-||tl.getTestCasesForTestSuite||No||Completed||-||
+||tl.getTestCasesForTestSuite||Yes||Completed||-||
 ||tl.getLastExecutionResult||No||Planned||D||
 ||tl.getTestCaseCustomFieldDesignValue||No||Not scheduled for support at this time||E||
 ||tl.getTestCaseAttachments||No||Not scheduled for support at this time||E||
