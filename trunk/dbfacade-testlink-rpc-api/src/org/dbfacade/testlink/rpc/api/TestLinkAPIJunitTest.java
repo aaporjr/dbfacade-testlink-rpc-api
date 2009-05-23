@@ -23,6 +23,8 @@ package org.dbfacade.testlink.rpc.api;
 
 import static org.junit.Assert.*;
 
+import java.util.Date;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -66,7 +68,7 @@ public class TestLinkAPIJunitTest implements TestLinkAPIConst
 	@Before
 	public void setUp() throws Exception
 	{
-		api = new TestLinkAPIClient(userKey, apiURL);
+		api = new TestLinkAPIClient(userKey, apiURL, true);
 	}
 
 	/**
@@ -314,6 +316,27 @@ public class TestLinkAPIJunitTest implements TestLinkAPIConst
 			TestLinkAPIResults added = api.addTestCaseToTestPlan(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME, JUNIT_CASE);
 			if ( added == null ) {
 				throw new Exception("Unable to add test case to test plan.");
+			}
+		} catch ( Exception e ) {
+			fail("Failed to create a build.");
+		}
+	}
+	
+	/**
+	 * Test reporting a test result by project, plan and case name
+	 */
+	@Test
+	public void testReportTestCaseResult()
+	{
+		try {
+			TestLinkAPIResults results = api.reportTestCaseResult(
+					JUNIT_PLAN_PROJECT,
+					JUNIT_PLAN_NAME,
+					JUNIT_CASE, 
+					"The test was by JUnit run on " + new Date().toString(),
+					TEST_PASSED);
+			if ( results == null ) {
+				throw new Exception("Unable to add test case to test plan suite.");
 			}
 		} catch ( Exception e ) {
 			fail("Failed to create a build.");

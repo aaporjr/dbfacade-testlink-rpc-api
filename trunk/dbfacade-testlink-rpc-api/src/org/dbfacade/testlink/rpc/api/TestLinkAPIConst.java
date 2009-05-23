@@ -53,7 +53,7 @@ public interface TestLinkAPIConst
 	// Get methods
 	public static final String API_METHOD_GET_PROJECTS = "tl.getProjects";
 	public static final String API_METHOD_GET_PROJECT_TEST_PLANS = "tl.getProjectTestPlans";
-	public static final String API_METHOD_GET_BUILDS_FOR_PLANS = "tl.getBuildsForTestPlan";
+	public static final String API_METHOD_GET_BUILDS_FOR_PLAN = "tl.getBuildsForTestPlan";
 	public static final String API_METHOD_GET_LAST_BUILDS_FOR_PLAN = "tl.getLatestBuildForTestPlan";
 	public static final String API_METHOD_GET_SUITES_FOR_PLAN = "tl.getTestSuitesForTestPlan";
 	public static final String API_METHOD_GET_TEST_CASES_FOR_PLAN = "tl.getTestCasesForTestPlan";
@@ -154,6 +154,13 @@ public interface TestLinkAPIConst
 	public static final String TESTCASE_EXECUTION_TYPE_MANUAL="1";
 	public static final String TESTCASE_EXECUTION_TYPE_AUTO="2";
 
+
+	// Test result types
+	public static final String TEST_PASSED="p";
+	public static final String TEST_BLOCKED="b";
+	public static final String TEST_FAILED="f";
+	public static final String TEST_WRONG="w";
+	public static final String TEST_DEPARTED="d";
 
 
     
