@@ -46,6 +46,6 @@ Getter Methods
 Setter Methods
 
 ||*Method*||*Supported*||*Development Status*||*Priority*||
-||tl.setTestMode||No||Setting the mode to true cases the java client to fail all test cases (not going to be supported)||F||
+||tl.setTestMode||No||Setting the mode to true causes the Java client to fail all test cases (not going to be supported)||F||
 ||tl.addTestCaseToTestPlan||Yes||Completed||-||
 ||tl.assignRequirements||No||Not scheduled for support at this time||E||
