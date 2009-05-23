@@ -1,4 +1,4 @@
-package org.dbfacade.testlink.rpc.api;
+package org.dbfacade.testlink.api.client;
 
 
 /**
