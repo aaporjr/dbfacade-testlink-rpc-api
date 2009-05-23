@@ -10,7 +10,7 @@ The following is a listing of the methods the TestLink API Java Client supports 
 Automated Test Results Recording
 
 ||*Method*||*Supported*||*Development Status*||*Priority*||
-||tl.reportTCResult||No||Planned||A||
+||tl.reportTCResult||Yes||Unit testing under way||A||
 
 
 Utility methods
@@ -33,7 +33,7 @@ Getter Methods
 ||tl.getProjects||Yes||Completed||-||
 ||tl.getFirstLevelTestSuitesForTestProject||Yes||Completed||-||
 ||tl.getProjectTestPlans||Yes||Completed||-||
-||tl.getBuildsForTestPlan||No||Planned||B||
+||tl.getBuildsForTestPlan||Yes||Completed||-||
 ||tl.getLatestBuildForTestPlan||No||Planned||A||
 ||tl.getTestSuitesForTestPlan||No||Planned||A||
 ||tl.getTestCasesForTestPlan||Yes||Partial - Unit Testing under way||A||
