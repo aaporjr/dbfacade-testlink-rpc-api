@@ -45,7 +45,20 @@ public class TestLinkAPIResults implements TestLinkAPIConst
 	public void add(
 		Map item)
 	{
-		results.add(item);
+		// Inspect the item first. If it is a map of maps
+		// then get the individual hashes.
+		if ( isMapOfMaps(item) ) {
+			Iterator keys = item.keySet().iterator();
+			while ( keys.hasNext() ) {
+				Object key = keys.next();
+				Map innerMap = (Map) item.get(key);
+				if ( innerMap != null ) {
+					results.add(innerMap);
+				}
+			}
+		} else {
+			results.add(item);
+		}
 	}
 	
 	/**
@@ -93,13 +106,19 @@ public class TestLinkAPIResults implements TestLinkAPIConst
 	 * @param name
 	 * @return
 	 */
-	public Object getValueByName(Map result, String name) {
+	public Object getValueByName(
+		Map result,
+		String name)
+	{
 		Object value = result.get(name);
 		if ( value == null ) {
 			Iterator mapKeys = result.keySet().iterator();
 			while ( mapKeys.hasNext() ) {
 				Object internalKey = mapKeys.next();
 				Object internalData = result.get(internalKey);
+				if ( internalData == null ) {
+					continue;
+				}
 				if ( internalData instanceof Map ) {
 					Map internalMap = (Map) internalData;
 					value = internalMap.get(name);
@@ -112,6 +131,23 @@ public class TestLinkAPIResults implements TestLinkAPIConst
 			}
 		}
 		return value;
+	}
+	
+	private boolean isMapOfMaps(
+		Map map)
+	{
+		Iterator keys = map.keySet().iterator();
+		while ( keys.hasNext() ) {
+			Object key = keys.next();
+			Object data = map.get(key);
+			if ( data == null ) {
+				continue;
+			} else if ( data instanceof Map ) {
+				continue;
+			}
+			return false;
+		}
+		return true;
 	}
 	
 	/**

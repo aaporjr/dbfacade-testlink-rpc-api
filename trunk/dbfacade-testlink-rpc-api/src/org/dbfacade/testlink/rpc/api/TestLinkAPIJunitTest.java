@@ -271,7 +271,52 @@ public class TestLinkAPIJunitTest implements TestLinkAPIConst
 			}
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			fail("Failed to create a test suite.");
+			fail("Failed to check test plan.");
+		}
+	}
+	
+	/**
+	 * Test method create build
+	 */
+	@Test
+	public void testCreateBuild()
+	{
+		try {
+			Integer id = api.createBuild(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME, JUNIT_BUILD,
+				JUNIT_BUILD + " created by JUnit test.");
+			if ( id == null ) {
+				throw new Exception("Unable to create project.");
+			}
+		} catch ( Exception e ) {
+			fail("Failed to create a build.");
+		}
+	}
+	
+	/**
+	 * Test method add test case to test plan
+	 */
+	@Test
+	public void testAddTestCaseToTestPlan()
+	{
+		try {
+			Integer id = api.createTestCase(
+					"admin",
+					JUNIT_PLAN_PROJECT, 
+					JUNIT_PLAN_SUITE,
+					JUNIT_CASE, 
+					"JUnit created summary.",
+					"JUnit created steps.",
+					"JUnit created expected results.", 
+					HIGH);
+			if ( id == null ) {
+				throw new Exception("Unable to add test case to test plan suite.");
+			}
+			TestLinkAPIResults added = api.addTestCaseToTestPlan(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME, JUNIT_CASE);
+			if ( added == null ) {
+				throw new Exception("Unable to add test case to test plan.");
+			}
+		} catch ( Exception e ) {
+			fail("Failed to create a build.");
 		}
 	}
 	

@@ -21,11 +21,8 @@
 package org.dbfacade.testlink.rpc.api;
 
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
-
-import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
@@ -110,7 +107,9 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		if ( projectID != null ) {
 			return createTestSuite(projectID, suiteName, description);
 		} else {
-			throw new TestLinkAPIException("The project " + projectName + " was not found and the test suite " + suiteName + " could not be created.");
+			throw new TestLinkAPIException(
+				"The project " + projectName + " was not found and the test suite "
+				+ suiteName + " could not be created.");
 		}
 	}
 	
@@ -189,8 +188,8 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	{
 		Integer projectID = TestLinkAPIHelper.getProjectID(this, projectName);
 		Integer suiteID = TestLinkAPIHelper.getSuiteID(this, projectName, suiteName);
-		return createTestCase(authorLoginName, projectID, suiteID, testCaseName, summary, steps, expectedResults, null,
-			null, null, null, null, importance);
+		return createTestCase(authorLoginName, projectID, suiteID, testCaseName, summary,
+			steps, expectedResults, null, null, null, null, null, importance);
 	}
 	
 	/**
@@ -214,7 +213,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 */
 	public Integer createTestCase(
 		String authorLoginName,
-        Integer projectID,
+		Integer projectID,
 		Integer suiteID,
 		String caseName,
 		String summary,
@@ -242,14 +241,16 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		setParam(params, OPTIONAL, API_PARAM_ACTION_DUP_NAME, actionOnDuplicatedName);
 		setParam(params, OPTIONAL, API_PARAM_EXEC_TYPE, executionType);
 		setParam(params, OPTIONAL, API_PARAM_IMPORTANCE, importance);
-		TestLinkAPIResults results = executeRpcMethod(API_METHOD_CREATE_TEST_CASE, params);
-		return getCreatedRecordIdentifier(results, API_RESULT_IDENTIFIER);
+		executeRpcMethod(API_METHOD_CREATE_TEST_CASE, params);
+		// The id returned in results is the id within
+		// the project we want the actual test case id
+		return TestLinkAPIHelper.getCaseID(this, projectID, suiteID, caseName);
 	}
 	
 	/*
 	 * This method is not supported by the TestLink API. It is
 	 * needed so that JUnit test could be run without human
-	 * intervention but right now manual creation in the only
+	 * intervention but right now manual creation is the only
 	 * way to get to all the other test.
 	 * 
 	 * 
@@ -258,47 +259,239 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 * @param description
 	 * @throws TestLinkAPIException
 	 *
-	public Integer createTestPlan(
+	 public Integer createTestPlan(
+	 String projectName,
+	 String planName,
+	 String description) throws TestLinkAPIException
+	 {
+	 Integer projectID = TestLinkAPIHelper.getProjectID(this, projectName);
+	 if ( projectID != null ) {
+	 return createTestPlan(projectID, planName, description);
+	 } else {
+	 throw new TestLinkAPIException("The project " + projectName + " was not found and the test plan " + planName + " could not be created.");
+	 }
+	 }
+	 */
+	
+	/*
+	 * This method is not supported by the TestLink API. It is
+	 * needed so that JUnit test could be run without human
+	 * intervention but right now manual creation is the only
+	 * way to get to all the other test.
+	 * 
+	 * @param projectName
+	 * @param planName
+	 * @param description
+	 * @throws TestLinkAPIException
+	 *
+	 public Integer createTestPlan(
+	 Integer projectID,
+	 String planName,
+	 String description) throws TestLinkAPIException
+	 {
+	 Hashtable params = new Hashtable();				
+	 setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+	 setParam(params, REQUIRED, API_PARAM_TEST_PROJECT_ID, projectID.toString());
+	 setParam(params, REQUIRED, "testplanname", planName); // not supported by TestLink
+	 setParam(params, REQUIRED, API_PARAM_NOTES, description);
+	 TestLinkAPIResults results = executeRpcMethod(API_METHOD_CREATE_TEST_PLAN, params);
+	 return getCreatedRecordIdentifier(results, API_RESULT_IDENTIFIER);
+	 }
+	 */
+
+
+	/**
+	 * The method creates a build under the provided project name and test plan.
+	 * 
+	 * @param projectName
+	 * @param planName
+	 * @param buildName
+	 * @param buildNotes
+	 * @return
+	 * @throws TestLinkAPIException
+	 */
+	public Integer createBuild(
 		String projectName,
 		String planName,
-		String description) throws TestLinkAPIException
+		String buildName,
+		String buildNotes) throws TestLinkAPIException
 	{
 		Integer projectID = TestLinkAPIHelper.getProjectID(this, projectName);
-		if ( projectID != null ) {
-			return createTestPlan(projectID, planName, description);
+		if ( projectID == null ) {
+			throw new TestLinkAPIException(
+				"The project " + projectName + " was not found and the build " + buildName
+				+ " could not be created.");
+		}
+		Integer planID = TestLinkAPIHelper.getPlanID(this, projectID, planName);
+		if ( planID != null ) {
+			return createBuild(planID, buildName, buildNotes);
 		} else {
-			throw new TestLinkAPIException("The project " + projectName + " was not found and the test plan " + planName + " could not be created.");
+			throw new TestLinkAPIException(
+				"The plan " + planName + " was not found and the build " + buildName
+				+ " could not be created.");
 		}
 	}
-	*/
 	
-	/*
-	 * This method is not supported by the TestLink API. It is
-	 * needed so that JUnit test could be run without human
-	 * intervention but right now manual creation in the only
-	 * way to get to all the other test.
+	/**
+	 * The method creates a build under the test plan ID.
+	 * 
+	 * @param planID
+	 * @param buildName
+	 * @param buildNotes
+	 * @return
+	 * @throws TestLinkAPIException
+	 */
+	public Integer createBuild(
+		Integer planID,
+		String buildName,
+		String buildNotes) throws TestLinkAPIException
+	{
+		Hashtable params = new Hashtable();	
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		setParam(params, REQUIRED, API_PARAM_TEST_PLAN_ID, planID);
+		setParam(params, REQUIRED, API_PARAM_BUILD_NAME, buildName);
+		setParam(params, REQUIRED, API_PARAM_BUILD_NOTES, buildNotes);
+		TestLinkAPIResults results = executeRpcMethod(API_METHOD_CREATE_BUILD, params);
+		return getCreatedRecordIdentifier(results, API_RESULT_IDENTIFIER);
+	}
+	
+	/**
+	 * Appends that latest version of a test case to a test 
+	 * plan with a default level of urgency. Can only handle
+	 * test cases associated with first level suites.
+	 * 
 	 * 
 	 * @param projectName
 	 * @param planName
-	 * @param description
+	 * @param testCaseName
+	 * @return
 	 * @throws TestLinkAPIException
-	 *
-	public Integer createTestPlan(
-		Integer projectID,
+	 */
+	public TestLinkAPIResults addTestCaseToTestPlan(
+		String projectName,
 		String planName,
-		String description) throws TestLinkAPIException
+		String testCaseName) throws TestLinkAPIException
 	{
-		Hashtable params = new Hashtable();				
-		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
-		setParam(params, REQUIRED, API_PARAM_TEST_PROJECT_ID, projectID.toString());
-		setParam(params, REQUIRED, "testplanname", planName); // not suppirted by TestLink
-		setParam(params, REQUIRED, API_PARAM_NOTES, description);
-		TestLinkAPIResults results = executeRpcMethod(API_METHOD_CREATE_TEST_PLAN, params);
-		return getCreatedRecordIdentifier(results, API_RESULT_IDENTIFIER);
+		int maxNode=0;
+		TestLinkAPIResults cases = getCasesForTestPlan(projectName, planName);
+		for (int i=0; i < cases.size(); i++) {
+			Map data = cases.getData(i);
+			Object node = data.get("execution_order");
+			if ( node != null ) {
+				try {
+					Integer cn = new Integer(node.toString());
+					if ( cn.intValue() > maxNode ) {
+						maxNode = cn.intValue();
+					}
+				} catch (Exception e) {}
+			}
+		}
+		maxNode++;
+		TestLinkAPIResults results = addTestCaseToTestPlan(projectName, planName,
+			testCaseName, new Integer(maxNode), null);	
+		return results;
 	}
-	*/
-
-
+	
+	/**
+	 * Appends that latest version of a test case to a test plan with
+	 * a medium urgency. Can only handle test in first level suites.
+	 * 
+	 * @param projectName
+	 * @param planName
+	 * @param testCaseName
+	 * @return
+	 * @throws TestLinkAPIException
+	 */
+	public TestLinkAPIResults addTestCaseToTestPlan(
+		String projectName,
+		String planName,
+		String testCaseName,
+		Integer execOrder,
+		String urgency) throws TestLinkAPIException
+	{
+		Integer projectID = TestLinkAPIHelper.getProjectID(this, projectName);
+		if ( projectID == null ) {
+			throw new TestLinkAPIException(
+				"The project " + projectName + " was not found and the test case "
+				+ testCaseName + " could not be appended.");
+		}
+		Integer planID = TestLinkAPIHelper.getPlanID(this, projectID, planName);
+		if ( planID == null ) {
+			throw new TestLinkAPIException(
+				"The plan " + planName + " was not found and the test case " + testCaseName
+				+ " could not be appended.");
+		}
+		Integer caseID = TestLinkAPIHelper.getCaseID(this, projectID, testCaseName);
+		if ( caseID == null ) {
+			throw new TestLinkAPIException(
+				"The test case " + testCaseName + " was not found and the test case"
+				+ " could not be appended to test plan " + planName + ".");
+		}
+		Map caseInfo = TestLinkAPIHelper.getTestCaseInfo(this, projectID, caseID);
+		if ( caseInfo == null ) {
+			throw new TestLinkAPIException(
+				"The test case identifier " + caseID + " was not found and the test case "
+				+ testCaseName + " could not be appended to test plan " + planName + ".");
+		}
+		Map projectInfo = TestLinkAPIHelper.getProjectInfo(this, projectName);
+		if ( projectInfo == null ) {
+			throw new TestLinkAPIException(
+				"The project information for " + projectName
+				+ " was not found and the test case " + testCaseName
+				+ " could not be appended to test plan " + planName + ".");
+		}
+		Object prefix = projectInfo.get("prefix");
+		Object externalID = caseInfo.get(API_PARAM_TC_EXTERNAL_ID);
+		String visibleTestCaseID = prefix.toString() + '-' + externalID.toString();
+		Object version = caseInfo.get(API_PARAM_VERSION);
+		TestLinkAPIResults results = addTestCaseToTestPlan(projectID, planID,
+			visibleTestCaseID, new Integer(version.toString()), execOrder, urgency);	
+		return results;
+	}
+	
+	/**
+	 * The method adds a test case from a project to the test plan.
+	 * 
+	 * @param projectID
+	 * @param planID
+	 * @param testCaseID
+	 * @param version
+	 * @param ExecOrder
+	 * @param Urgency
+	 * @return
+	 * @throws TestLinkAPIException
+	 */
+	public TestLinkAPIResults addTestCaseToTestPlan(
+		Integer projectID,
+		Integer planID,
+		String testCaseVisibleID,
+		Integer version,
+		Integer execOrder,
+		String urgency) throws TestLinkAPIException
+	{
+		Hashtable params = new Hashtable();	
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		setParam(params, REQUIRED, API_PARAM_TEST_PROJECT_ID, projectID);
+		setParam(params, REQUIRED, API_PARAM_TEST_PLAN_ID, planID);
+		setParam(params, REQUIRED, API_PARAM_TEST_CASE_ID_EXTERNAL, testCaseVisibleID);
+		setParam(params, REQUIRED, API_PARAM_VERSION, version);
+		setParam(params, OPTIONAL, API_PARAM_URGENCY, urgency);
+		setParam(params, OPTIONAL, API_PARAM_EXEC_ORDER, execOrder);
+		TestLinkAPIResults results = executeRpcMethod(API_METHOD_ADD_TEST_CASE_TO_PLAN,
+			params);
+		if ( results.size() < 1 ) {
+			throw new TestLinkAPIException(
+				"Could not add test case " + testCaseVisibleID + " to test plan id " + planID);
+		}
+		Map data = results.getData(0);
+		if ( hasError(data) ) {
+			throw new TestLinkAPIException(
+				"Could not add test case " + testCaseVisibleID + " to test plan id " + planID
+				+ ". Results Message: [" + data.toString() + "]");
+		}
+		return results;
+	}
+				
 	/**
 	 * Get all the test projects
 	 */
@@ -309,21 +502,21 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		return executeRpcMethod(API_METHOD_GET_PROJECTS, params);
 	}
 	
-	public TestLinkAPIResults getProjectTestPlans(String projectName) throws TestLinkAPIException
+	public TestLinkAPIResults getProjectTestPlans(
+		String projectName) throws TestLinkAPIException
 	{
 		Integer projectID = TestLinkAPIHelper.getProjectID(this, projectName);
 		return getProjectTestPlans(projectID);
 	}
 	
-	
-	public TestLinkAPIResults getProjectTestPlans(Integer projectID) throws TestLinkAPIException
+	public TestLinkAPIResults getProjectTestPlans(
+		Integer projectID) throws TestLinkAPIException
 	{
 		Hashtable params = new Hashtable();	
 		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
 		setParam(params, REQUIRED, API_PARAM_TEST_PROJECT_ID, projectID);
 		return executeRpcMethod(API_METHOD_GET_PROJECT_TEST_PLANS, params);
 	}
-	
 	
 	/**
 	 * Get all the first level project test suites by project name
@@ -375,12 +568,12 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	/**
 	 * Get test cases for test suite
 	 * 
-	 * @param int testCaseID 
-	 * @param int testPlanID
+	 * @param int testProjectID
+	 * @param int testSuiteID
 	 */ 
 	public TestLinkAPIResults getCasesForTestSuite(
-		int testProjectID,
-		int testSuiteID) throws TestLinkAPIException
+		Integer testProjectID,
+		Integer testSuiteID) throws TestLinkAPIException
 	{ 
 		Hashtable params = new Hashtable();				
 		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
@@ -389,6 +582,75 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		setParam(params, REQUIRED, API_PARAM_DEPTH_FLAG, true);
 		setParam(params, REQUIRED, API_PARAM_DETAILS, "full");
 		return executeRpcMethod(API_METHOD_GET_TEST_CASES_FOR_SUITE, params);
+	}
+	
+
+	public TestLinkAPIResults getCasesForTestPlan(
+			String projectName,
+			String planName
+			) throws TestLinkAPIException
+	{ 
+		Integer projectID = TestLinkAPIHelper.getProjectID(this, projectName);
+		if ( projectID == null ) {
+			throw new TestLinkAPIException(
+				"Could not get project identifier for " + projectName);
+		}
+		Integer planID = TestLinkAPIHelper.getPlanID(this, projectID, planName);
+		if ( planID == null ) {
+			throw new TestLinkAPIException(
+					"Could not get plan identifier for " + planName);
+		}
+		return getCasesForTestPlan(planID);
+	}
+	
+	
+	/**
+	 * 
+	 * @param testPlanID
+	 * @return
+	 * @throws TestLinkAPIException
+	 */
+	public TestLinkAPIResults getCasesForTestPlan(
+			Integer testPlanID
+			) throws TestLinkAPIException
+	{ 
+			return getCasesForTestPlan(testPlanID, null, null, null, null, null, null, null);
+	}
+	
+	/**
+	 * Get all the test cases associated with a test plan.
+	 * 
+	 * Note: Only the testPlanID is currently supported
+	 * 
+	 * @param testPlanID
+	 * @param testCaseID
+	 * @param buildID
+	 * @param keywordID
+	 * @param executed
+	 * @param assignedTo
+	 * @param execStatus
+	 * @param execType
+	 * @return
+	 * @throws TestLinkAPIException
+	 */
+	private TestLinkAPIResults getCasesForTestPlan(
+		Integer testPlanID,
+		Integer testCaseID,
+		Integer buildID,
+		Integer keywordID,
+		String executed,
+		String assignedTo,
+		String execStatus,
+		String execType
+		) throws TestLinkAPIException
+	{ 
+		Hashtable params = new Hashtable();				
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		setParam(params, REQUIRED, API_PARAM_TEST_PLAN_ID, testPlanID);
+		
+		// TODO : Add all the optional parameters
+		
+		return executeRpcMethod(API_METHOD_GET_TEST_CASES_FOR_PLAN, params);
 	}
 	
 	/**
@@ -406,18 +668,50 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		TestLinkAPIResults results = new TestLinkAPIResults();
 		ArrayList<Object> params = new ArrayList<Object>();
 		XmlRpcClient rpcClient = getRpcClient();
+		int unknownResultTypeCnt = 0;
 		
 		try {
 			params.add(executionData);
-			Object[] result = (Object[]) rpcClient.execute(method, params);			
-			for ( int i = 0; i < result.length; i++ ) {
-				Map item = (Map) result[i];
-				results.add(item);
+			Object[] rawResults = (Object[]) rpcClient.execute(method, params);			
+			for ( int i = 0; i < rawResults.length; i++ ) {
+				Object result = (Map) rawResults[i];
+				if ( result instanceof Map ) {
+					Map item = (Map) result;
+					results.add(item);
+				} else {
+					unknownResultTypeCnt++;
+					HashMap data = new HashMap();
+					data.put(getUnknownKey(unknownResultTypeCnt), result);
+					results.add(data);
+				}
 			}
-		} catch ( XmlRpcException e ) {
-			throw new TestLinkAPIException("The call to the xml-rpc client failed.", e);
+		} catch ( Exception e ) {
+			
+			// Try without casting to an Object[] list since XML-RPC officially returns
+			// an Object but TestLink API is known to return Object[] list and cast is
+			// tried first and then if that does not work we go with Object.
+			try {
+				Object single = rpcClient.execute(method, params);	
+				if ( single instanceof Map ) {
+					results.add((Map) single);
+				} else {
+					unknownResultTypeCnt++;
+					HashMap data = new HashMap();
+					data.put(getUnknownKey(unknownResultTypeCnt), single);
+					results.add(data);
+				}
+			} catch ( Exception ee ) {
+				throw new TestLinkAPIException("The call to the xml-rpc client failed.", e);
+			}
 		}
 		return results;
+	}
+	
+	private static String getUnknownKey(
+		int cnt)
+	{
+		String key = new Integer(cnt).toString();
+		return "RESULT_NUM_" + key + "_OF_UNKNOWN_TYPE";
 	}
 	
 	/**
@@ -433,7 +727,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 			config.setServerURL(new URL(SERVER_URL));
 			rpcClient = new XmlRpcClient();
 			rpcClient.setConfig(config);
-		} catch ( MalformedURLException e ) {
+		} catch ( Exception e ) {
 			throw new TestLinkAPIException("Unable to create a XML-RPC client.", e);
 		}
 		
@@ -461,22 +755,54 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		}
 		
 		// Set the parameter for the XML-RPC call
-		params.put(paramName, value.toString());
+		try {
+			Integer intTypeValue = new Integer(value.toString());
+			params.put(paramName, intTypeValue.intValue());
+		} catch ( Exception e ) {
+			params.put(paramName, value.toString());
+		}
 	}
 	
-	private Integer getCreatedRecordIdentifier(TestLinkAPIResults results, String idKey) throws TestLinkAPIException {
-		Integer newID=null;
+	private Integer getCreatedRecordIdentifier(
+		TestLinkAPIResults results,
+		String idKey) throws TestLinkAPIException
+	{
+		Integer newID = null;
 		if ( results.size() == 1 ) {
 			Object id = results.getValueByName(0, idKey);
 			if ( id != null ) {
 				newID = new Integer(id.toString());
 			} else {
 				Map msg = results.getData(0);
-				String failMsg = "Create failed since the identifier for new record was not retrieved.\nAPI Returned Data: [" + msg.toString() + "]";
+				String failMsg = "Create failed since the identifier for new record was not retrieved.\nAPI Returned Data: ["
+					+ msg.toString() + "]";
 				throw new TestLinkAPIException(failMsg);
 			}
 		}
 		return newID;
+	}
+	
+	/**
+	 * There seems to be no standard message coming from the 
+	 * TestLink API to indicate there is an error. So this is 
+	 * a kludge trying to figure out if the message is an error
+	 * since it contains both a message and code.
+	 * 
+	 * Maybe it is the XML-RPC.
+	 * 
+	 * @return
+	 */
+	private boolean hasError(
+		Map data)
+	{
+		String message = (String) data.get(API_PARAM_MESSAGE);
+		Object code = data.get(API_PARAM_CODE);
+		if ( message != null && code != null ) {
+			if ( !message.toLowerCase().contains("success") ) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
 

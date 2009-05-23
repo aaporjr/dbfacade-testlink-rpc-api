@@ -86,12 +86,12 @@ public interface TestLinkAPIConst
 	public static final String API_PARAM_TEST_SUITE_NAME = "testsuitename";
 	public static final String API_PARAM_TEST_CASE_ID = "testcaseid";
 	public static final String API_PARAM_TEST_CASE_NAME = "testcasename";
+	public static final String API_PARAM_TEST_CASE_ID_EXTERNAL = "testcaseexternalid";
 	public static final String API_PARAM_TEST_PLAN_ID = "testplanid";
 	public static final String API_PARAM_STATUS = "status";
 	public static final String API_PARAM_DEPTH_FLAG = "deep";
 	public static final String API_PARAM_DETAILS = "details";
 	public static final String API_PARAM_NOTES = "notes";
-	public static final String API_PARAM_TEST_CASE_EXTERNAL = "testcaseexternalid";
 	public static final String API_PARAM_BUILD_ID = "buildid";
 	public static final String API_PARAM_TIMESTAMP = "timestamp";
 	public static final String API_PARAM_GUESS = "guess";
@@ -121,6 +121,12 @@ public interface TestLinkAPIConst
 	public static final String API_PARAM_REQUIREMENTS = "requirements";
 	public static final String API_PARAM_BUG_ID = "bugid";		
 	public static final String API_PARAM_PARENT_ID = "parentid";
+	public static final String API_PARAM_NODE_ORDER = "node_order";
+	public static final String API_PARAM_TC_EXTERNAL_ID="tc_external_id";
+	public static final String API_PARAM_MESSAGE="message";
+	public static final String API_PARAM_CODE="code";
+	
+	
 	
 	
     
@@ -158,7 +164,7 @@ public interface TestLinkAPIConst
 	public static final String JUNIT_PROJECT = "Test Project " + JUNIT_ID;
 	public static final String JUNIT_SUITE = "Test Suite " + JUNIT_ID;
 	public static final String JUNIT_CASE = "Test Case " + JUNIT_ID;
-	public static final String JUNIT_PLAN = "Test Plan " + JUNIT_ID;
+	public static final String JUNIT_BUILD = "Build " + JUNIT_ID;
 	public static final String JUNIT_PREFIX = JUNIT_ID;
 	public static final String JUNIT_PLAN_PROJECT = "My Test Plan Project";
 	public static final String JUNIT_PLAN_SUITE = "My Test Plan Suite";
