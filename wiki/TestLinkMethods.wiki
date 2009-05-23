@@ -36,7 +36,7 @@ Getter Methods
 ||tl.getBuildsForTestPlan||No||Planned||B||
 ||tl.getLatestBuildForTestPlan||No||Planned||A||
 ||tl.getTestSuitesForTestPlan||No||Planned||A||
-||tl.getTestCasesForTestPlan||No||Planned||A||
+||tl.getTestCasesForTestPlan||Yes||Partial - Unit Testing under way||A||
 ||tl.getTestCaseIDByName||No||Planned||C||
 ||tl.getTestCasesForTestSuite||Yes||Completed||-||
 ||tl.getLastExecutionResult||No||Planned||D||
