@@ -647,7 +647,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 				+ " could not be appended to test plan " + planName + ".");
 		}
 		Object prefix = projectInfo.get("prefix");
-		Object externalID = caseInfo.get(API_PARAM_TC_EXTERNAL_ID);
+		Object externalID = caseInfo.get(API_RESULT_TC_EXTERNAL_ID);
 		String visibleTestCaseID = prefix.toString() + '-' + externalID.toString();
 		Object version = caseInfo.get(API_PARAM_VERSION);
 		TestLinkAPIResults results = addTestCaseToTestPlan(projectID, planID,
@@ -1173,8 +1173,8 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	private boolean hasError(
 		Map data)
 	{
-		String message = (String) data.get(API_PARAM_MESSAGE);
-		Object code = data.get(API_PARAM_CODE);
+		String message = (String) data.get(API_RESULT_MESSAGE);
+		Object code = data.get(API_RESULT_CODE);
 		if ( message != null && code != null ) {
 			if ( !message.toLowerCase().contains("success") ) {
 				return true;

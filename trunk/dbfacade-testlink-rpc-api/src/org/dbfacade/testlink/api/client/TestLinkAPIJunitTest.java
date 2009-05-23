@@ -343,5 +343,29 @@ public class TestLinkAPIJunitTest implements TestLinkAPIConst
 		}
 	}
 	
+	/**
+	 * Test reporting a test result by project, plan build, and case name
+	 */
+	@Test
+	public void testReportTestCaseResultByBuild()
+	{
+		try {
+			String caseVisibleID = TestLinkAPIHelper.getCaseVisibleID(api, JUNIT_PLAN_PROJECT, JUNIT_CASE);
+			TestLinkAPIResults results = api.reportTestCaseResult(
+					JUNIT_PLAN_PROJECT,
+					JUNIT_PLAN_NAME,
+					caseVisibleID, 
+					JUNIT_BUILD,
+					"The test was by JUnit run on " + new Date().toString(),
+					TEST_PASSED);
+			if ( results == null ) {
+				throw new Exception("Unable to add test case to test plan suite.");
+			}
+		} catch ( Exception e ) {
+			fail("Failed to create a build.");
+		}
+	}
+	
+	
 }
 

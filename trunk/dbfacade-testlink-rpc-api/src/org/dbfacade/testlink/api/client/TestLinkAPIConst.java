@@ -121,10 +121,7 @@ public interface TestLinkAPIConst
 	public static final String API_PARAM_REQUIREMENTS = "requirements";
 	public static final String API_PARAM_BUG_ID = "bugid";		
 	public static final String API_PARAM_PARENT_ID = "parentid";
-	public static final String API_PARAM_NODE_ORDER = "node_order";
-	public static final String API_PARAM_TC_EXTERNAL_ID="tc_external_id";
-	public static final String API_PARAM_MESSAGE="message";
-	public static final String API_PARAM_CODE="code";
+
 	
 	
 	
@@ -136,6 +133,11 @@ public interface TestLinkAPIConst
 	 */
 	public static final String API_RESULT_IDENTIFIER = "id";
 	public static final String API_RESULT_NAME = "name";
+	public static final String API_RESULT_PREFIX = "prefix";
+	public static final String API_RESULT_NODE_ORDER = "node_order";
+	public static final String API_RESULT_TC_EXTERNAL_ID="tc_external_id";
+	public static final String API_RESULT_MESSAGE="message";
+	public static final String API_RESULT_CODE="code";
 	
 	
     

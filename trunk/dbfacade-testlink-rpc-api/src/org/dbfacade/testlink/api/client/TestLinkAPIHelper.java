@@ -149,6 +149,19 @@ public class TestLinkAPIHelper implements TestLinkAPIConst
 		return null;
 	}
 	
+	public static String getCaseVisibleID(
+			TestLinkAPIClient apiClient,
+			String projectName,
+			String caseName) throws TestLinkAPIException {
+		Map projectInfo = getProjectInfo(apiClient, projectName);
+		Integer projectID = getIdentifier(projectInfo);
+		Integer caseID = getCaseID(apiClient, projectID, caseName);
+		Map caseInfo = getTestCaseInfo(apiClient, projectID, caseID);
+		Object prefix = projectInfo.get(API_RESULT_PREFIX);
+		Object externalID = caseInfo.get(API_RESULT_TC_EXTERNAL_ID);
+		return prefix.toString() + '-' + externalID.toString();
+	}
+	
 	/**
 	 * Get the test case identifier for a case name within a project.
 	 * 
@@ -249,7 +262,7 @@ public class TestLinkAPIHelper implements TestLinkAPIConst
 		for ( int i = 0; i < results.size(); i++ ) {
 			Map data = results.getData(i);
 			if ( data != null ) {
-				Object externalID = data.get(API_PARAM_TC_EXTERNAL_ID);
+				Object externalID = data.get(API_RESULT_TC_EXTERNAL_ID);
 				Object name = data.get(API_RESULT_NAME);
 				if ( externalID != null && name != null ) {
 					String currentPattern = name.toString();
