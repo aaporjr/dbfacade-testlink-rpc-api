@@ -47,5 +47,5 @@ Setter Methods
 
 ||*Method*||*Supported*||*Development Status*||*Priority*||
 ||tl.setTestMode||No||Planned||D||
-||tl.addTestCaseToTestPlan||No||Planned||C||
+||tl.addTestCaseToTestPlan||Yes||Completed||-||
 ||tl.assignRequirements||No||Not scheduled for support at this time||E||
