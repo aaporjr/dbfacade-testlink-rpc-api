@@ -34,12 +34,12 @@ Getter Methods
 ||tl.getFirstLevelTestSuitesForTestProject||Yes||Completed||-||
 ||tl.getProjectTestPlans||Yes||Completed||-||
 ||tl.getBuildsForTestPlan||Yes||Completed||-||
-||tl.getLatestBuildForTestPlan||No||Planned||A||
-||tl.getTestSuitesForTestPlan||No||Planned||A||
-||tl.getTestCasesForTestPlan||Yes||Partial - Unit Testing under way||A||
-||tl.getTestCaseIDByName||No||Planned||C||
+||tl.getLatestBuildForTestPlan||Yes||Completed||-||
+||tl.getTestSuitesForTestPlan||Yes||Completed||-||
+||tl.getTestCasesForTestPlan||Yes||Partial - Unit testing under way||A||
+||tl.getTestCaseIDByName||Yes||Completed||-||
 ||tl.getTestCasesForTestSuite||Yes||Completed||-||
-||tl.getLastExecutionResult||No||Planned||D||
+||tl.getLastExecutionResult||Yes||Completed||-||
 ||tl.getTestCaseCustomFieldDesignValue||No||Not scheduled for support at this time||E||
 ||tl.getTestCaseAttachments||No||Not scheduled for support at this time||E||
 
