@@ -36,7 +36,7 @@ Getter Methods
 ||tl.getBuildsForTestPlan||Yes||Completed||-||
 ||tl.getLatestBuildForTestPlan||Yes||Completed||-||
 ||tl.getTestSuitesForTestPlan||Yes||Completed||-||
-||tl.getTestCasesForTestPlan||Yes||Partial - Unit testing under way||A||
+||tl.getTestCasesForTestPlan||Yes||Implemented but TestLink does not seem to be returning expected results for some of the many parameters passed into this method.||-||
 ||tl.getTestCaseIDByName||Yes||Completed||-||
 ||tl.getTestCasesForTestSuite||Yes||Completed||-||
 ||tl.getLastExecutionResult||Yes||Completed||-||
