@@ -92,6 +92,13 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		SERVER_URL = url;
 		this.useCache = useCache;
 	}
+	
+	public TestLinkAPIResults about() throws TestLinkAPIException {
+		Hashtable params = new Hashtable();				
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		TestLinkAPIResults results = executeRpcMethod(API_METHOD_REPORT_TEST_RESULT, params);
+		return results;
+	}
 		
 	/**
 	 * Report a test execution result for a test case by test
