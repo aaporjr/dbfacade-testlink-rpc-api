@@ -36,7 +36,7 @@ Getter Methods
 ||tl.getBuildsForTestPlan||Yes||Completed||-||
 ||tl.getLatestBuildForTestPlan||Yes||Completed||-||
 ||tl.getTestSuitesForTestPlan||Yes||Completed||-||
-||tl.getTestCasesForTestPlan||Yes||Implemented but TestLink does not seem to be returning expected results for some of the many parameters passed into this method.||-||
+||tl.getTestCasesForTestPlan||Yes||Implemented but API does not seem to be returning expected results for some of the many parameters passed into this method. For instance execution type works which is tested in PHP client sample but execution status does not seem to work. 'f' and 'p' return nothing.||-||
 ||tl.getTestCaseIDByName||Yes||Completed||-||
 ||tl.getTestCasesForTestSuite||Yes||Completed||-||
 ||tl.getLastExecutionResult||Yes||Completed||-||
