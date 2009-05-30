@@ -18,13 +18,18 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.dbfacade.testlink.api.client;
+package org.dbfacade.testlink.api.client.junit;
 
 
 import static org.junit.Assert.*;
 
 import java.util.Date;
 
+import org.dbfacade.testlink.api.client.TestLinkAPIClient;
+import org.dbfacade.testlink.api.client.TestLinkAPIConst;
+import org.dbfacade.testlink.api.client.TestLinkAPIException;
+import org.dbfacade.testlink.api.client.TestLinkAPIHelper;
+import org.dbfacade.testlink.api.client.TestLinkAPIResults;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
