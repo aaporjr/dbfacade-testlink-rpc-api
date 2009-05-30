@@ -48,7 +48,7 @@ import org.junit.Test;
  * @author Daniel Padilla
  *
  */
-public class TestLinkAPIJunitTest implements TestLinkAPIConst
+public class TestLinkAPICreatorsTest implements TestLinkAPIConst
 {
 	
 	// The URL path to testing TestLink application instance. You want to avoid production.
