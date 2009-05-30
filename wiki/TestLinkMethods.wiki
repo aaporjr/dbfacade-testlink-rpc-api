@@ -16,8 +16,8 @@ Automated Test Results Recording
 Utility methods
 
 ||*Method*||*Supported*||*Development Status*||*Priority*||
-||tl.about||No||Planned||C||
-||tl.ping||No||Planned||C||
+||tl.about||No||Completed||-||
+||tl.ping||No||Completed||-||
 
 Create Methods
 
