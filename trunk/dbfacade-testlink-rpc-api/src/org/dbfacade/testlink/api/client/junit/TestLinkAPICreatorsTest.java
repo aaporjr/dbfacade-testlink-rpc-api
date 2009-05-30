@@ -254,7 +254,7 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst
 				"This suite was created by a JUnit test.");
 			}
 			
-			Integer caseID = TestLinkAPIHelper.getCaseID(api, projectID, suiteID, JUNIT_PLAN_CASE);
+			Integer caseID = TestLinkAPIHelper.getCaseIDByName(api, projectID, suiteID, JUNIT_PLAN_CASE);
 			
 			if ( caseID == null ) {
 				caseID = api.createTestCase(
@@ -328,6 +328,36 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst
 	}
 	
 	/**
+	 * Test method add test case (static plan case) to test plan
+	 */
+	@Test
+	public void testAddTestPlanCaseToTestPlan()
+	{
+		try {
+			Integer id = api.createTestCase(
+					"admin",
+					JUNIT_PLAN_PROJECT, 
+					JUNIT_PLAN_SUITE,
+					JUNIT_PLAN_CASE, 
+					"JUnit created summary.",
+					"JUnit created steps.",
+					"JUnit created expected results.", 
+					HIGH);
+			if ( id == null ) {
+				throw new Exception("Unable to add test case to test plan suite.");
+			}
+			TestLinkAPIResults added = api.addTestCaseToTestPlan(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME, JUNIT_PLAN_CASE);
+			if ( added == null ) {
+				throw new Exception("Unable to add test case to test plan.");
+			}
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to create a build.");
+		}
+	}
+	
+	
+	/**
 	 * Test reporting a test result by project, plan and case name
 	 */
 	@Test
@@ -338,6 +368,7 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst
 					JUNIT_PLAN_PROJECT,
 					JUNIT_PLAN_NAME,
 					JUNIT_CASE, 
+					null,
 					"The test was by JUnit run on " + new Date().toString(),
 					TEST_PASSED);
 			if ( results == null ) {
@@ -347,6 +378,30 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst
 			fail("Failed to create a build.");
 		}
 	}
+	
+	/**
+	 * Test reporting a test result by project, plan and case name (static plan case)
+	 */
+	@Test
+	public void testReportTestPlanCaseResult()
+	{
+		try {
+			TestLinkAPIResults results = api.reportTestCaseResult(
+					JUNIT_PLAN_PROJECT,
+					JUNIT_PLAN_NAME,
+					JUNIT_PLAN_CASE, 
+					null,
+					"The test was by JUnit run on " + new Date().toString(),
+					TEST_PASSED);
+			if ( results == null ) {
+				throw new Exception("Unable to add test case to test plan suite.");
+			}
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to create a build.");
+		}
+	}
+	
 	
 	/**
 	 * Test reporting a test result by project, plan build, and case name

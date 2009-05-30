@@ -54,7 +54,7 @@ public interface TestLinkAPIConst
 	public static final String API_METHOD_GET_PROJECTS = "tl.getProjects";
 	public static final String API_METHOD_GET_PROJECT_TEST_PLANS = "tl.getProjectTestPlans";
 	public static final String API_METHOD_GET_BUILDS_FOR_PLAN = "tl.getBuildsForTestPlan";
-	public static final String API_METHOD_GET_LAST_BUILDS_FOR_PLAN = "tl.getLatestBuildForTestPlan";
+	public static final String API_METHOD_GET_LATEST_BUILD_FOR_PLAN = "tl.getLatestBuildForTestPlan";
 	public static final String API_METHOD_GET_SUITES_FOR_PLAN = "tl.getTestSuitesForTestPlan";
 	public static final String API_METHOD_GET_TEST_CASES_FOR_PLAN = "tl.getTestCasesForTestPlan";
 	public static final String API_METHOD_GET_TEST_CASE_IDS_BY_NAME = "tl.getTestCaseIDByName";
@@ -102,7 +102,7 @@ public interface TestLinkAPIConst
 	public static final String API_PARAM_KEY_WORD_ID = "keywordid";
 	public static final String API_PARAM_EXECUTED = "executed";
 	public static final String API_PARAM_ASSIGNED_TO = "assignedto";
-	public static final String API_PARAM_EXECUTE__STATUS = "executestatus";
+	public static final String API_PARAM_EXECUTE_STATUS = "executestatus";
 	public static final String API_PARAM_CUST_FIELD_NAME = "customfieldname";
 	public static final String API_PARAM_SUMMARY = "summary";
 	public static final String API_PARAM_STEPS = "steps";

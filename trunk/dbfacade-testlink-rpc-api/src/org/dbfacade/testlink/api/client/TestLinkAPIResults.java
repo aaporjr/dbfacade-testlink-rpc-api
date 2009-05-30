@@ -159,4 +159,18 @@ public class TestLinkAPIResults implements TestLinkAPIConst
 	{
 		return results.size();
 	}
+	
+	public String toString() {
+		if ( results.size() == 0 ) {
+			return "The results list is empty.";
+		}
+		StringBuffer value = new StringBuffer();
+		for (int i=0; i < results.size(); i++) {
+			Object m = results.get(i);
+			if ( m != null ) {
+				value.append("Result[" + i + "] = " + m.toString() + "\n");
+			}
+		}
+		return value.toString();
+	}
 }

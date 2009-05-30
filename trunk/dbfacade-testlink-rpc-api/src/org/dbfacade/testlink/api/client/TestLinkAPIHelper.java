@@ -150,18 +150,43 @@ public class TestLinkAPIHelper implements TestLinkAPIConst
 	}
 	
 	public static String getCaseVisibleID(
-			TestLinkAPIClient apiClient,
-			String projectName,
-			String caseName) throws TestLinkAPIException {
+		TestLinkAPIClient apiClient,
+		String projectName,
+		String caseName) throws TestLinkAPIException
+	{
 		Map projectInfo = getProjectInfo(apiClient, projectName);
 		Integer projectID = getIdentifier(projectInfo);
-		Integer caseID = getCaseID(apiClient, projectID, caseName);
+		Integer caseID = getCaseIDByName(apiClient, projectID, caseName);
 		Map caseInfo = getTestCaseInfo(apiClient, projectID, caseID);
 		Object prefix = projectInfo.get(API_RESULT_PREFIX);
 		Object externalID = caseInfo.get(API_RESULT_TC_EXTERNAL_ID);
 		return prefix.toString() + '-' + externalID.toString();
 	}
 	
+	public static Integer getTestCaseID(
+		TestLinkAPIClient apiClient,
+		Integer projectID,
+		String testCaseNameOrVisibleID) throws TestLinkAPIException
+	{
+		Integer caseID = null;
+		try {
+			caseID = getCaseIDByName(apiClient, projectID, testCaseNameOrVisibleID);
+			
+		} catch ( Exception e ) {
+			caseID = null;
+		} 
+		
+		if ( caseID == null ) {
+			try {
+				caseID = TestLinkAPIHelper.getCaseIDByVisibleID(apiClient, projectID,
+					testCaseNameOrVisibleID);
+			} catch ( Exception ee ) {
+				return null;
+			}
+		}
+		return caseID;
+	}
+			
 	/**
 	 * Get the test case identifier for a case name within a project.
 	 * 
@@ -171,7 +196,7 @@ public class TestLinkAPIHelper implements TestLinkAPIConst
 	 * @return
 	 * @throws TestLinkAPIException
 	 */
-	public static Integer getCaseID(
+	public static Integer getCaseIDByName(
 		TestLinkAPIClient apiClient,
 		Integer projectID,
 		String caseName) throws TestLinkAPIException
@@ -200,7 +225,7 @@ public class TestLinkAPIHelper implements TestLinkAPIConst
 	 * @return
 	 * @throws TestLinkAPIException
 	 */
-	public static Integer getCaseID(
+	public static Integer getCaseIDByName(
 		TestLinkAPIClient apiClient, 
 		Integer projectID, 
 		Integer suiteID,
@@ -432,7 +457,6 @@ public class TestLinkAPIHelper implements TestLinkAPIConst
 		}
 		return null;
 	}
-	
 	
 	private static Integer getIdentifier(
 		Map data)

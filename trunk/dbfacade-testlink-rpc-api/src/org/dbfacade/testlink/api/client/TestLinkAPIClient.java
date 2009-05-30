@@ -46,12 +46,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 * if the user of the api chooses to cache.
 	 */
 	boolean useCache = false;
-	TestLinkAPIResults projects = null;
-	Map plans = null;
-	Map firstLevelSuites = null;
-	Map casesForSuite = null;
-	Map casesForPlan = null;
-	Map buildsForPlan = null;
+	Map cacheList = new HashMap();
 	
 	/* API Initialization variables */
 	public static String DEV_KEY; 
@@ -93,57 +88,32 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		this.useCache = useCache;
 	}
 	
-	public TestLinkAPIResults about() throws TestLinkAPIException {
-		Hashtable params = new Hashtable();				
-		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
-		TestLinkAPIResults results = executeRpcMethod(API_METHOD_REPORT_TEST_RESULT, params);
-		return results;
-	}
-		
 	/**
-	 * Report a test execution result for a test case by test
-	 * project name and test plan name. The system is allowed
-	 * to guess on the latest build for the test case.
+	 * Get information about the TestLink API version
 	 * 
-	 * @param projectName			Required
-	 * @param testPlanName			Required
-	 * @param testCaseName			Required
-	 * @param testResultStatus		Required
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
-	public TestLinkAPIResults reportTestCaseResult(
-		String projectName,
-		String testPlanName,
-		String testCaseName,
-		String execNotes,
-		String testResultStatus) throws TestLinkAPIException
+	public TestLinkAPIResults about() throws TestLinkAPIException
 	{
-		Integer projectID = TestLinkAPIHelper.getProjectID(this, projectName);
-		if ( projectID == null ) {
-			throw new TestLinkAPIException(
-				"The project " + projectName + " was not found and the test case "
-				+ testCaseName + " could not be accessed to report a test result.");
-		}
-		Integer planID = TestLinkAPIHelper.getPlanID(this, projectID, testPlanName);
-		if ( planID == null ) {
-			throw new TestLinkAPIException(
-				"The plan " + testPlanName + " was not found and the test case "
-				+ testCaseName + " could not be accessed to report a test result.");
-		}
-		Integer caseID = TestLinkAPIHelper.getCaseID(this, projectID, testCaseName);
-		if ( caseID == null ) {
-			throw new TestLinkAPIException(
-				"The test case " + testCaseName + " was not found and the test case"
-				+ " could not be accessed to report a test result against plan "
-				+ testPlanName + ".");
-		}
-
-		TestLinkAPIResults results = reportTestCaseResult(planID, caseID, null,
-			execNotes, testResultStatus);
-		return results;
+		Hashtable params = new Hashtable();				
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		return execXmlRpcMethodWithCache(API_METHOD_ABOUT, params, null);
 	}
 	
+	/**
+	 * Allows user to test if the XML-RPC TestLink API is responding.
+	 * 
+	 * @return The results from the TestLink API as a list of Map entries
+	 * @throws TestLinkAPIException
+	 */
+	public TestLinkAPIResults ping() throws TestLinkAPIException
+	{
+		Hashtable params = new Hashtable();				
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		return execXmlRpcMethodWithCache(API_METHOD_PING, params, null);
+	}
+
 	/**
 	 * Report a test execution result for a test case by test
 	 * project name and test plan name for a specific build.
@@ -151,18 +121,18 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 * If the build is left as null then the system is allowed 
 	 * to guess on the latest build for the test case.
 	 * 
-	 * @param projectName			Required
-	 * @param testPlanName			Required
-	 * @param testCaseVisibleID		Required (Test Case ID on web-page tree)
-	 * @param buildName				Optional
-	 * @param testResultStatus		Required
+	 * @param projectName				Required
+	 * @param testPlanName				Required
+	 * @param testCaseNameOrVisibleID	Required (Test Case Name or ID on web-page tree)
+	 * @param buildName					Optional
+	 * @param testResultStatus			Required
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
 	public TestLinkAPIResults reportTestCaseResult(
 		String projectName,
 		String testPlanName,
-		String testCaseVisibleID,
+		String testCaseNameOrVisibleID,
 		String buildName,
 		String execNotes,
 		String testResultStatus) throws TestLinkAPIException
@@ -171,20 +141,20 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		if ( projectID == null ) {
 			throw new TestLinkAPIException(
 				"The project " + projectName + " was not found and the test case "
-				+ testCaseVisibleID + " could not be accessed to report a test result.");
+				+ testCaseNameOrVisibleID + " could not be accessed to report a test result.");
 		}
 		Integer planID = TestLinkAPIHelper.getPlanID(this, projectID, testPlanName);
 		if ( planID == null ) {
 			throw new TestLinkAPIException(
 				"The plan " + testPlanName + " was not found and the test case "
-				+ testCaseVisibleID + " could not be accessed to report a test result.");
+				+ testCaseNameOrVisibleID + " could not be accessed to report a test result.");
 		}
-		Integer caseID = TestLinkAPIHelper.getCaseIDByVisibleID(this, projectID,
-			testCaseVisibleID);
+		Integer caseID = TestLinkAPIHelper.getTestCaseID(this, projectID,
+			testCaseNameOrVisibleID);
 		if ( caseID == null ) {
 			throw new TestLinkAPIException(
 				"The test case identifier " + caseID + " was not found and the test case "
-				+ testCaseVisibleID
+				+ testCaseNameOrVisibleID
 				+ " could not be accessed to report a test result to test plan "
 				+ testPlanName + ".");
 		}
@@ -195,7 +165,8 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 			if ( buildID == null ) {
 				throw new TestLinkAPIException(
 					"The build name " + buildName + " was not found in test plan "
-					+ testPlanName + " and the test result for test case " + testCaseVisibleID + " could not be recorded.");
+					+ testPlanName + " and the test result for test case "
+					+ testCaseNameOrVisibleID + " could not be recorded.");
 			}
 		}
 		
@@ -264,17 +235,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		setParam(params, OPTIONAL, API_PARAM_GUESS, guess);
 		setParam(params, OPTIONAL, API_PARAM_NOTES, execNotes);
 		setParam(params, REQUIRED, API_PARAM_STATUS, testResultStatus);
-		TestLinkAPIResults results = executeRpcMethod(API_METHOD_REPORT_TEST_RESULT, params);
-		if ( hasError(results) ) {
-			String empty = "Nothing was reported back when recording a test case execution result.";
-			String notEmpty = "An error was reported while recording a test case execution result.";
-			if ( results.size() < 1 ) {
-				throw new TestLinkAPIException(empty);
-			}
-			Map data = results.getData(0);
-			throw new TestLinkAPIException(notEmpty + " Results Message: [" + data.toString() + "]");
-		}
-		return results;
+		return execXmlRpcMethodWithCache(API_METHOD_REPORT_TEST_RESULT, params, null);
 	}
 	
 	/**
@@ -295,7 +256,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		setParam(params, REQUIRED, API_PARAM_TEST_PROJECT_NAME, projectName);
 		setParam(params, REQUIRED, API_PARAM_TEST_CASE_PREFIX, testCasePrefix);
 		setParam(params, REQUIRED, API_PARAM_NOTES, description);
-		TestLinkAPIResults results = executeRpcMethod(API_METHOD_CREATE_PROJECT, params);
+		TestLinkAPIResults results = executeXmlRpcMethod(API_METHOD_CREATE_PROJECT, params);
 		return getCreatedRecordIdentifier(results, API_RESULT_IDENTIFIER);
 	}
 	
@@ -370,7 +331,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		setParam(params, OPTIONAL, API_PARAM_PARENT_ID, parentID);
 		setParam(params, OPTIONAL, API_PARAM_ORDER, order);
 		setParam(params, OPTIONAL, API_PARAM_CHECK_DUP_NAMES, check);
-		TestLinkAPIResults results = executeRpcMethod(API_METHOD_CREATE_SUITE, params);
+		TestLinkAPIResults results = executeXmlRpcMethod(API_METHOD_CREATE_SUITE, params);
 		return getCreatedRecordIdentifier(results, API_RESULT_IDENTIFIER);
 	}
 	
@@ -452,10 +413,10 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		setParam(params, OPTIONAL, API_PARAM_ACTION_DUP_NAME, actionOnDuplicatedName);
 		setParam(params, OPTIONAL, API_PARAM_EXEC_TYPE, executionType);
 		setParam(params, OPTIONAL, API_PARAM_IMPORTANCE, importance);
-		executeRpcMethod(API_METHOD_CREATE_TEST_CASE, params);
+		executeXmlRpcMethod(API_METHOD_CREATE_TEST_CASE, params);
 		// The id returned in results is the id within
 		// the project we want the actual test case id
-		return TestLinkAPIHelper.getCaseID(this, projectID, suiteID, caseName);
+		return TestLinkAPIHelper.getCaseIDByName(this, projectID, suiteID, caseName);
 	}
 	
 	/*
@@ -564,7 +525,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		setParam(params, REQUIRED, API_PARAM_TEST_PLAN_ID, planID);
 		setParam(params, REQUIRED, API_PARAM_BUILD_NAME, buildName);
 		setParam(params, REQUIRED, API_PARAM_BUILD_NOTES, buildNotes);
-		TestLinkAPIResults results = executeRpcMethod(API_METHOD_CREATE_BUILD, params);
+		TestLinkAPIResults results = executeXmlRpcMethod(API_METHOD_CREATE_BUILD, params);
 		return getCreatedRecordIdentifier(results, API_RESULT_IDENTIFIER);
 	}
 	
@@ -634,7 +595,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 				"The plan " + planName + " was not found and the test case " + testCaseName
 				+ " could not be appended.");
 		}
-		Integer caseID = TestLinkAPIHelper.getCaseID(this, projectID, testCaseName);
+		Integer caseID = TestLinkAPIHelper.getCaseIDByName(this, projectID, testCaseName);
 		if ( caseID == null ) {
 			throw new TestLinkAPIException(
 				"The test case " + testCaseName + " was not found and the test case"
@@ -691,7 +652,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		setParam(params, REQUIRED, API_PARAM_VERSION, version);
 		setParam(params, OPTIONAL, API_PARAM_URGENCY, urgency);
 		setParam(params, OPTIONAL, API_PARAM_EXEC_ORDER, execOrder);
-		TestLinkAPIResults results = executeRpcMethod(API_METHOD_ADD_TEST_CASE_TO_PLAN,
+		TestLinkAPIResults results = executeXmlRpcMethod(API_METHOD_ADD_TEST_CASE_TO_PLAN,
 			params);
 		if ( results.size() < 1 ) {
 			throw new TestLinkAPIException(
@@ -713,12 +674,9 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 */
 	public TestLinkAPIResults getProjects() throws TestLinkAPIException
 	{
-		if ( projects == null || useCache == false ) {
-			Hashtable params = new Hashtable();	
-			setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
-			projects = executeRpcMethod(API_METHOD_GET_PROJECTS, params);
-		}
-		return projects;
+		Hashtable params = new Hashtable();	
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		return execXmlRpcMethodWithCache(API_METHOD_GET_PROJECTS, params, "projects");
 	}
 	
 	public TestLinkAPIResults getProjectTestPlans(
@@ -738,27 +696,37 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	public TestLinkAPIResults getProjectTestPlans(
 		Integer projectID) throws TestLinkAPIException
 	{
-		boolean isCached = true;
 		Hashtable params = new Hashtable();	
 		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
-		setParam(params, REQUIRED, API_PARAM_TEST_PROJECT_ID, projectID);
-		
-		if ( plans == null || useCache == false ) {
-			plans = new HashMap();
-			isCached = false;
-		} else if ( !plans.containsKey(projectID) ) {
-			isCached = false;
-		}
-		
-		if ( isCached == false ) {
-			TestLinkAPIResults results = executeRpcMethod(
-				API_METHOD_GET_PROJECT_TEST_PLANS, params);
-			plans.put(projectID, results);		
-		}
-		
-		return (TestLinkAPIResults) plans.get(projectID);
+		setParam(params, REQUIRED, API_PARAM_TEST_PROJECT_ID, projectID);		
+		return execXmlRpcMethodWithCache(API_METHOD_GET_PROJECT_TEST_PLANS, params,
+			projectID);
 	}
 	
+	/**
+	 * Get the builds by project and plan name.
+	 * 
+	 * @param projectName
+	 * @param planName
+	 * @return The results from the TestLink API as a list of Map entries
+	 * @throws TestLinkAPIException
+	 */
+	public TestLinkAPIResults getBuildsForTestPlan(
+		String projectName,
+		String planName) throws TestLinkAPIException
+	{
+		Integer projectID = TestLinkAPIHelper.getProjectID(this, projectName);
+		if ( projectID == null ) {
+			throw new TestLinkAPIException(
+				"The project " + projectName + " was not found.");
+		}
+		Integer planID = TestLinkAPIHelper.getPlanID(this, projectID, planName);
+		if ( planID == null ) {
+			throw new TestLinkAPIException("The plan " + planName + " was not found.");
+		}
+		return getBuildsForTestPlan(planID);
+	}
+		
 	/**
 	 * Get a list of builds for a test plan id
 	 * 
@@ -769,25 +737,51 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	public TestLinkAPIResults getBuildsForTestPlan(
 		Integer planID) throws TestLinkAPIException
 	{
-		boolean isCached = true;
 		Hashtable params = new Hashtable();	
 		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
-		setParam(params, REQUIRED, API_PARAM_TEST_PLAN_ID, planID);
-			
-		if ( buildsForPlan == null || useCache == false ) {
-			buildsForPlan = new HashMap();
-			isCached = false;
-		} else if ( !buildsForPlan.containsKey(planID) ) {
-			isCached = false;
+		setParam(params, REQUIRED, API_PARAM_TEST_PLAN_ID, planID);			
+		return execXmlRpcMethodWithCache(API_METHOD_GET_BUILDS_FOR_PLAN, params, planID);
+	}
+	
+	/**
+	 * Get the latest build by project and plan name.
+	 * 
+	 * @param projectName
+	 * @param planName
+	 * @return The results from the TestLink API as a list of Map entries
+	 * @throws TestLinkAPIException
+	 */
+	public TestLinkAPIResults getLatestBuildForTestPlan(
+		String projectName,
+		String planName) throws TestLinkAPIException
+	{
+		Integer projectID = TestLinkAPIHelper.getProjectID(this, projectName);
+		if ( projectID == null ) {
+			throw new TestLinkAPIException(
+				"The project " + projectName + " was not found.");
 		}
-			
-		if ( isCached == false ) {
-			TestLinkAPIResults results = executeRpcMethod(API_METHOD_GET_BUILDS_FOR_PLAN,
-				params);
-			buildsForPlan.put(planID, results);		
+		Integer planID = TestLinkAPIHelper.getPlanID(this, projectID, planName);
+		if ( planID == null ) {
+			throw new TestLinkAPIException("The plan " + planName + " was not found.");
 		}
-			
-		return (TestLinkAPIResults) buildsForPlan.get(planID);
+		return getLatestBuildForTestPlan(planID);
+	}
+		
+	/**
+	 * Get a latest build for a test plan id
+	 * 
+	 * @param planID	Required
+	 * @return The results from the TestLink API as a list of Map entries
+	 * @throws TestLinkAPIException
+	 */
+	public TestLinkAPIResults getLatestBuildForTestPlan(
+		Integer planID) throws TestLinkAPIException
+	{
+		Hashtable params = new Hashtable();	
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		setParam(params, REQUIRED, API_PARAM_TEST_PLAN_ID, planID);			
+		return execXmlRpcMethodWithCache(API_METHOD_GET_LATEST_BUILD_FOR_PLAN, params,
+			planID);
 	}
 	
 	/**
@@ -814,25 +808,24 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	public TestLinkAPIResults getFirstLevelTestSuitesForTestProject(
 		Integer projectID) throws TestLinkAPIException
 	{
-		boolean isCached = true;
 		Hashtable params = new Hashtable();	
 		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
 		setParam(params, REQUIRED, API_PARAM_TEST_PROJECT_ID, projectID);
-		
-		if ( firstLevelSuites == null || useCache == false ) {
-			firstLevelSuites = new HashMap();
-			isCached = false;
-		} else if ( !firstLevelSuites.containsKey(projectID) ) {
-			isCached = false;
-		}
-		
-		if ( isCached == false ) {
-			TestLinkAPIResults results = executeRpcMethod(
-				API_METHOD_GET_FIRST_LEVEL_SUITES_FOR_PROJECT, params);
-			firstLevelSuites.put(projectID, results);
-		}
-		
-		return (TestLinkAPIResults) firstLevelSuites.get(projectID);
+		return execXmlRpcMethodWithCache(API_METHOD_GET_FIRST_LEVEL_SUITES_FOR_PROJECT,
+			params, projectID);
+	}
+	
+	/**
+	 * Get a test case id by name
+	 * 
+	 * @param testCaseName
+	 * @return The results from the TestLink API as a list of Map entries
+	 * @throws TestLinkAPIException
+	 */
+	public TestLinkAPIResults getTestCaseIDByName(
+		String testCaseName) throws TestLinkAPIException
+	{ 
+		return this.getTestCaseIDByName(testCaseName, null, null);
 	}
 	
 	/**
@@ -844,15 +837,18 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */ 
-	public TestLinkAPIResults getCaseIDsByName(
+	public TestLinkAPIResults getTestCaseIDByName(
 		String testCaseName,
-		String status) throws TestLinkAPIException
+		String testProjectName,
+		String testSuiteName) throws TestLinkAPIException
 	{ 
-		// TODO: Cache
 		Hashtable params = new Hashtable();				
 		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
 		setParam(params, REQUIRED, API_PARAM_TEST_CASE_NAME, testCaseName);
-		return executeRpcMethod(API_METHOD_GET_TEST_CASE_IDS_BY_NAME, params);
+		setParam(params, OPTIONAL, API_PARAM_TEST_PROJECT_NAME, testProjectName);
+		setParam(params, OPTIONAL, API_PARAM_TEST_SUITE_NAME, testSuiteName);
+		return execXmlRpcMethodWithCache(API_METHOD_GET_TEST_CASE_IDS_BY_NAME, params,
+			null);
 	}
 	
 	/**
@@ -866,7 +862,6 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		Integer testProjectID,
 		Integer testSuiteID) throws TestLinkAPIException
 	{ 
-		boolean isCached = true;
 		String key = testProjectID.toString() + "-" + testSuiteID.toString();
 		Hashtable params = new Hashtable();				
 		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
@@ -874,24 +869,93 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		setParam(params, REQUIRED, API_PARAM_TEST_SUITE_ID, testSuiteID);
 		setParam(params, REQUIRED, API_PARAM_DEPTH_FLAG, true);
 		setParam(params, REQUIRED, API_PARAM_DETAILS, "full");
-		
-		if ( casesForSuite == null || useCache == false ) {
-			casesForSuite = new HashMap();
-			isCached = false;
-		} else if ( !casesForSuite.containsKey(key) ) {
-			isCached = false;
-		}
-		
-		if ( isCached == false ) {
-			TestLinkAPIResults results = executeRpcMethod(
-				API_METHOD_GET_TEST_CASES_FOR_SUITE, params);
-			casesForSuite.put(key, results);
-		}
-		
-		return (TestLinkAPIResults) casesForSuite.get(key);
+		return execXmlRpcMethodWithCache(API_METHOD_GET_TEST_CASES_FOR_SUITE, params, key);
 	}
 	
 	/**
+	 * Get test suites for a test plan by project and plan name.
+	 * 
+	 * @param projectName
+	 * @param planName
+	 * @return The results from the TestLink API as a list of Map entries
+	 * @throws TestLinkAPIException
+	 */
+	public TestLinkAPIResults getTestSuitesForTestPlan(
+		String projectName,
+		String planName
+		) throws TestLinkAPIException
+	{ 
+		Integer projectID = TestLinkAPIHelper.getProjectID(this, projectName);
+		if ( projectID == null ) {
+			throw new TestLinkAPIException(
+				"Could not get project identifier for " + projectName);
+		}
+		Integer planID = TestLinkAPIHelper.getPlanID(this, projectID, planName);
+		if ( planID == null ) {
+			throw new TestLinkAPIException("Could not get plan identifier for " + planName);
+		}
+		return getTestSuitesForTestPlan(planID);
+	}
+	
+	/**
+	 * Get test suites for test test plan by plan identifier.
+	 * 
+	 * @param testPlanID
+	 * @return The results from the TestLink API as a list of Map entries
+	 * @throws TestLinkAPIException
+	 */
+	public TestLinkAPIResults getTestSuitesForTestPlan(
+		Integer testPlanID
+		) throws TestLinkAPIException
+	{ 
+		Hashtable params = new Hashtable();				
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		setParam(params, REQUIRED, API_PARAM_TEST_PLAN_ID, testPlanID);
+		return execXmlRpcMethodWithCache(API_METHOD_GET_SUITES_FOR_PLAN, params,
+			testPlanID);
+	}
+	
+	public TestLinkAPIResults getLastExecutionResult(
+		String projectName,
+		String testPlanName,
+		String testCaseNameOrVisibleID) throws TestLinkAPIException
+	{
+		Integer projectID = TestLinkAPIHelper.getProjectID(this, projectName);
+		if ( projectID == null ) {
+			throw new TestLinkAPIException(
+				"The project " + projectName + " was not found.");
+		}
+		Integer planID = TestLinkAPIHelper.getPlanID(this, projectID, testPlanName);
+		if ( planID == null ) {
+			throw new TestLinkAPIException("The plan " + testPlanName + " was not found.");
+		}
+		Integer caseID = TestLinkAPIHelper.getTestCaseID(this, projectID,
+			testCaseNameOrVisibleID);
+		if ( caseID == null ) {
+			throw new TestLinkAPIException(
+				"The test case " + testCaseNameOrVisibleID
+				+ " was not found and the test case"
+				+ " could not be accessed to report a test result against plan "
+				+ testPlanName + ".");
+		}
+
+		return getLastExecutionResult(planID, caseID);
+	}
+	
+	public TestLinkAPIResults getLastExecutionResult(
+		Integer testPlanID,
+		Integer testCaseID) throws TestLinkAPIException
+	{
+		Hashtable params = new Hashtable(); 
+		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
+		setParam(params, REQUIRED, API_PARAM_TEST_PLAN_ID, testPlanID);
+		setParam(params, REQUIRED, API_PARAM_TEST_CASE_ID, testCaseID);
+		return execXmlRpcMethodWithCache(API_METHOD_LAST_EXECUTION_RESULT, params,
+			testPlanID);
+	}
+	
+	/**
+	 * Gets all the test cases for a test plan by project name and plan name.
 	 * 
 	 * @param projectName
 	 * @param planName
@@ -944,7 +1008,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
-	private TestLinkAPIResults getCasesForTestPlan(
+	public TestLinkAPIResults getCasesForTestPlan(
 		Integer testPlanID,
 		Integer testCaseID,
 		Integer buildID,
@@ -955,7 +1019,6 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		String execType
 		) throws TestLinkAPIException
 	{ 
-		boolean isCached = true;
 		
 		// setup the key
 		String key = "Plan:" + testPlanID.toString();
@@ -999,24 +1062,15 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		Hashtable params = new Hashtable();				
 		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
 		setParam(params, REQUIRED, API_PARAM_TEST_PLAN_ID, testPlanID);
-		
-		// TODO : Add all the optional parameters
-		
-		// Check the hash
-		if ( casesForPlan == null || useCache == false ) {
-			casesForPlan = new HashMap();
-			isCached = false;
-		} else if ( !casesForPlan.containsKey(key) ) {
-			isCached = false;
-		}
-		
-		if ( isCached == false ) {
-			TestLinkAPIResults results = executeRpcMethod(
-				API_METHOD_GET_TEST_CASES_FOR_PLAN, params);
-			casesForPlan.put(key, results);
-		}
-		
-		return (TestLinkAPIResults) casesForPlan.get(key);
+		setParam(params, OPTIONAL, API_PARAM_TEST_CASE_ID, testCaseID);
+		setParam(params, OPTIONAL, API_PARAM_BUILD_ID, buildID);
+		setParam(params, OPTIONAL, API_PARAM_KEY_WORD_ID, keywordID);
+		setParam(params, OPTIONAL, API_PARAM_EXECUTED, executed);
+		setParam(params, OPTIONAL, API_PARAM_ASSIGNED_TO, assignedTo);
+		setParam(params, OPTIONAL, API_PARAM_EXECUTE_STATUS, execStatus);
+		setParam(params, OPTIONAL, API_PARAM_EXEC_TYPE, execType);
+
+		return execXmlRpcMethodWithCache(API_METHOD_GET_TEST_CASES_FOR_PLAN, params, key);
 	}
 	
 	/* =========================================== */
@@ -1025,22 +1079,75 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	
 	/* =========================================== */
 	
+	/*
+	 * Initialize the cache
+	 */
 	private void initCache()
 	{
-		projects = null;
-		plans = null;
-		firstLevelSuites = null;
-		casesForSuite = null;
-		casesForPlan = null;
-		buildsForPlan = null;
+		cacheList = new HashMap();
 	}
 	
+	/*
+	 * Executes the XML-RPC method but checks for cached results first. Also, if
+	 * an error exists in the results then the method throws an exception.
+	 * 
+	 * @param method		The xml-rpc method name
+	 * @param params		The parameters for the method
+	 * @param cacheKey		If caching is desired this must not be null
+	 * @return The results from the TestLink API as a list of Map entries
+	 * @throws TestLinkAPIException
+	 */
+	private TestLinkAPIResults execXmlRpcMethodWithCache(
+		String method,
+		Hashtable params,
+		Object cacheKey) throws TestLinkAPIException
+	{
+		boolean isCached = true;
+	
+		if ( method == null ) {
+			throw new TestLinkAPIException(
+				"A method must be provided for caching a xml-rpc calls to work.");
+		}
+	
+		// Check the hash
+		Map cache = (Map) cacheList.get(method);
+		if ( cache == null || useCache == false || cacheKey == null ) {
+			cache = new HashMap();
+			cacheList.put(method, cache);
+			isCached = false;
+		} else if ( !cache.containsKey(cacheKey) ) {
+			isCached = false;
+		}
+	
+		TestLinkAPIResults results = null;
+		if ( isCached == false ) {
+			results = executeXmlRpcMethod(method, params);
+			if ( cacheKey != null ) {
+				cache.put(cacheKey, results);
+			}
+		} else {
+			results = (TestLinkAPIResults) cache.get(cacheKey);
+		}
+	
+		if ( results == null ) {
+			throw new TestLinkAPIException(
+				"\nThe xml-rpc call to TestLink API method " + method
+				+ " failed because the results were null.");
+		}
+		if ( hasError(results) ) {
+			throw new TestLinkAPIException(
+				"\nThe xml-rpc call to TestLink API method " + method + " failed.\n"
+				+ results);
+		}
+		return results;
+	}
+
 	/*
 	 * Private method used to make xml-rpc method calls
 	 * to the TestLink api URL.
 	 */
 	
-	private TestLinkAPIResults executeRpcMethod(
+	private TestLinkAPIResults executeXmlRpcMethod(
 		String method,
 		Hashtable executionData) throws TestLinkAPIException
 	{
@@ -1074,10 +1181,15 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 				if ( single instanceof Map ) {
 					results.add((Map) single);
 				} else {
-					unknownResultTypeCnt++;
-					HashMap data = new HashMap();
-					data.put(getUnknownKey(unknownResultTypeCnt), single);
-					results.add(data);
+					if ( single != null ) {
+						// The api returns a length 0 string for empty list
+						if ( single.toString().length() > 0 ) {
+							unknownResultTypeCnt++;
+							HashMap data = new HashMap();
+							data.put(getUnknownKey(unknownResultTypeCnt), single);
+							results.add(data);
+						}
+					}
 				}
 			} catch ( Exception ee ) {
 				throw new TestLinkAPIException("The call to the xml-rpc client failed.", e);
@@ -1090,7 +1202,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		int cnt)
 	{
 		String key = new Integer(cnt).toString();
-		return "RESULT_NUM_" + key + "_OF_UNKNOWN_TYPE";
+		return "RESULT_" + key;
 	}
 	
 	/*
@@ -1170,11 +1282,18 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 * Maybe it is the XML-RPC.
 	 * 
 	 */
-	private boolean hasError(TestLinkAPIResults results) {
-		if ( results.size() < 1 ) {
+	
+	private boolean hasError(
+		TestLinkAPIResults results)
+	{
+		if ( results == null ) {
 			return true;
 		}
-		return hasError(results.getData(0));
+		if ( results.size() > 0 ) {
+			return hasError(results.getData(0));
+		} else {
+			return false;
+		}
 	}
 	
 	private boolean hasError(

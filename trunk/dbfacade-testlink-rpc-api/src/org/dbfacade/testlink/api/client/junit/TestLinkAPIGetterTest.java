@@ -25,6 +25,8 @@ import static org.junit.Assert.fail;
 
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIConst;
+import org.dbfacade.testlink.api.client.TestLinkAPIException;
+import org.dbfacade.testlink.api.client.TestLinkAPIHelper;
 import org.dbfacade.testlink.api.client.TestLinkAPIResults;
 import org.junit.After;
 import org.junit.Before;
@@ -80,22 +82,355 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst
 	{}
 
 	/**
-	 * Test method create project
+	 * Test method about
 	 */
 	@Test
-	public void testAbount()
+	public void testAbout()
 	{
 		try {
 			TestLinkAPIResults results = api.about();
 			if ( results == null ) {
 				throw new Exception("Unable to run about method.");
 			}
+			printResults("testAbout", results);
 		} catch ( Exception e ) {
+			e.printStackTrace();
 			fail("Failed to run TestLink API about method.");
 		}
 	}
 	
+	/**
+	 * Test method pint
+	 */
+	@Test
+	public void testPing()
+	{
+		try {
+			TestLinkAPIResults results = api.ping();
+			if ( results == null ) {
+				throw new Exception("Unable to run ping method.");
+			}
+			printResults("testPing", results);
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to run TestLink API ping method.");
+		}
+	}
 	
+	/**
+	 * Test method getProjects
+	 */
+	@Test
+	public void testGetProjects()
+	{
+		try {
+			TestLinkAPIResults results = api.getProjects();
+			if ( results == null ) {
+				throw new Exception("Unable to run getProject() method.");
+			}
+			printResults("testGetProjects", results);
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to run TestLink API getProjects() method.");
+		}
+	}
+	
+	/**
+	 * Test method getFirstLevelTestSuitesForTestProject
+	 */
+	@Test
+	public void testGetFirstLevelTestSuitesForTestProject()
+	{
+		try {
+			TestLinkAPIResults results = api.getFirstLevelTestSuitesForTestProject(JUNIT_PLAN_PROJECT);
+			if ( results == null ) {
+				throw new Exception("Unable to run getFirstLevelTestSuitesForTestProject() method.");
+			}
+			printResults("testGetFirstLevelTestSuitesForTestProject", results);
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to run TestLink API getFirstLevelTestSuitesForTestProject() method.");
+		}
+	}
+	
+	/**
+	 * Test method getProjectTestPlans
+	 */
+	@Test
+	public void testGetProjectTestPlans()
+	{
+		try {
+			TestLinkAPIResults results = api.getProjectTestPlans(JUNIT_PLAN_PROJECT);
+			if ( results == null ) {
+				throw new Exception("Unable to run getProjectTestPlans() method.");
+			}
+			printResults("testGetProjectTestPlans", results);
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to run TestLink API getProjectTestPlans() method.");
+		}
+	}
+	
+	/**
+	 * Test method getBuildsForTestPlan
+	 */
+	@Test
+	public void testGetBuildsForTestPlan()
+	{
+		try {
+			TestLinkAPIResults results = api.getBuildsForTestPlan(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME);
+			if ( results == null ) {
+				throw new Exception("Unable to run getBuildsForTestPlan() method.");
+			}
+			printResults("testGetBuildsForTestPlan", results);
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to run TestLink API getBuildsForTestPlan() method.");
+		}
+	}
+	
+	/**
+	 * Test method getLatestBuildForTestPlan
+	 */
+	@Test
+	public void testGetLatestBuildForTestPlan()
+	{
+		try {
+			TestLinkAPIResults results = api.getLatestBuildForTestPlan(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME);
+			if ( results == null ) {
+				throw new Exception("Unable to run getLatestBuildForTestPlan() method.");
+			}
+			printResults("testGetLatestBuildForTestPlans", results);
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to run TestLink API getLatestBuildForTestPlan() method.");
+		}
+	}
+	
+	/**
+	 * Test method getTestSuitesForTestPlan
+	 */
+	@Test
+	public void testGetTestSuitesForTestPlan()
+	{
+		try {
+			TestLinkAPIResults results = api.getTestSuitesForTestPlan(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME);
+			if ( results == null ) {
+				throw new Exception("Unable to run getTestSuitesForTestPlan() method.");
+			}
+			printResults("testGetTestSuitesForTestPlan", results);
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to run TestLink API getTestSuitesForTestPlan() method.");
+		}
+	}
+	
+	/**
+	 * Test method getTestCaseIDByName
+	 */
+	@Test
+	public void testGetTestCaseIDByName()
+	{
+		try {
+			TestLinkAPIResults results = api.getTestCaseIDByName(JUNIT_PLAN_CASE);
+			if ( results == null ) {
+				throw new Exception("Unable to run getTestCaseIDByName() method.");
+			}
+			printResults("testGetTestCaseIDByName", results);
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to run TestLink API getTestCaseIDByName() method.");
+		}
+	}
+	
+	/**
+	 * Test method getLastExecutionResult
+	 */
+	@Test
+	public void testGetLastExecutionResult()
+	{
+		try {
+			TestLinkAPIResults results = api.getLastExecutionResult(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME, JUNIT_PLAN_CASE);
+			if ( results == null ) {
+				throw new Exception("Unable to run getLastExecutionResult() method.");
+			}
+			printResults("testGetLastExecutionResult", results);
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to run TestLink API getLastExecutionResult() method.");
+		}
+	}
+	
+	/**
+	 * Test method getCasesForTestPlan(projectName, planName)
+	 */
+	@Test
+	public void testGetTestCasesByPlanName()
+	{
+		try {
+			TestLinkAPIResults results = api.getCasesForTestPlan(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME);
+			if ( results == null ) {
+				throw new Exception("Unable to run getCasesForTestPlan() method.");
+			}
+			printResults("testGetTestCasesByPlanName", results);
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to run TestLink API getCasesForTestPlan() method.");
+		}
+	}
+	
+	/**
+	 * Test method getLastExecutionResult
+	 */
+	@Test
+	public void testGetTestCasesManual()
+	{
+		try {
+			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_PLAN_PROJECT);
+			if ( projectID == null ) {
+				throw new TestLinkAPIException(
+					"Could not get project identifier for " + JUNIT_PLAN_PROJECT);
+			}
+			Integer planID = TestLinkAPIHelper.getPlanID(api, projectID, JUNIT_PLAN_NAME);
+			if ( planID == null ) {
+				throw new TestLinkAPIException("Could not get plan identifier for " + JUNIT_PLAN_NAME);
+			}
+			TestLinkAPIResults results = api.getCasesForTestPlan(
+					planID,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					TESTCASE_EXECUTION_TYPE_MANUAL
+					);
+			if ( results == null ) {
+				throw new Exception("Unable to run getCasesForTestPlan() method.");
+			}
+			printResults("testGetTestCasesPassedManual", results);
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to run TestLink API getCasesForTestPlan() method.");
+		}
+	}
+	
+	
+	/**
+	 * Test method getLastExecutionResult
+	 */
+	@Test
+	public void testGetTestCasesAuto()
+	{
+		try {
+			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_PLAN_PROJECT);
+			if ( projectID == null ) {
+				throw new TestLinkAPIException(
+					"Could not get project identifier for " + JUNIT_PLAN_PROJECT);
+			}
+			Integer planID = TestLinkAPIHelper.getPlanID(api, projectID, JUNIT_PLAN_NAME);
+			if ( planID == null ) {
+				throw new TestLinkAPIException("Could not get plan identifier for " + JUNIT_PLAN_NAME);
+			}
+			TestLinkAPIResults results = api.getCasesForTestPlan(
+					planID,
+					null,
+					null,
+					null,
+					null,
+					null,
+                    null,
+                    TESTCASE_EXECUTION_TYPE_AUTO
+					);
+			if ( results == null ) {
+				throw new Exception("Unable to run getCasesForTestPlan() method.");
+			}
+			printResults("testGetTestCasesPassedAuto", results);
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to run TestLink API getCasesForTestPlan() method.");
+		}
+	}
+	
+	/**
+	 * Test method getLastExecutionResult
+	 */
+	@Test
+	public void testGetTestCasesFailed()
+	{
+		try {
+			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_PLAN_PROJECT);
+			if ( projectID == null ) {
+				throw new TestLinkAPIException(
+					"Could not get project identifier for " + JUNIT_PLAN_PROJECT);
+			}
+			Integer planID = TestLinkAPIHelper.getPlanID(api, projectID, JUNIT_PLAN_NAME);
+			if ( planID == null ) {
+				throw new TestLinkAPIException("Could not get plan identifier for " + JUNIT_PLAN_NAME);
+			}
+			TestLinkAPIResults results = api.getCasesForTestPlan(
+					planID,
+					null,
+					null,
+					null,
+					null,
+					null,
+					TEST_FAILED,
+					null
+					);
+			if ( results == null ) {
+				throw new Exception("Unable to run getCasesForTestPlan() method.");
+			}
+			printResults("testGetTestCasesFailed", results);
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to run TestLink API getCasesForTestPlan() method.");
+		}
+	}
+	
+	
+	/**
+	 * Test method getLastExecutionResult
+	 */
+	@Test
+	public void testGetTestCasesPassed()
+	{
+		try {
+			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_PLAN_PROJECT);
+			if ( projectID == null ) {
+				throw new TestLinkAPIException(
+					"Could not get project identifier for " + JUNIT_PLAN_PROJECT);
+			}
+			Integer planID = TestLinkAPIHelper.getPlanID(api, projectID, JUNIT_PLAN_NAME);
+			if ( planID == null ) {
+				throw new TestLinkAPIException("Could not get plan identifier for " + JUNIT_PLAN_NAME);
+			}
+			TestLinkAPIResults results = api.getCasesForTestPlan(
+					planID,
+					null,
+					null,
+					null,
+					null,
+					null,
+					TEST_PASSED,
+					null
+					);
+			if ( results == null ) {
+				throw new Exception("Unable to run getCasesForTestPlan() method.");
+			}
+			printResults("testGetTestCasesPassed", results);
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to run TestLink API getCasesForTestPlan() method.");
+		}
+	}
+	
+	
+	private void printResults(String method, TestLinkAPIResults results) {
+		System.out.println("\n----------------------------------------------------------------");
+		System.out.println(method + " results: ");
+		System.out.println(results.toString());
+	}
 	
 	
 }
