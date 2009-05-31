@@ -20,7 +20,17 @@
  */
 package org.dbfacade.testlink.tc.autoexec;
 
+import org.dbfacade.testlink.api.client.TestLinkAPIResults;
+
 public interface TestCase {
+	
+	/**
+	 * Using the data returned from the TestLink API the test
+	 * case is initialized.
+	 * 
+	 * @param testCase
+	 */
+	public void initExistingCase(TestLinkAPIResults testCase);
 	
 	/*
 	 * Project related information

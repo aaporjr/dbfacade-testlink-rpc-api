@@ -20,12 +20,14 @@
  */
 package org.dbfacade.testlink.tc.autoexec;
 
+
 /**
+ * Currently not supported (class stub).
+ * <p>
  * Default implementation of the TestCase interface for automated test cases.
  * 
  * @author Daniel Padilla
  *
  */
-public class AutomatedTestCase {
-
-}
+public class AutomatedTestCase
+{}

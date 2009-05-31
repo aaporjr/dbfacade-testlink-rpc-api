@@ -20,16 +20,23 @@
  */
 package org.dbfacade.testlink.tc.autoexec;
 
+
+import java.util.Iterator;
+
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
 
+
 /**
+ * Currently not supported (class stub).
+ * <p>
  * The class is used to manage the execution of automated test cases
  * associated with a test plan.
  * 
  * @author Daniel Padilla
  *
  */
-public class TestPlanManager {
+public class TestPlanManager
+{
 
 	/**
 	 * Currently not supported (constructor stub).
@@ -40,7 +47,42 @@ public class TestPlanManager {
 	 * @param projectName
 	 * @param planName
 	 */
-	public TestPlanManager(String projectName, String planName) {
+	public TestPlanManager(
+		String projectName,
+		String planName)
+	{
+		init();
+	}
+	
+	/**
+	 * Currently not supported (constructor stub).
+	 * <p>
+	 * When the TestPlanManager is instantiated then it retrieves all the
+	 * test cases that are defined as automated test cases in the test plan.
+	 * <p>
+	 * The cases are instantiated using the class that is passed to the constructor.
+	 *
+	 * @param projectName
+	 * @param planName
+	 * @param testCaseImplementionClass
+	 */
+	public TestPlanManager(
+		String projectName,
+		String planName,
+		String testCaseImplementionClass)
+	{
+		init();
+	}
+	
+	/**
+	 * Currently not supported (method stub).
+	 * <p>
+	 * Method is called by the constructor and it finds
+	 * all the automated test cases in a test plan and
+	 * then instantiates the classes using the initExistingCase()
+	 * method. Once the case is instantiated it is stored in a list.
+	 */
+	private void init() {
 		
 	}
 	
@@ -53,19 +95,24 @@ public class TestPlanManager {
 	 * @param testCase
 	 * @throws TestLinkAPIException
 	 */
-	public void addTestCase(TestCase testCase) throws TestLinkAPIException {
-		
+	public void addTestCase(
+		TestCase testCase) throws TestLinkAPIException
+	{
+		throw new TestLinkAPIException("The method is not currently supported.");
 	}
 	
 	/**
 	 * Currently not supported (method stub).
 	 * <p>
-	 * Get the test case by name.
+	 * Get the test case by name or visible id. The visible identifier can be
+	 * viewed when looking at a test case suite tree in the TestLink web application.
 	 * 
-	 * @param caseName
+	 * @param caseNameOrVisibleID
 	 * @return TestCase if found otherwise null
 	 */
-	public TestCase getTestCase(String caseName) throws TestLinkAPIException {
+	public TestCase getTestCase(
+		String caseNameOrVisibleID) throws TestLinkAPIException
+	{
 		throw new TestLinkAPIException("The method is not currently supported.");
 	}
 	
@@ -77,9 +124,51 @@ public class TestPlanManager {
 	 * @param caseID
 	 * @return TestCase if found otherwise null
 	 */
-	public TestCase getTestCase(Integer caseID) throws TestLinkAPIException {
+	public TestCase getTestCase(
+		Integer caseID) throws TestLinkAPIException
+	{
 		throw new TestLinkAPIException("The method is not currently supported.");
 	}
+	
+	/**
+	 * Currently not supported (method stub).
+	 * <p>
+	 * Get an iterator for all the existing case names in this plan.
+	 * 
+	 * @return Iterator of test case internal identifiers
+	 */
+	public Iterator getTestCaseNames() throws TestLinkAPIException
+	{
+		throw new TestLinkAPIException("The method is not currently supported.");
+	}
+	
+
+	/**
+	 * Currently not supported (method stub).
+	 * <p>
+	 * Get an iterator for all the existing case visible identifiers in this plan.
+	 * 
+	 * @return Iterator of test case internal identifiers
+	 */
+	public Iterator getTestCaseVisibleIDs() throws TestLinkAPIException
+	{
+		throw new TestLinkAPIException("The method is not currently supported.");
+	}
+	
+	
+
+	/**
+	 * Currently not supported (method stub).
+	 * <p>
+	 * Get an iterator for all the existing case internal identifiers in this plan.
+	 * 
+	 * @return Iterator of test case internal identifiers
+	 */
+	public Iterator getTestCaseInternalIDs() throws TestLinkAPIException
+	{
+		throw new TestLinkAPIException("The method is not currently supported.");
+	}
+	
 	
 	/**
 	 * Currently not supported (method stub).
@@ -90,7 +179,8 @@ public class TestPlanManager {
 	 * 
 	 * @throws TestLinkAPIException
 	 */
-	public void executeTestCases() throws TestLinkAPIException {
+	public void executeTestCases() throws TestLinkAPIException
+	{
 		throw new TestLinkAPIException("The method is not currently supported.");
 	}
 }
