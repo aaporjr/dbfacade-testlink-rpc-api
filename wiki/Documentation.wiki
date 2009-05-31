@@ -10,9 +10,9 @@ In addition methods that make access to the API without the need to know interna
 = Details =
 
 <h2>Constructor Summary</h2>
- * TestLinkAPIClient(java.lang.String devKey, java.lang.String url) 
+ * <b>TestLinkAPIClient</b>(devKey, url) 
           Construct an instance with cache capabilities turned off. 
- * TestLinkAPIClient(java.lang.String devKey, java.lang.String url, boolean useCache) 
+ * <b>TestLinkAPIClient</b>(devKey, url, useCache) 
           Construct an instance and indicate if cache capabilities should be enabled or disabled. 
 
 <h2>Method Summary</h2>
