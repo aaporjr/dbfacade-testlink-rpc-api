@@ -8,7 +8,7 @@
 
 	<!-- set global properties for this build -->
 	<property name="src.home" value="../src"/>
-	<property name="dist.home" value="dist/${dist.date}"/>
+	<property name="dist.home" value="dbfacade-testlink-client-${dist.date}"/>
 	<property name="compile.home" value="../bin"/>
 	<property name="compile.lib" value="../lib"/>
 	<property name="dist.version" value="1.0"/>
