@@ -1,0 +1,89 @@
+#summary The methods that are avaiable in the TestLink API Java Client.
+
+= Introduction =
+
+TestLinkAPIClient class is the principal interface to the TestLink API. An instance of the class can be used to make calls to most of the TestLink API xml-rpc methods. The list of supported methods can be found at http://code.google.com/p/dbfacade-testlink-rpc-api/wiki/TestLinkMethods. 
+
+In addition methods that make access to the API without the need to know internal TestLink database identfiers have been provided to shield the user from the need to access the TestLink database in order to use the API. 
+
+
+= Details =
+
+<h2>Constructor Summary</h2>
+ * TestLinkAPIClient(java.lang.String devKey, java.lang.String url) 
+          Construct an instance with cache capabilities turned off. 
+ * TestLinkAPIClient(java.lang.String devKey, java.lang.String url, boolean useCache) 
+          Construct an instance and indicate if cache capabilities should be enabled or disabled. 
+
+<h2>Method Summary</h2>
+
+ * about() 
+          Get information about the TestLink API version. 
+ * addTestCaseToTestPlan(java.lang.Integer projectID, java.lang.Integer planID, java.lang.String testCaseVisibleID, java.lang.Integer version, java.lang.Integer execOrder, java.lang.String urgency) 
+          The method adds a test case from a project to the test plan. 
+ * addTestCaseToTestPlan(java.lang.String projectName, java.lang.String planName, java.lang.String testCaseName) 
+          Appends that latest version of a test case to a test plan with a default level of urgency. 
+ * addTestCaseToTestPlan(java.lang.String projectName, java.lang.String planName, java.lang.String testCaseName, java.lang.Integer execOrder, java.lang.String urgency) 
+          Appends that latest version of a test case to a test plan with a medium urgency. 
+ * createBuild(java.lang.Integer planID, java.lang.String buildName, java.lang.String buildNotes) 
+          Create a new build under the provided test plan identifier. 
+ * createBuild(java.lang.String projectName, java.lang.String planName, java.lang.String buildName, java.lang.String buildNotes) 
+          Create a new build under the provided project name and test plan. 
+ * createTestCase(java.lang.String authorLoginName, java.lang.Integer projectID, java.lang.Integer suiteID, java.lang.String caseName, java.lang.String summary, java.lang.String steps, java.lang.String expectedResults, java.lang.Integer order, java.lang.Integer internalID, java.lang.Boolean checkDuplicatedName, java.lang.String actionOnDuplicatedName, java.lang.String executionType, java.lang.String importance) 
+          Create a new test case using all the variables that are provided by the TestLink API. 
+ * createTestCase(java.lang.String authorLoginName, java.lang.String projectName, java.lang.String suiteName, java.lang.String testCaseName, java.lang.String summary, java.lang.String steps, java.lang.String expectedResults, java.lang.String importance) 
+          Create a test case by project name and suite name. 
+ * createTestProject(java.lang.String projectName, java.lang.String testCasePrefix, java.lang.String description) 
+          Create a new project in TestLink database. 
+ * createTestSuite(java.lang.Integer projectID, java.lang.String suiteName, java.lang.String description) 
+          Create top level test suite under a specific project identifier 
+ * createTestSuite(java.lang.Integer projectID, java.lang.String suiteName, java.lang.String description, java.lang.Integer parentID, java.lang.Integer order, java.lang.Boolean check) 
+          Create a test suite at any level using the project identifier and the parent suite identifier information. 
+ * createTestSuite(java.lang.String projectName, java.lang.String suiteName, java.lang.String description) 
+          Create top level test suite under a specific project name 
+ * getBuildsForTestPlan(java.lang.Integer planID) 
+          Get a list of builds for a test plan id 
+ * getBuildsForTestPlan(java.lang.String projectName, java.lang.String planName) 
+          Get the builds by project and plan name. 
+ * getCasesForTestPlan(java.lang.Integer testPlanID) 
+          Get all the test cases associated with a test plan identifier. 
+ * getCasesForTestPlan(java.lang.Integer testPlanID, java.lang.Integer testCaseID, java.lang.Integer buildID, java.lang.Integer keywordID, java.lang.String executed, java.lang.String assignedTo, java.lang.String execStatus, java.lang.String execType) 
+          Get all the test cases associated with a test plan. 
+ * getCasesForTestPlan(java.lang.String projectName, java.lang.String planName) 
+          Gets all the test cases for a test plan by project name and plan name. 
+ * getCasesForTestSuite(java.lang.Integer testProjectID, java.lang.Integer testSuiteID) 
+          Get all the test cases for a project identifier and test suite identifier. 
+ * getFirstLevelTestSuitesForTestProject(java.lang.Integer projectID) 
+          Get all the first level project test suites by project id 
+ * getFirstLevelTestSuitesForTestProject(java.lang.String projectName) 
+          Get all the first level project test suites by project name 
+ * getLastExecutionResult(java.lang.Integer testPlanID, java.lang.Integer testCaseID) 
+          Get the last execution result by plan identifier and test case internal identifier. 
+ * getLastExecutionResult(java.lang.String projectName, java.lang.String testPlanName, java.lang.String testCaseNameOrVisibleID) 
+          Get the last execution result by project, plan and test case name/visible id. 
+ * getLatestBuildForTestPlan(java.lang.Integer planID) 
+          Get a latest build for a test plan id 
+ * getLatestBuildForTestPlan(java.lang.String projectName, java.lang.String planName) 
+          Get the latest build by project and plan name. 
+ * getProjects() 
+          Get a list of all the existing test projects for the instantiated TestLink URL. 
+ * getProjectTestPlans(java.lang.Integer projectID) 
+          Get the test plans for a project identifier. 
+ * getProjectTestPlans(java.lang.String projectName) 
+          Get a list of all the existing test plans for a project by name. 
+ * getTestCaseIDByName(java.lang.String testCaseName) 
+          Get a test case id by name 
+ * getTestCaseIDByName(java.lang.String testCaseName, java.lang.String testProjectName, java.lang.String testSuiteName) 
+          Get test case by name. 
+ * getTestSuitesForTestPlan(java.lang.Integer testPlanID) 
+          Get test suites for test test plan by plan identifier. 
+ * getTestSuitesForTestPlan(java.lang.String projectName, java.lang.String planName) 
+          Get test suites for a test plan by project and plan name. 
+ * ping() 
+          Allows user to test if the XML-RPC TestLink API is responding. 
+ * reportTestCaseResult(java.lang.Integer testPlanID, java.lang.Integer testCaseID, java.lang.Integer buildID, java.lang.Integer bugID, java.lang.Boolean guess, java.lang.String execNotes, java.lang.String testResultStatus) 
+          This method supports the TestLink API set of parameters that can be used to report a test case result. 
+ * reportTestCaseResult(java.lang.Integer testPlanID, java.lang.Integer testCaseID, java.lang.Integer buildID, java.lang.String execNotes, java.lang.String testResultStatus) 
+          Report a test execution result for a test case by test plan identifier and test case identifier for a specific build identifier. 
+ * reportTestCaseResult(java.lang.String projectName, java.lang.String testPlanName, java.lang.String testCaseNameOrVisibleID, java.lang.String buildName, java.lang.String execNotes, java.lang.String testResultStatus) 
+          Report a test execution result for a test case by test project name and test plan name for a specific build. 
