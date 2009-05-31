@@ -28,9 +28,16 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
 
 /**
- * The TestLinkAPI class is the principal interface
- * to the TestLink API. The class has been created 
- * to return results in easy to manage Java structures.
+ * The TestLinkAPIClient class is the principal interface
+ * to the TestLink API. An instance of the class can be used 
+ * to make calls to most of the TestLink API xml-rpc methods. 
+ * The list of supported methods can be found at
+ * http://code.google.com/p/dbfacade-testlink-rpc-api/wiki/TestLinkMethods.
+ * <p>
+ * In addition methods that make access to the API without the
+ * need to know internal TestLink database identfiers have been
+ * provided to shield the user from the need to access the TestLink
+ * database in order to use the API.
  * 
  * @author Daniel Padilla
  *
@@ -49,11 +56,29 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	Map cacheList = new HashMap();
 	
 	/* API Initialization variables */
+	
+	/**
+	 * The value in the TestLink database user record for API access. 
+	 * For TestLink version 1.8.2 this value had to be set manually using a database update statement.
+	 * See the TestLink API documentation for more information.
+	 * <p>
+	 * Example:
+	 * <p>
+	 * update users set script_key = 'AnyStringYouWant' where id=2
+	 * <p>
+	 * DEV_KEY = "AnyStringYouWant"
+	 */
 	public static String DEV_KEY; 
+	
+	/**
+	 * The TestLink API URL. See the TestLink API documentation for more information.
+	 * <p>
+	 * Example: http://localhost/testlink/lib/api/xmlrpc.php
+	 */
 	public static String SERVER_URL; 
 	
 	/**
-	 * Constructor. The class cache capabilities are turned off by default.
+	 * Construct an instance with cache capabilities turned off.
 	 * 
 	 * @param devKey
 	 * @param url
@@ -67,9 +92,8 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	}
 	
 	/**
-	 * Constructor. Cache capabilities can be enable or disable 
-	 * using this constructor. 
-	 * 
+	 * Construct an instance and indicate if cache capabilities should be enabled or disabled. 
+	 * <p>
 	 * If the cache is enabled during instantiation then the instance will
 	 * ignore all external changes made either manually or by other instances
 	 * of this class to the TestLink database. Therefore, results will only 
@@ -123,7 +147,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	/**
 	 * Report a test execution result for a test case by test
 	 * project name and test plan name for a specific build.
-	 * 
+	 * <p>
 	 * If the build is left as null then the system is allowed 
 	 * to guess on the latest build for the test case.
 	 * 
@@ -192,7 +216,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 * @param testPlanID				Required
 	 * @param testCaseID				Required
 	 * @param buildID					Optional
-	 * @param String testResultStatus	Required 
+	 * @param testResultStatus			Required 
 	 */ 
 	public TestLinkAPIResults reportTestCaseResult(
 		Integer testPlanID,
@@ -219,7 +243,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 * @param buildID				Optional
 	 * @param bugID					Optional
 	 * @param execNotes				Optional
-	 * @param testResultStatus		Optional
+	 * @param testResultStatus		Required
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
@@ -688,6 +712,13 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		return execXmlRpcMethodWithCache(API_METHOD_GET_PROJECTS, params, "projects");
 	}
 	
+	/**
+	 * Get a list of all the existing test plans for a project by name.
+	 * 
+	 * @param projectName	Required
+	 * @return The results from the TestLink API as a list of Map entries
+	 * @throws TestLinkAPIException
+	 */
 	public TestLinkAPIResults getProjectTestPlans(
 		String projectName) throws TestLinkAPIException
 	{
@@ -962,10 +993,11 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	}
 	
 	/**
+	 * Get the last execution result by plan identifier and test case internal identifier.
 	 * 
 	 * @param testPlanID	Required
 	 * @param testCaseID	Required
-	 * @return The results from the TestLink API as a list of Map entri
+	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
 	public TestLinkAPIResults getLastExecutionResult(

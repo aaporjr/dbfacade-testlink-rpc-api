@@ -27,8 +27,11 @@ import java.util.Map;
 
 
 /**
- * Used to return unparsed results from an XML-RPC call
- * to the TestLink API.
+ * Returns the results from the TestLINK API methods. It standardizes the results
+ * as a list of Maps. This is done since as of version 1.8.2 of the TestLink API 
+ * mostly returns a list of Maps. When this is not done then a key of Result_<count>
+ * is assigned by the result list and TestLink API result object is returned as a 
+ * map value.
  * 
  * @author Daniel Padilla
  *

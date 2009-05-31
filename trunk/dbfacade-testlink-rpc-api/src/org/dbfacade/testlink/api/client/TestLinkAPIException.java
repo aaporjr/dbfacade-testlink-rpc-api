@@ -2,8 +2,8 @@ package org.dbfacade.testlink.api.client;
 
 
 /**
- * The exception does not do anything special other
- * then report back with its own exception type.
+ * The exception is used to indicate the conditions under which a failure
+ * occurred during a call to a TestLink API Java Client method.
  * 
  * @author Daniel Padilla
  *
