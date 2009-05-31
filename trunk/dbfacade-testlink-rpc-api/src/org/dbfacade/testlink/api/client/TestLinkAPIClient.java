@@ -53,8 +53,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	public static String SERVER_URL; 
 	
 	/**
-	 * Constructor. The client cache capabilities
-	 * are turned off by default.
+	 * Constructor. The class cache capabilities are turned off by default.
 	 * 
 	 * @param devKey
 	 * @param url
@@ -68,11 +67,18 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	}
 	
 	/**
-	 * Constructor that can be used to enable or disable 
-	 * the api cache. The API ignores all external changes 
-	 * that can be made to a project when the cache is
-	 * enabled. It keeps track of changes made by the client
-	 * object instance and manages the cache accordingly.
+	 * Constructor. Cache capabilities can be enable or disable 
+	 * using this constructor. 
+	 * 
+	 * If the cache is enabled during instantiation then the instance will
+	 * ignore all external changes made either manually or by other instances
+	 * of this class to the TestLink database. Therefore, results will only 
+	 * be up to date with the first query performed by the instance unless 
+	 * changes are made by the instance. If a change is made to the TestLink
+	 * database by the instance then the cache is reset.
+	 * 
+	 * The cache is very helpful when performing executions of test during which
+	 * test plans are known to not be changing.
 	 * 
 	 * @param devKey
 	 * @param url
@@ -89,7 +95,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	}
 	
 	/**
-	 * Get information about the TestLink API version
+	 * Get information about the TestLink API version.
 	 * 
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
@@ -208,12 +214,12 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 * This method supports the TestLink API set of parameters
 	 * that can be used to report a test case result. 
 	 * 
-	 * @param testPlanID				Required
-	 * @param testCaseID
-	 * @param buildID
-	 * @param bugID
-	 * @param execNotes
-	 * @param testResultStatus
+	 * @param testPlanID			Required
+	 * @param testCaseID			Required
+	 * @param buildID				Optional
+	 * @param bugID					Optional
+	 * @param execNotes				Optional
+	 * @param testResultStatus		Optional
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
@@ -239,11 +245,13 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	}
 	
 	/**
-	 * Create a new project in TestLink. 
+	 * Create a new project in TestLink database.
 	 * 
-	 * @param projectName
-	 * @param testCasePrefix
-	 * @param description
+	 * @param projectName		Required
+	 * @param testCasePrefix	Required
+	 * @param description		Required
+	 * @return The identifier for the created test project.
+	 * @throws TestLinkAPIException
 	 */
 	public Integer createTestProject(
 		String projectName,
@@ -263,9 +271,9 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	/**
 	 * Create top level test suite under a specific project name
 	 * 
-	 * @param projectName
-	 * @param suiteName
-	 * @param description
+	 * @param projectName		Required
+	 * @param suiteName			Required
+	 * @param description		Required
 	 * @throws TestLinkAPIException
 	 */
 	public Integer createTestSuite(
@@ -286,10 +294,10 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	/**
 	 * Create top level test suite under a specific project identifier
 	 * 
-	 * @param projectID
-	 * @param suiteName
-	 * @param description
-	 * @return
+	 * @param projectID		Required
+	 * @param suiteName		Required
+	 * @param description	Required
+	 * @return The identifier for the created test suite.
 	 * @throws TestLinkAPIException
 	 */
 	public Integer createTestSuite(
@@ -305,13 +313,13 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 * Create a test suite at any level using the project identifier and
 	 * the parent suite identifier information.
 	 * 
-	 * @param projectID
-	 * @param suiteName
-	 * @param description
-	 * @param parentID
-	 * @param order
-	 * @param check
-	 * @return
+	 * @param projectID		Required
+	 * @param suiteName		Required
+	 * @param description	Required
+	 * @param parentID		Optional
+	 * @param order			Optional
+	 * @param check			Optional
+	 * @return The identifier for the created test suite.
 	 * @throws TestLinkAPIException
 	 */
 	public Integer createTestSuite(
@@ -338,14 +346,14 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	/**
 	 * Create a test case by project name and suite name. 
 	 * 
-	 * @param projectName
-	 * @param suiteName
-	 * @param testCaseName
-	 * @param summary
-	 * @param steps
-	 * @param expectedResults
-	 * @param importance
-	 * @return
+	 * @param projectName		Required
+	 * @param suiteName			Required
+	 * @param testCaseName		Required
+	 * @param summary			Required
+	 * @param steps				Required
+	 * @param expectedResults	Required
+	 * @param importance		Optional
+	 * @return The internal identifier for the created test case.
 	 */
 	public Integer createTestCase(
 		String authorLoginName,
@@ -368,18 +376,19 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 * the TestLink API. For more information on the parameters refer to the 
 	 * TestLink API documentation.
 	 * 
-	 * @param suiteID
-	 * @param caseName
-	 * @param summary
-	 * @param steps
-	 * @param expectedResults
-	 * @param order
-	 * @param internalID
-	 * @param checkDuplicatedName
-	 * @param actionOnDuplicatedName
-	 * @param executionType
-	 * @param importance
-	 * @return The new test case identifier or null if unsuccessful
+	 * @param projectID					Required
+	 * @param suiteID					Required
+	 * @param caseName					Required
+	 * @param summary					Required
+	 * @param steps						Required
+	 * @param expectedResults			Required
+	 * @param order						Optional
+	 * @param internalID				Optional
+	 * @param checkDuplicatedName		Optional
+	 * @param actionOnDuplicatedName	Optional
+	 * @param executionType				Optional
+	 * @param importance				Optional
+	 * @return The internal identifier created test case
 	 * @throws TestLinkAPIException
 	 */
 	public Integer createTestCase(
@@ -474,13 +483,13 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 
 
 	/**
-	 * The method creates a build under the provided project name and test plan.
+	 * Create a new build under the provided project name and test plan.
 	 * 
-	 * @param projectName
-	 * @param planName
-	 * @param buildName
-	 * @param buildNotes
-	 * @return
+	 * @param projectName		Required
+	 * @param planName			Required
+	 * @param buildName			Required
+	 * @param buildNotes		Required
+	 * @return The identifier for the build that was created.
 	 * @throws TestLinkAPIException
 	 */
 	public Integer createBuild(
@@ -506,12 +515,12 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	}
 	
 	/**
-	 * The method creates a build under the test plan ID.
+	 * Create a new build under the provided test plan identifier.
 	 * 
-	 * @param planID
-	 * @param buildName
-	 * @param buildNotes
-	 * @return
+	 * @param planID		Required
+	 * @param buildName		Required
+	 * @param buildNotes	Required
+	 * @return	The identifier for the build that was created.
 	 * @throws TestLinkAPIException
 	 */
 	public Integer createBuild(
@@ -535,9 +544,9 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 * test cases associated with first level suites.
 	 * 
 	 * 
-	 * @param projectName
-	 * @param planName
-	 * @param testCaseName
+	 * @param projectName		Required
+	 * @param planName			Required
+	 * @param testCaseName		Required
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
@@ -570,9 +579,9 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 * Appends that latest version of a test case to a test plan with
 	 * a medium urgency. Can only handle test in first level suites.
 	 * 
-	 * @param projectName
-	 * @param planName
-	 * @param testCaseName
+	 * @param projectName		Required
+	 * @param planName			Required
+	 * @param testCaseName		Required
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
@@ -626,12 +635,12 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	/**
 	 * The method adds a test case from a project to the test plan.
 	 * 
-	 * @param projectID
-	 * @param planID
-	 * @param testCaseID
-	 * @param version
-	 * @param ExecOrder
-	 * @param Urgency
+	 * @param projectID			Required
+	 * @param planID			Required
+	 * @param testCaseVisibleID	Required
+	 * @param version			Required
+	 * @param ExecOrder			Optional
+	 * @param Urgency			Optional
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
@@ -668,7 +677,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	}
 				
 	/**
-	 * Get a list of all the test projects
+	 * Get a list of all the existing test projects for the instantiated TestLink URL.
 	 * 
 	 * @return The results from the TestLink API as a list of Map entries
 	 */
@@ -687,9 +696,9 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	}
 	
 	/**
-	 * Get the lest of test plans for a project
+	 * Get the test plans for a project identifier.
 	 * 
-	 * @param projectID
+	 * @param projectID		Required
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
@@ -706,8 +715,8 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	/**
 	 * Get the builds by project and plan name.
 	 * 
-	 * @param projectName
-	 * @param planName
+	 * @param projectName	Required
+	 * @param planName		Required
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
@@ -746,8 +755,8 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	/**
 	 * Get the latest build by project and plan name.
 	 * 
-	 * @param projectName
-	 * @param planName
+	 * @param projectName		Required
+	 * @param planName			Required
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
@@ -787,7 +796,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	/**
 	 * Get all the first level project test suites by project name
 	 * 
-	 * @param projectName
+	 * @param projectName	Required
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
@@ -801,7 +810,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	/**
 	 * Get all the first level project test suites by project id
 	 * 
-	 * @param projectID
+	 * @param projectID		Required
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
@@ -818,7 +827,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	/**
 	 * Get a test case id by name
 	 * 
-	 * @param testCaseName
+	 * @param testCaseName		Required
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
@@ -829,11 +838,12 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	}
 	
 	/**
-	 * Get test cases for test suite
+	 * Get test case by name. As an option the results can be
+	 * restricted to a project and and test suite name.
 	 * 
-	 * @param int testCaseID 
-	 * @param int testPlanID
-	 * @param String status 
+	 * @param testCaseName 		Required
+	 * @param testProjectName	Optional
+	 * @param testSuiteName		Optional
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */ 
@@ -852,7 +862,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	}
 	
 	/**
-	 * Get test cases for test suite
+	 * Get all the test cases for a project identifier and test suite identifier.
 	 * 
 	 * @param int testProjectID		Required
 	 * @param int testSuiteID		Required
@@ -875,8 +885,8 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	/**
 	 * Get test suites for a test plan by project and plan name.
 	 * 
-	 * @param projectName
-	 * @param planName
+	 * @param projectName		Required
+	 * @param planName			Required
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
@@ -900,7 +910,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	/**
 	 * Get test suites for test test plan by plan identifier.
 	 * 
-	 * @param testPlanID
+	 * @param testPlanID	Required
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
@@ -915,6 +925,15 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 			testPlanID);
 	}
 	
+	/**
+	 * Get the last execution result by project, plan and test case name/visible id.
+	 * 
+	 * @param projectName				Required
+	 * @param testPlanName				Required
+	 * @param testCaseNameOrVisibleID	Required
+	 * @return The results from the TestLink API as a list of Map entries
+	 * @throws TestLinkAPIException
+	 */
 	public TestLinkAPIResults getLastExecutionResult(
 		String projectName,
 		String testPlanName,
@@ -942,6 +961,13 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		return getLastExecutionResult(planID, caseID);
 	}
 	
+	/**
+	 * 
+	 * @param testPlanID	Required
+	 * @param testCaseID	Required
+	 * @return The results from the TestLink API as a list of Map entri
+	 * @throws TestLinkAPIException
+	 */
 	public TestLinkAPIResults getLastExecutionResult(
 		Integer testPlanID,
 		Integer testCaseID) throws TestLinkAPIException
@@ -957,8 +983,8 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	/**
 	 * Gets all the test cases for a test plan by project name and plan name.
 	 * 
-	 * @param projectName
-	 * @param planName
+	 * @param projectName		Required
+	 * @param planName			Required
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
@@ -980,8 +1006,9 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	}
 	
 	/**
+	 * Get all the test cases associated with a test plan identifier.
 	 * 
-	 * @param testPlanID
+	 * @param testPlanID	Required
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
@@ -995,16 +1022,14 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	/**
 	 * Get all the test cases associated with a test plan.
 	 * 
-	 * Note: Only the testPlanID is currently supported
-	 * 
-	 * @param testPlanID
-	 * @param testCaseID
-	 * @param buildID
-	 * @param keywordID
-	 * @param executed
-	 * @param assignedTo
-	 * @param execStatus
-	 * @param execType
+	 * @param testPlanID		Required
+	 * @param testCaseID		Optional
+	 * @param buildID			Optional
+	 * @param keywordID			Optional
+	 * @param executed			Optional
+	 * @param assignedTo		Optional
+	 * @param execStatus		Optional
+	 * @param execType			Optional
 	 * @return The results from the TestLink API as a list of Map entries
 	 * @throws TestLinkAPIException
 	 */
