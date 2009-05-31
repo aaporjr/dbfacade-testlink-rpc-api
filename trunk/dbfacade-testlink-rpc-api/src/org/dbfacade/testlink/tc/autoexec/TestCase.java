@@ -21,5 +21,46 @@
 package org.dbfacade.testlink.tc.autoexec;
 
 public interface TestCase {
-
+	
+	/*
+	 * Project related information
+	 */
+	public String getProjectName();
+	public void setProjectName(String projectName);
+	public Integer getProjectID();
+	public void setProjectID(Integer id);
+	
+	/*
+	 * Suite related information
+	 */
+	public String getSuiteName();
+	public void setSuiteName(String suiteName);
+	public Integer getSuiteID();
+	public void setSuiteID(Integer id);
+	
+	
+	/*
+	 * Test case related information
+	 */
+	public String getTestCaseName();
+	public void setTestCaseName(String caseName);
+	public String getTestCaseVisibleID();
+	public void setTestCaseVisibleID(String visibleID);
+	public Integer getTestCaseInternalID();
+	public void setTestCaseInternalIDID(Integer id);
+	public String getTestCaseSummary();
+	public void setTestCaseSummary(String summary);
+	public String getTestCaseSteps();
+	public void setTestCaseSteps(String summary);
+	public String getTestCaseExpectedResults();
+	public void setTestCaseExpectedResults(String summary);
+	public String getTestCaseCustomFieldContents(String fieldName);
+	public void setTestCaseCustomFieldContents(String fieldName, String contents);
+	
+	/*
+	 * Registration information
+	 */
+	public TestCaseExecutor getExecutor();
+	public void setExecutor(TestCaseExecutor executor);
+	
 }
