@@ -21,6 +21,7 @@
 package org.dbfacade.testlink.tc.autoexec;
 
 
+import org.dbfacade.testlink.api.client.TestLinkAPIException;
 import org.dbfacade.testlink.api.client.TestLinkAPIResults;
 
 
@@ -34,7 +35,7 @@ public interface TestCase
 	 * @param testCase
 	 */
 	public void initExistingCase(
-		TestLinkAPIResults testCase);
+		TestLinkAPIResults testCase) throws TestLinkAPIException;
 	
 	/**
 	 * Get the name of the project with which the test case is associated.

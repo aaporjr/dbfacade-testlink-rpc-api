@@ -20,19 +20,36 @@
  */
 package org.dbfacade.testlink.tc.autoexec;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.dbfacade.testlink.api.client.TestLinkAPIException;
 import org.dbfacade.testlink.api.client.TestLinkAPIResults;
 
 
 /**
  * Currently not supported (class stub).
  * <p>
- * Default implementation of the TestCase interface for automated test cases.
+ * Default implementation of the TestCase interface for test cases that
+ * can be executed.
  * 
  * @author Daniel Padilla
  *
  */
-public class AutomatedTestCase implements TestCase
+public class ExecutableTestCase implements TestCase
 {
+	private String projectName;
+	private Integer projectID;
+	private String suiteName;
+	private Integer suiteID;
+	private String testCaseName;
+	private String testCaseVisibleID;
+	private Integer testCaseID;
+	private String testCaseSummary;
+	private String testCaseSteps;
+	private String testCaseExpectedResults;
+	private Map custom = new HashMap();
+	private TestCaseExecutor autoTestExecutor=null;
 	
 	/**
 	 * Currently not supported (method stub).
@@ -43,7 +60,10 @@ public class AutomatedTestCase implements TestCase
 	 * @param testCase
 	 */
 	public void initExistingCase(
-		TestLinkAPIResults testCase){}
+		TestLinkAPIResults testCase) throws TestLinkAPIException {
+		
+		projectName = "";
+	}
 	
 	/**
 	 * Currently not supported (method stub).
@@ -53,7 +73,7 @@ public class AutomatedTestCase implements TestCase
 	 * @return
 	 */
 	public String getProjectName(){
-		return null;
+		return projectName;
 	}
 	
 	/**
@@ -64,7 +84,9 @@ public class AutomatedTestCase implements TestCase
 	 * @param projectName
 	 */
 	public void setProjectName(
-		String projectName){}
+		String projectName){
+		this.projectName = projectName;
+	}
 	
 	/**
 	 * Currently not supported (method stub).
@@ -74,7 +96,7 @@ public class AutomatedTestCase implements TestCase
 	 * @return
 	 */
 	public Integer getProjectID(){
-		return null;
+		return projectID;
 	}
 	
 	/**
@@ -85,7 +107,9 @@ public class AutomatedTestCase implements TestCase
 	 * @param id
 	 */
 	public void setProjectID(
-		Integer id){}
+		Integer id){
+		this.projectID = id;
+	}
 	
 	/**
 	 * Currently not supported (method stub).
@@ -95,7 +119,7 @@ public class AutomatedTestCase implements TestCase
 	 * @return
 	 */
 	public String getSuiteName(){
-		return null;
+		return suiteName;
 	}
 	
 	/**
@@ -106,7 +130,9 @@ public class AutomatedTestCase implements TestCase
 	 * @param suiteName
 	 */
 	public void setSuiteName(
-		String suiteName){}
+		String suiteName){
+		this.suiteName = suiteName;
+	}
 	
 	/**
 	 * Currently not supported (method stub).
@@ -116,7 +142,7 @@ public class AutomatedTestCase implements TestCase
 	 * @return
 	 */
 	public Integer getSuiteID(){
-		return null;
+		return suiteID;
 	}
 	
 	/**
@@ -127,7 +153,9 @@ public class AutomatedTestCase implements TestCase
 	 * @param id
 	 */
 	public void setSuiteID(
-		Integer id){}
+		Integer id){
+		this.suiteID = id;
+	}
 	
 	/**
 	 * Currently not supported (method stub).
@@ -137,7 +165,7 @@ public class AutomatedTestCase implements TestCase
 	 * @return
 	 */
 	public String getTestCaseName(){
-		return null;
+		return testCaseName;
 	}
 	
 	/**
@@ -148,7 +176,9 @@ public class AutomatedTestCase implements TestCase
 	 * @param caseName
 	 */
 	public void setTestCaseName(
-		String caseName) {}
+		String caseName) {
+		this.testCaseName = caseName;
+	}
 	
 	/**
 	 * Currently not supported (method stub).
@@ -158,7 +188,7 @@ public class AutomatedTestCase implements TestCase
 	 * @return
 	 */
 	public String getTestCaseVisibleID(){
-		return null;
+		return testCaseVisibleID;
 	}
 	
 	/**
@@ -169,7 +199,9 @@ public class AutomatedTestCase implements TestCase
 	 * @param visibleID
 	 */
 	public void setTestCaseVisibleID(
-		String visibleID){}
+		String visibleID){
+		this.testCaseVisibleID = visibleID;
+	}
 	
 	/**
 	 * Currently not supported (method stub).
@@ -179,7 +211,7 @@ public class AutomatedTestCase implements TestCase
 	 * @return
 	 */
 	public Integer getTestCaseInternalID(){
-		return null;
+		return testCaseID;
 	}
 	
 	/**
@@ -190,7 +222,9 @@ public class AutomatedTestCase implements TestCase
 	 * @param id
 	 */
 	public void setTestCaseInternalIDID(
-		Integer id){}
+		Integer id){
+		this.testCaseID = id;
+	}
 	
 	/**
 	 * Currently not supported (method stub).
@@ -200,7 +234,7 @@ public class AutomatedTestCase implements TestCase
 	 * @return
 	 */
 	public String getTestCaseSummary(){
-		return null;
+		return testCaseSummary;
 	}
 	
 	/**
@@ -211,7 +245,9 @@ public class AutomatedTestCase implements TestCase
 	 * @param summary
 	 */
 	public void setTestCaseSummary(
-		String summary){}
+		String summary){
+		this.testCaseSummary = summary;
+	}
 	
 	/**
 	 * Currently not supported (method stub).
@@ -221,7 +257,7 @@ public class AutomatedTestCase implements TestCase
 	 * @return
 	 */
 	public String getTestCaseSteps(){
-		return null;
+		return testCaseSteps;
 	}
 	
 	/**
@@ -232,7 +268,9 @@ public class AutomatedTestCase implements TestCase
 	 * @param steps
 	 */
 	public void setTestCaseSteps(
-		String steps){}
+		String steps){
+		this.testCaseSteps = steps;
+	}
 	
 	/**
 	 * Currently not supported (method stub).
@@ -242,7 +280,7 @@ public class AutomatedTestCase implements TestCase
 	 * @return
 	 */
 	public String getTestCaseExpectedResults(){
-		return null;
+		return testCaseExpectedResults;
 	}
 	
 	/**
@@ -253,7 +291,9 @@ public class AutomatedTestCase implements TestCase
 	 * @param expectedResults
 	 */
 	public void setTestCaseExpectedResults(
-		String expectedResults){}
+		String expectedResults){
+		this.testCaseExpectedResults = expectedResults;
+	}
 	
 	/**
 	 * Currently not supported (method stub).
@@ -265,7 +305,7 @@ public class AutomatedTestCase implements TestCase
 	 */
 	public String getTestCaseCustomFieldContents(
 		String fieldName){
-		return null;
+		return (String) this.custom.get(fieldName);
 	}
 	
 	/**
@@ -278,7 +318,9 @@ public class AutomatedTestCase implements TestCase
 	 */
 	public void setTestCaseCustomFieldContents(
 		String fieldName,
-		String contents){}
+		String contents){
+		this.custom.put(fieldName, contents);
+	}
 	
 	/**
 	 * Currently not supported (method stub).
@@ -287,7 +329,7 @@ public class AutomatedTestCase implements TestCase
 	 * @return
 	 */
 	public TestCaseExecutor getExecutor(){
-		return null;
+		return autoTestExecutor;
 	}
 	
 	/**
@@ -298,5 +340,7 @@ public class AutomatedTestCase implements TestCase
 	 * @param executor
 	 */
 	public void setExecutor(
-		TestCaseExecutor executor){}
+		TestCaseExecutor executor){
+		this.autoTestExecutor = executor;
+	}
 }
