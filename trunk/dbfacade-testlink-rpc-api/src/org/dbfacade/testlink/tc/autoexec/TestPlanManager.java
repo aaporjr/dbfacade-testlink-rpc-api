@@ -37,7 +37,7 @@ import org.dbfacade.testlink.api.client.TestLinkAPIException;
  */
 public class TestPlanManager
 {
-
+	
 	/**
 	 * Currently not supported (constructor stub).
 	 * <p
@@ -92,10 +92,13 @@ public class TestPlanManager
 	 * Adds a test case to the a project test suite if the test case does
 	 * not exist and then it it adds it to the test plan.
 	 * 
+	 * If the test case exists it replaces the test case class obejct instance
+	 * with the new instance.
+	 * 
 	 * @param testCase
 	 * @throws TestLinkAPIException
 	 */
-	public void addTestCase(
+	public void putTestCase(
 		TestCase testCase) throws TestLinkAPIException
 	{
 		throw new TestLinkAPIException("The method is not currently supported.");
