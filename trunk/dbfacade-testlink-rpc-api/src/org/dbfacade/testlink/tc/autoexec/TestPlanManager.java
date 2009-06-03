@@ -34,8 +34,17 @@ import org.dbfacade.testlink.api.client.TestLinkAPIResults;
 /**
  * Currently not supported (class stub).
  * <p>
- * The class is used to manage the execution of automated test cases
+ * The class is used to manage the execution of test cases
  * associated with a test plan.
+ * <p>
+ * The test plan manager has two modes of opertaion. There is the online mode 
+ * and the offline mode. In order to enter online mode a valid DEV KEY and 
+ * TestLink API url must be provided. See the TestLink documentation for more 
+ * information about the dev key.
+ * <p>
+ * If the api is deemed to be unreachable no error is thrown. The test plan
+ * manager just defaults into offline mode. The offline or online state
+ * of a TestPlanManager instance is found by using isOffline() method.
  * 
  * @author Daniel Padilla
  *
