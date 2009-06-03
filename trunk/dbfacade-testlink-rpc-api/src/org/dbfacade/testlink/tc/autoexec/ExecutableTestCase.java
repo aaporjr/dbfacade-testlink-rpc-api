@@ -61,7 +61,8 @@ public class ExecutableTestCase implements TestCase
 	 */
 	public void initNewCase(
 		TestProject projectInfo,
-		TestSuite suiteInfo) throws TestLinkAPIException
+		TestSuite suiteInfo,
+		String caseName) throws TestLinkAPIException
 	{
 		if ( projectInfo == null ) {
 			throw new TestLinkAPIException(
@@ -73,6 +74,7 @@ public class ExecutableTestCase implements TestCase
 		}
 		this.testProject = projectInfo;
 		this.testSuite = suiteInfo;
+		this.testCaseName = caseName;
 	}
 	
 	/**
@@ -378,6 +380,16 @@ public class ExecutableTestCase implements TestCase
 	public int getExecOrder()
 	{
 		return execOrder.intValue();
+	}
+
+	
+	/**
+	 * Set the execution order for the test case.
+	 * 
+	 * @param order
+	 */
+	public void setExecOrder(int order) {
+		this.execOrder = order;
 	}
 	
 	/**

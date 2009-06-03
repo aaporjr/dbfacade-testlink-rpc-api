@@ -2,6 +2,8 @@ package org.dbfacade.testlink.tc.autoexec;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 
 /**
@@ -12,6 +14,7 @@ import java.util.ArrayList;
  */
 public class TestCaseRegistry
 {
+	Comparator orderByExecOrder = new TestCaseExecOrderCompare();
 	ArrayList caseList = new ArrayList();
 	
 	/**
@@ -130,6 +133,7 @@ public class TestCaseRegistry
 		} else {
 			caseList.set(idx, testCase);
 		}
+		Collections.sort(caseList, orderByExecOrder);
 	}
 
 	/**
@@ -144,6 +148,7 @@ public class TestCaseRegistry
 		if ( idx > -1 ) {
 			caseList.remove(idx);
 		}
+		Collections.sort(caseList, orderByExecOrder);
 	}
     
 	/**

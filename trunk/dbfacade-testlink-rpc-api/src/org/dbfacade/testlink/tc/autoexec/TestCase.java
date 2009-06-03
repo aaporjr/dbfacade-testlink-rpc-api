@@ -46,7 +46,8 @@ public interface TestCase
 	 */
 	public void initNewCase(
 		TestProject testProject,
-		TestSuite testSuite) throws TestLinkAPIException;
+		TestSuite testSuite,
+		String caseName) throws TestLinkAPIException;
 	
 	/**
 	 * Using the data returned from the TestLink API the test
@@ -180,6 +181,21 @@ public interface TestCase
 	public void setTestCaseCustomFieldContents(
 		String fieldName,
 		String contents);
+	
+
+	/**
+	 * Return the test cases execution order
+	 * 
+	 * @return
+	 */
+	public int getExecOrder();
+	
+	/**
+	 * Set the execution order for the test case.
+	 * 
+	 * @param order
+	 */
+	public void setExecOrder(int order);
 	
 	/**
 	 * True if the test requires manual execution.
