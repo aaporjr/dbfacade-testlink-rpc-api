@@ -20,16 +20,15 @@
  */
 package org.dbfacade.testlink.tc.autoexec;
 
+
 import java.util.HashMap;
 import java.util.Map;
 
+import org.dbfacade.testlink.api.client.TestLinkAPIConst;
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
-import org.dbfacade.testlink.api.client.TestLinkAPIResults;
 
 
 /**
- * Currently not supported (class stub).
- * <p>
  * Default implementation of the TestCase interface for test cases that
  * can be executed.
  * 
@@ -38,279 +37,327 @@ import org.dbfacade.testlink.api.client.TestLinkAPIResults;
  */
 public class ExecutableTestCase implements TestCase
 {
-	private String projectName;
-	private Integer projectID;
-	private String suiteName;
-	private Integer suiteID;
+	private TestProject testProject;
+	private TestSuite testSuite;
 	private String testCaseName;
 	private String testCaseVisibleID;
 	private Integer testCaseID;
+	private Integer execOrder = new Integer(5000);
+	private Integer execType = new Integer(TestLinkAPIConst.TESTCASE_EXECUTION_TYPE_MANUAL);
 	private String testCaseSummary;
 	private String testCaseSteps;
 	private String testCaseExpectedResults;
+	private String testCaseVersion;
+	private String testCaseImportance = TestLinkAPIConst.MEDIUM;
 	private Map custom = new HashMap();
-	private TestCaseExecutor autoTestExecutor=null;
+	private TestCaseExecutor autoTestExecutor = null;
+	private boolean isOpen = true;
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
+	 * Using the data returned from the TestLink API the test
+	 * case is initialized.
+	 * 
+	 * @param testCase
+	 */
+	public void initNewCase(
+		TestProject projectInfo,
+		TestSuite suiteInfo) throws TestLinkAPIException
+	{
+		if ( projectInfo == null ) {
+			throw new TestLinkAPIException(
+				"The test project information cannot be initialized to null.");
+		}
+		if ( suiteInfo == null ) {
+			throw new TestLinkAPIException(
+				"The test suite information cannot be initialized to null.");
+		}
+		this.testProject = projectInfo;
+		this.testSuite = suiteInfo;
+	}
+	
+	/**
 	 * Using the data returned from the TestLink API the test
 	 * case is initialized.
 	 * 
 	 * @param testCase
 	 */
 	public void initExistingCase(
-		TestLinkAPIResults testCase) throws TestLinkAPIException {
+		TestProject projectInfo,
+		TestSuite suiteInfo,
+		Map testCaseInfo) throws TestLinkAPIException
+	{
+		if ( projectInfo == null ) {
+			throw new TestLinkAPIException(
+				"The test project information cannot be initialized to null.");
+		}
+		if ( suiteInfo == null ) {
+			throw new TestLinkAPIException(
+				"The test suite information cannot be initialized to null.");
+		}
+		if ( testCaseInfo == null ) {
+			throw new TestLinkAPIException(
+				"The test suite information cannot be initialized to null.");
+		}
+		this.testProject = projectInfo;
+		this.testSuite = suiteInfo;
 		
-		projectName = "";
+		// Identifier
+		Object value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_IDENTIFIER);
+		if ( value != null ) {
+			this.testCaseID = new Integer(value.toString());
+		} else {
+			throw new TestLinkAPIException(
+				"The test case identifier cannot be null for existing test case.");
+		}
+		
+		// Name
+		value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_NAME);
+		if ( value != null ) {
+			this.testCaseName = value.toString();
+		} else {
+			throw new TestLinkAPIException(
+				"The test case identifier cannot be null for existing test case.");
+		}
+		
+		// Execution Order
+		value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_NODE_ORDER);
+		if ( value != null ) {
+			this.execOrder = new Integer(value.toString());
+		} else {
+			throw new TestLinkAPIException(
+				"The test case identifier cannot be null for existing test case.");
+		}
+		
+		// Visible ID
+		value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_TC_EXTERNAL_ID);
+		if ( value != null ) {
+			this.testCaseVisibleID = this.testProject.getTestCasePrefix() + '-'
+				+ value.toString();
+		} else {
+			throw new TestLinkAPIException(
+				"The test case identifier cannot be null for existing test case.");
+		}
+		
+		// Summary
+		value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_SUMMARY);
+		if ( value != null ) {
+			this.testCaseSummary = value.toString();
+		}
+		
+		// Execution Type
+		value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_EXEC_TYPE);
+		if ( value != null ) {
+			this.execType = new Integer(value.toString());
+		} else {
+			throw new TestLinkAPIException(
+				"The test case identifier cannot be null for existing test case.");
+		}
+		
+		// Is Open
+		value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_IS_OPEN); 
+		if ( value != null ) {
+			if ( new Integer(value.toString()).intValue() < 1 ) {
+				isOpen = false;
+			}
+		}
+		
+		// Steps
+		value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_STEPS);
+		if ( value != null ) {
+			this.testCaseSteps = value.toString();
+		}
+		
+		// Suite verification
+		value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_TC_SUITE);
+		if ( value != null ) {
+			if ( !testSuite.getSuiteName().equals(value.toString()) ) {
+				throw new TestLinkAPIException(
+					"The pass test suite name " + testSuite.getSuiteName()
+					+ " does not match the suite name " + value.toString()
+					+ " for the test case.");
+			}
+		} else {
+			throw new TestLinkAPIException(
+				"The test case identifier cannot be null for existing test case.");
+		}
+		
+		// TC Version
+		value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_VERSION);
+		if ( value != null ) {
+			this.testCaseVersion = value.toString();
+		}
+		
+		// Expected results
+		value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_EXPECTED_RESULTS);  
+		if ( value != null ) {
+			this.testCaseExpectedResults = value.toString();
+		}
+		
+		// Importance
+		value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_IMPORTANCE);
+		if ( value != null ) {
+			this.testCaseImportance = value.toString();
+		}
+		
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Get the name of the project with which the test case is associated.
 	 * 
 	 * @return
 	 */
-	public String getProjectName(){
-		return projectName;
+	public String getProjectName()
+	{
+		return testProject.getProjectName();
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
-	 * Set the name of the project with which the test case is associated.
-	 * 
-	 * @param projectName
-	 */
-	public void setProjectName(
-		String projectName){
-		this.projectName = projectName;
-	}
-	
-	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Get the internal identifier of the project with which the test case is associated.
 	 * 
 	 * @return
 	 */
-	public Integer getProjectID(){
-		return projectID;
+	public Integer getProjectID()
+	{
+		return testProject.getProjectID();
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
-	 * Set the internal identifier for the project with which the test case is associated.
-	 * 
-	 * @param id
-	 */
-	public void setProjectID(
-		Integer id){
-		this.projectID = id;
-	}
-	
-	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Get the name of the test suite with which the test case is associated.
 	 * 
 	 * @return
 	 */
-	public String getSuiteName(){
-		return suiteName;
+	public String getSuiteName()
+	{
+		return testSuite.getSuiteName();
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
-	 * Set the name of the test suite with which the test case is associated.
-	 * 
-	 * @param suiteName
-	 */
-	public void setSuiteName(
-		String suiteName){
-		this.suiteName = suiteName;
-	}
-	
-	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Get the internal identifier of the test suite with which the test case is associated.
 	 * 
 	 * @return
 	 */
-	public Integer getSuiteID(){
-		return suiteID;
+	public Integer getSuiteID()
+	{
+		return testSuite.getSuiteID();
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
-	 * Set the internal identifier of the test suite with which the test case is associated.
-	 * 
-	 * @param id
-	 */
-	public void setSuiteID(
-		Integer id){
-		this.suiteID = id;
-	}
-	
-	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Get the name of the test case.
 	 * 
 	 * @return
 	 */
-	public String getTestCaseName(){
+	public String getTestCaseName()
+	{
 		return testCaseName;
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Set the name of the test case.
 	 * 
 	 * @param caseName
 	 */
 	public void setTestCaseName(
-		String caseName) {
+		String caseName)
+	{
 		this.testCaseName = caseName;
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Get the test case's visible identifier in the web application.
 	 * 
 	 * @return
 	 */
-	public String getTestCaseVisibleID(){
+	public String getTestCaseVisibleID()
+	{
 		return testCaseVisibleID;
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
-	 * Set the test case's visible identifier as seen in the web application.
-	 * 
-	 * @param visibleID
-	 */
-	public void setTestCaseVisibleID(
-		String visibleID){
-		this.testCaseVisibleID = visibleID;
-	}
-	
-	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Get the test case's internal identifier.
 	 * 
 	 * @return
 	 */
-	public Integer getTestCaseInternalID(){
+	public Integer getTestCaseInternalID()
+	{
 		return testCaseID;
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
-	 * Set the test case's internal identifier if it is available.
-	 * 
-	 * @param id
-	 */
-	public void setTestCaseInternalIDID(
-		Integer id){
-		this.testCaseID = id;
-	}
-	
-	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Get the test case summary information.
 	 * 
 	 * @return
 	 */
-	public String getTestCaseSummary(){
+	public String getTestCaseSummary()
+	{
 		return testCaseSummary;
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Set the test case summary information.
 	 * 
 	 * @param summary
 	 */
 	public void setTestCaseSummary(
-		String summary){
+		String summary)
+	{
 		this.testCaseSummary = summary;
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Get the execution steps for the test case.
 	 * 
 	 * @return
 	 */
-	public String getTestCaseSteps(){
+	public String getTestCaseSteps()
+	{
 		return testCaseSteps;
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Set the execution steps for the test case.
 	 * 
 	 * @param steps
 	 */
 	public void setTestCaseSteps(
-		String steps){
+		String steps)
+	{
 		this.testCaseSteps = steps;
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Get the test case execution expected results.
 	 * 
 	 * @return
 	 */
-	public String getTestCaseExpectedResults(){
+	public String getTestCaseExpectedResults()
+	{
 		return testCaseExpectedResults;
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Set the test case's expected results.
 	 * 
 	 * @param expectedResults
 	 */
 	public void setTestCaseExpectedResults(
-		String expectedResults){
+		String expectedResults)
+	{
 		this.testCaseExpectedResults = expectedResults;
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Get custom information.
 	 * 
 	 * @param fieldName
 	 * @return
 	 */
 	public String getTestCaseCustomFieldContents(
-		String fieldName){
+		String fieldName)
+	{
 		return (String) this.custom.get(fieldName);
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Set custom information.
 	 * 
 	 * @param fieldName
@@ -318,29 +365,147 @@ public class ExecutableTestCase implements TestCase
 	 */
 	public void setTestCaseCustomFieldContents(
 		String fieldName,
-		String contents){
+		String contents)
+	{
 		this.custom.put(fieldName, contents);
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
+	 * Get the test case execution order within a plan.
+	 * 
+	 * @return
+	 */
+	public int getExecOrder()
+	{
+		return execOrder.intValue();
+	}
+	
+	/**
+	 * True if the test requires manual execution.
+	 * 
+	 * @return
+	 */
+	public boolean isManualExec()
+	{
+		return !(isAutoExec());
+	}
+	
+	/**
+	 * True if the test requires automated execution.
+	 * 
+	 * @return
+	 */
+	public boolean isAutoExec()
+	{
+		Integer auto = new Integer(TestLinkAPIConst.TESTCASE_EXECUTION_TYPE_AUTO);
+		return (execType.intValue() == auto.intValue());
+	}
+	
+	/**
+	 * Set test case to manual execution
+	 */
+	public void setExecTypeManual()
+	{
+		execType = new Integer(TestLinkAPIConst.TESTCASE_EXECUTION_TYPE_MANUAL);
+	}
+	
+	/**
+	 * Set test case to automated execution
+	 */
+	public void setExecTypeAuto()
+	{
+		execType = new Integer(TestLinkAPIConst.TESTCASE_EXECUTION_TYPE_AUTO);
+	}
+	
+	/**
+	 * Get the version for the test case
+	 * 
+	 * @return
+	 */
+	public String getVersion()
+	{
+		return testCaseVersion;
+	}
+	
+	/**
+	 * True if the test case is of low importance
+	 * 
+	 * @return
+	 */
+	public boolean isLowImportance()
+	{
+		return(this.testCaseImportance.equals(TestLinkAPIConst.LOW));
+	}
+	
+	/**
+	 * True if the test case is of medium.
+	 * 
+	 * @return
+	 */
+	public boolean isMediumImportance()
+	{
+		return(this.testCaseImportance.equals(TestLinkAPIConst.MEDIUM));
+	}
+	
+	/**
+	 * True if the test case is of high importance.
+	 * 
+	 * @return
+	 */
+	public boolean isHighImportance()
+	{
+		return (!isLowImportance() && !isMediumImportance());
+	}
+	
+	/**
+	 * Set the test case to low importance
+	 */
+	public void setToLowImportance()
+	{
+		this.testCaseImportance = TestLinkAPIConst.LOW;
+	}
+	
+	/**
+	 * Set the test case to medium importance
+	 */
+	public void setToMediumImportance()
+	{
+		this.testCaseImportance = TestLinkAPIConst.MEDIUM;
+	}
+	
+	/**
+	 * Set the test case to high importance
+	 */
+	public void setToHighImportance()
+	{
+		this.testCaseImportance = TestLinkAPIConst.HIGH;
+	}
+	
+	/**
+	 * See test link documentation for the meaning of this flag
+	 */
+	public boolean isOpen() {
+		return isOpen;
+	}
+	
+	/**
 	 * Get the test case's automated execution instance.
 	 * @return
 	 */
-	public TestCaseExecutor getExecutor(){
+	public TestCaseExecutor getExecutor()
+	{
 		return autoTestExecutor;
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Reqister the object that will be responsible for executing the test case automatically.
 	 * 
 	 * @param executor
 	 */
 	public void setExecutor(
-		TestCaseExecutor executor){
+		TestCaseExecutor executor)
+	{
 		this.autoTestExecutor = executor;
 	}
+	
 }

@@ -138,6 +138,20 @@ public interface TestLinkAPIConst
 	public static final String API_RESULT_TC_EXTERNAL_ID="tc_external_id";
 	public static final String API_RESULT_MESSAGE="message";
 	public static final String API_RESULT_CODE="code";
+	public static final String API_RESULT_AUTO_OPTION = "option_automation";
+	public static final String API_RESULT_PRIORITY = "option_priority";
+	public static final String API_RESULT_REQUIREMENTS = "option_regs";
+	public static final String API_RESULT_ACTIVE = "active";
+	public static final String API_RESULT_NOTES = "notes";
+	public static final String API_RESULT_SUMMARY = "summary";
+	public static final String API_RESULT_EXEC_TYPE = "execution_type";
+	public static final String API_RESULT_IS_OPEN = "is_open"; 
+	public static final String API_RESULT_STEPS = "steps";
+	public static final String API_RESULT_TC_SUITE = "tsuite_name";
+	public static final String API_RESULT_VERSION = "version";
+	public static final String API_RESULT_EXPECTED_RESULTS = "expected_results";  
+	public static final String API_RESULT_IMPORTANCE = "importance";
+	
 	
 	
     

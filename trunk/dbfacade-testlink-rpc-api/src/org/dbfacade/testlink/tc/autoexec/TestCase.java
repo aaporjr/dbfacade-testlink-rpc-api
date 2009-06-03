@@ -21,12 +21,32 @@
 package org.dbfacade.testlink.tc.autoexec;
 
 
+import java.util.Map;
+
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
-import org.dbfacade.testlink.api.client.TestLinkAPIResults;
 
 
+/**
+ * The TestCase interface is used to hold the data from an existing TestCase that
+ * is acquired using the TestLink API or for creating a new Test Case in the 
+ * TestLink database.
+ * 
+ * Therefore, the interface provides to initialization procedures. initExistingCase() and
+ * and initNewCase(). The auto executor will expect all the data about the test case to
+ * be initialized by one of these two methods.
+ * 
+ * @author Daniel Padilla
+ *
+ */
 public interface TestCase
 {
+	
+	/**
+	 * Initialize a new case for an existing TestLink Test Project
+	 */
+	public void initNewCase(
+		TestProject testProject,
+		TestSuite testSuite) throws TestLinkAPIException;
 	
 	/**
 	 * Using the data returned from the TestLink API the test
@@ -35,7 +55,9 @@ public interface TestCase
 	 * @param testCase
 	 */
 	public void initExistingCase(
-		TestLinkAPIResults testCase) throws TestLinkAPIException;
+		TestProject testProject,
+		TestSuite testSuite,
+		Map testCaseInfo) throws TestLinkAPIException;
 	
 	/**
 	 * Get the name of the project with which the test case is associated.
@@ -45,27 +67,11 @@ public interface TestCase
 	public String getProjectName();
 	
 	/**
-	 * Set the name of the project with which the test case is associated.
-	 * 
-	 * @param projectName
-	 */
-	public void setProjectName(
-		String projectName);
-	
-	/**
 	 * Get the internal identifier of the project with which the test case is associated.
 	 * 
 	 * @return
 	 */
 	public Integer getProjectID();
-	
-	/**
-	 * Set the internal identifier for the project with which the test case is associated.
-	 * 
-	 * @param id
-	 */
-	public void setProjectID(
-		Integer id);
 	
 	/**
 	 * Get the name of the test suite with which the test case is associated.
@@ -75,27 +81,11 @@ public interface TestCase
 	public String getSuiteName();
 	
 	/**
-	 * Set the name of the test suite with which the test case is associated.
-	 * 
-	 * @param suiteName
-	 */
-	public void setSuiteName(
-		String suiteName);
-	
-	/**
 	 * Get the internal identifier of the test suite with which the test case is associated.
 	 * 
 	 * @return
 	 */
 	public Integer getSuiteID();
-	
-	/**
-	 * Set the internal identifier of the test suite with which the test case is associated.
-	 * 
-	 * @param id
-	 */
-	public void setSuiteID(
-		Integer id);
 	
 	/**
 	 * 
@@ -121,27 +111,11 @@ public interface TestCase
 	public String getTestCaseVisibleID();
 	
 	/**
-	 * Set the test case's visible identifier as seen in the web application.
-	 * 
-	 * @param visibleID
-	 */
-	public void setTestCaseVisibleID(
-		String visibleID);
-	
-	/**
 	 * Get the test case's internal identifier.
 	 * 
 	 * @return
 	 */
 	public Integer getTestCaseInternalID();
-	
-	/**
-	 * Set the test case's internal identifier if it is available.
-	 * 
-	 * @param id
-	 */
-	public void setTestCaseInternalIDID(
-		Integer id);
 	
 	/**
 	 * Get the test case summary information.
@@ -206,6 +180,79 @@ public interface TestCase
 	public void setTestCaseCustomFieldContents(
 		String fieldName,
 		String contents);
+	
+	/**
+	 * True if the test requires manual execution.
+	 * 
+	 * @return
+	 */
+	public boolean isManualExec();
+	
+	/**
+	 * True if the test requires automated execution.
+	 * 
+	 * @return
+	 */
+	public boolean isAutoExec();
+	
+	/**
+	 * Set test case to manual execution
+	 */
+	public void setExecTypeManual();
+	
+	/**
+	 * Set test case to automated execution
+	 */
+	public void setExecTypeAuto();
+	
+	/**
+	 * Get the version for the test case
+	 * 
+	 * @return
+	 */
+	public String getVersion();
+	
+	/**
+	 * True if the test case is of low importance
+	 * 
+	 * @return
+	 */
+	public boolean isLowImportance();
+	
+	/**
+	 * True if the test case is of medium.
+	 * 
+	 * @return
+	 */
+	public boolean isMediumImportance();
+	
+	/**
+	 * True if the test case is of high importance.
+	 * 
+	 * @return
+	 */
+	public boolean isHighImportance();
+	
+	/**
+	 * Set the test case to low importance
+	 */
+	public void setToLowImportance();
+	
+	/**
+	 * Set the test case to medium importance
+	 */
+	public void setToMediumImportance();
+	
+	/**
+	 * Set the test case to high importance
+	 */
+	public void setToHighImportance();
+	
+	/**
+	 * See TestLink documenation for the meaning of this flag
+	 * @return
+	 */
+	public boolean isOpen();
 	
 	/**
 	 * Get the test case's automated execution instance.
