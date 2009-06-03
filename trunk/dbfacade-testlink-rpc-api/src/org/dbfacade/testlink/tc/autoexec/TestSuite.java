@@ -17,7 +17,17 @@ import org.dbfacade.testlink.api.client.TestLinkAPIException;
 public class TestSuite {
 	private String suiteName;
 	private Integer suiteID;
+	private boolean isOfflineVersion=false;
 
+	/**
+	 * Used to create offline dummy suite
+	 */
+	private TestSuite() {
+		suiteName = "Offline suite";
+		suiteID = new Integer(-1);
+		isOfflineVersion = true;
+	}
+	
 	/**
 	 * Constructs a TestSuite instance when provided with information
 	 * about the the suite using a Map result from the TestLink API
@@ -76,6 +86,23 @@ public class TestSuite {
 	public Integer getSuiteID()
 	{
 		return suiteID;
+	}
+	
+	/**
+	 * True if it is the offline version of a suite
+	 * 
+	 * @return
+	 */
+	public boolean isOfflineVersion() {
+		return isOfflineVersion;
+	}
+	
+	/**
+	 * Returns an offline dummy version of the TestSuite
+	 * @return
+	 */
+	public static TestSuite getOfflineTestSuite() {
+		return new TestSuite();
 	}
 
 }

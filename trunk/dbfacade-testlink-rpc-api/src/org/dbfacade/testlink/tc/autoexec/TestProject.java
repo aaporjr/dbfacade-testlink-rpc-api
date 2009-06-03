@@ -23,7 +23,29 @@ public class TestProject
 	private Integer projectID;
 	private Integer active = new Integer(1);
 	private Integer auto = new Integer(1);
+	private boolean isOfflineVersion=false;
 
+	/**
+	 * Used to create an offline dummy project
+	 */
+	private TestProject() {
+		projectName = "Offline project";
+		tcPrefix = "offline";
+		projectID = new Integer(-1);
+		isOfflineVersion=true;
+	}
+	
+	/**
+	 * Used to create an offline dummy project
+	 */
+	private TestProject(String projectName) {
+		this.projectName = projectName;
+		tcPrefix = "offline";
+		projectID = new Integer(-1);
+		isOfflineVersion=true;
+	}
+	
+	
 	/**
 	 * Constructs a TestProject instance when provided with information
 	 * about the the project using a Map result from the TestLink API
@@ -138,5 +160,33 @@ public class TestProject
 	public boolean allowsAutomation()
 	{
 		return (auto.intValue() > 0);
+	}
+
+	/**
+	 * True if the test suite is the dummy offline version
+	 * 
+	 * @return
+	 */
+	public boolean isOfflineVersion() {
+		return isOfflineVersion;
+	}
+	
+	/**
+	 * Return dummy offline version of a project.
+	 * 
+	 * @return
+	 */
+	public static TestProject getOffLineProject() {
+		return new TestProject();
+	}
+	
+	
+	/**
+	 * Return dummy offline version of a project with the parameter name
+	 * 
+	 * @return
+	 */
+	public static TestProject getOffLineProject(String projectName) {
+		return new TestProject(projectName);
 	}
 }
