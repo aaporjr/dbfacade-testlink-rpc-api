@@ -57,6 +57,7 @@
 		<jar jarfile="${dist.jar}" basedir="${compile.home}"/>
 		<tar destfile="${dist.tar}" basedir="." includes="${dist.home}/**"/>		
 		<zip destfile="${dist.zip}" basedir="." includes="${dist.home}/**"/>		
+		<gzip destfile="${dist.tar}.gz" src="${dist.tar}"/>
 	</target>
 
 	<target name="documentation" depends="init">
