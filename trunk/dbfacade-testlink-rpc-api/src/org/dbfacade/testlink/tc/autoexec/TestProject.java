@@ -45,6 +45,36 @@ public class TestProject
 		isOfflineVersion=true;
 	}
 	
+	/**
+	 * Get a new copied instance of the project.
+	 * 
+	 * @param otherProject
+	 */
+	public TestProject(TestProject otherProject) {
+		
+		if ( otherProject.projectName != null ) {
+			this.projectName = new String(otherProject.projectName);
+		}
+		
+		if ( otherProject.tcPrefix != null ) {
+		this.tcPrefix = new String(otherProject.tcPrefix);
+		}
+		
+		if ( otherProject.projectID != null ) {
+			this.projectID = new Integer(otherProject.projectID.intValue());
+		}
+		
+		if ( otherProject.active != null ) {
+			this.active = new Integer(otherProject.active.intValue());
+		}
+		
+		if ( otherProject.auto != null ) {
+			this.auto = new Integer(otherProject.auto.intValue());
+		}
+		
+		this.isOfflineVersion = otherProject.isOfflineVersion;
+		
+	}
 	
 	/**
 	 * Constructs a TestProject instance when provided with information

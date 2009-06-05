@@ -23,6 +23,7 @@ package org.dbfacade.testlink.tc.autoexec;
 
 import java.util.Map;
 
+import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
 
 
@@ -269,6 +270,11 @@ public interface TestCase
 	 * @return
 	 */
 	public boolean isOpen();
+	
+	/**
+	 * Add this test case to the TestLink Database if it does not exist
+	 */
+	public void addToTestLink(TestLinkAPIClient apiClient, String loginUserName) throws TestLinkAPIException;
 	
 	/**
 	 * Get the test case's automated execution instance.

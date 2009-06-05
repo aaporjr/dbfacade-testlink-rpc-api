@@ -29,6 +29,24 @@ public class TestSuite {
 	}
 	
 	/**
+	 * Returns a new copied instance of the test suite
+	 * 
+	 * @param other
+	 */
+	public TestSuite(TestSuite other) {
+		
+		if ( suiteName != null ) {
+			this.suiteName = new String(other.suiteName);
+		}
+		
+		if ( suiteID != null ) {
+			this.suiteID = new Integer(other.suiteID.intValue());
+		}
+		
+		this.isOfflineVersion=other.isOfflineVersion;
+	}
+	
+	/**
 	 * Constructs a TestSuite instance when provided with information
 	 * about the the suite using a Map result from the TestLink API
 	 * for a suite. 

@@ -189,13 +189,11 @@ public class TestPlan
 	 * @throws TestLinkAPIException
 	 */
 	public void putTestCase(
-		TestCase testCase) throws TestLinkAPIException
+		TestCase testCase,
+		String loginUserName) throws TestLinkAPIException
 	{
 		if ( !isOffline() ) {
-			if ( !doesCaseExist(testCase) ) {
-				createTestCase(testCase);
-			}
-			
+			testCase.addToTestLink(apiClient, loginUserName);
 			if ( !isCasePartOfPlan(testCase) ) {
 				addTestCaseToPlan(testCase);
 			}
@@ -383,56 +381,6 @@ public class TestPlan
 		isAPIReachable = false;
 		this.testProject = TestProject.getOffLineProject(projectName);
 		testPlanName = planName;
-	}
-	
-	/*
-	 * Check to see if the test case exist.
-	 */
-	private boolean doesCaseExist(
-		TestCase tc)
-	{
-		if ( tc.getTestCaseInternalID() == null ) {
-			return false;
-		}
-		
-		if ( tc.getTestCaseInternalID() < 1 ) {
-			return false;
-		}
-		
-		try {
-			Map tcInfo = TestLinkAPIHelper.getTestCaseInfo(apiClient, testProject.getProjectID(), tc.getTestCaseInternalID());
-			if ( tcInfo != null ) {
-				return true;
-			} else {
-				return false;
-			}
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	
-	/*
-	 * Create the test case if it does not exist
-	 */
-	private void createTestCase(
-		TestCase tc)
-	{
-		try {
-			String execType = TestLinkAPIConst.TESTCASE_EXECUTION_TYPE_MANUAL;
-			if ( tc.isAutoExec() ) {
-				execType = TestLinkAPIConst.TESTCASE_EXECUTION_TYPE_AUTO;
-			}
-			String importance = TestLinkAPIConst.MEDIUM;
-			if ( tc.isLowImportance() ) {
-				importance = TestLinkAPIConst.LOW;
-			} else if ( tc.isHighImportance() ){
-				importance = TestLinkAPIConst.HIGH;
-			}
-			apiClient.createTestCase("admin", testProject.getProjectID(), tc.getSuiteID(), tc.getTestCaseName(), tc.getTestCaseSummary(), tc.getTestCaseSteps(), tc.getTestCaseExpectedResults(), tc.getExecOrder(), null, null, null, execType, importance);
-		} catch (Exception e) {
-			// TODO: Report back some kind of error
-		}
-		
 	}
 	
 	/*

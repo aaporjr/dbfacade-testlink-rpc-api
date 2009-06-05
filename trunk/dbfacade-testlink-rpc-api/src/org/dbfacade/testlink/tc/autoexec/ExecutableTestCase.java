@@ -22,10 +22,13 @@ package org.dbfacade.testlink.tc.autoexec;
 
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
+import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIConst;
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
+import org.dbfacade.testlink.api.client.TestLinkAPIHelper;
 
 
 /**
@@ -52,6 +55,23 @@ public class ExecutableTestCase implements TestCase
 	private Map custom = new HashMap();
 	private TestCaseExecutor autoTestExecutor = null;
 	private boolean isOpen = true;
+	
+	/**
+	 * Default empty constructor.
+	 */
+	public ExecutableTestCase() {}
+	
+	/**
+	 * Make a copy of the test case and return it as a new instance.
+	 * This is useful for extending the test case and replacing
+	 * the test case that will run during automated running in a 
+	 * test plan.
+	 * 
+	 * @param testCaseOther
+	 */
+	public ExecutableTestCase(ExecutableTestCase testCaseOther) {
+		this.copy(testCaseOther);
+	}
 	
 	/**
 	 * Using the data returned from the TestLink API the test
@@ -500,6 +520,12 @@ public class ExecutableTestCase implements TestCase
 		return isOpen;
 	}
 	
+	public void addToTestLink(TestLinkAPIClient apiClient, String loginUserName) throws TestLinkAPIException {
+		if ( !doesCaseExist(apiClient, this) ) {
+			createTestCase(apiClient, this, loginUserName);
+		}
+	}
+	
 	/**
 	 * Get the test case's automated execution instance.
 	 * @return
@@ -518,6 +544,128 @@ public class ExecutableTestCase implements TestCase
 		TestCaseExecutor executor)
 	{
 		this.autoTestExecutor = executor;
+	}
+	
+	/*
+	 * Private methods
+	 */
+
+	private void copy(ExecutableTestCase otherTC) {
+		this.testProject = new TestProject(otherTC.testProject);
+		
+		if ( otherTC.testSuite != null ) {
+			this.testSuite = new TestSuite(otherTC.testSuite);
+		}
+
+		if ( otherTC.testCaseID != null ) {
+			this.testCaseID = new Integer(otherTC.testCaseID.intValue());
+		}
+		
+		if ( otherTC.execOrder != null ) {
+		this.execOrder = new Integer(otherTC.execOrder.intValue());
+		}
+		
+		if ( otherTC.execType != null ) {
+		this.execType = new Integer(otherTC.execType.intValue());
+		}
+		
+		if ( otherTC.testCaseName != null ) {
+		this.testCaseName = new String(otherTC.testCaseName);
+		}
+		
+		if ( otherTC.testCaseVisibleID != null ) {
+		this.testCaseVisibleID = new String(otherTC.testCaseVisibleID);
+		}
+		
+		if ( otherTC.testCaseSummary != null ) {
+		this.testCaseSummary = new String(otherTC.testCaseSummary);
+		}
+		
+		if ( otherTC.testCaseSteps != null ) {
+			this.testCaseSteps = new String(otherTC.testCaseSteps);
+		}
+		
+		if ( otherTC.testCaseExpectedResults != null ) {
+			this.testCaseExpectedResults = new String(otherTC.testCaseExpectedResults);
+		}
+		
+		if ( otherTC.testCaseVersion != null ) {
+			this.testCaseVersion = new String(otherTC.testCaseVersion);
+		}
+		
+		if ( otherTC.testCaseImportance != null ) {
+			this.testCaseImportance = new String(otherTC.testCaseImportance);
+		}
+		
+		Map tmp = new HashMap();
+		Iterator keys = otherTC.custom.keySet().iterator();
+		while ( keys.hasNext() ) {
+			Object key = keys.next();
+			Object value = otherTC.custom.get(key);
+			if ( value instanceof String ) {
+				tmp.put(key, new String(value.toString()));
+			} else {
+				tmp.put(key, value);
+			}
+		}
+		this.custom = tmp;
+		
+		this.isOpen = otherTC.isOpen;
+		
+		this.autoTestExecutor = otherTC.autoTestExecutor;
+		
+	}
+	/*
+	 * Check to see if the test case exist.
+	 */
+	private boolean doesCaseExist(
+		TestLinkAPIClient apiClient,
+		TestCase tc)
+	{
+		if ( tc.getTestCaseInternalID() == null ) {
+			return false;
+		}
+		
+		if ( tc.getTestCaseInternalID() < 1 ) {
+			return false;
+		}
+		
+		try {
+			Map tcInfo = TestLinkAPIHelper.getTestCaseInfo(apiClient, testProject.getProjectID(), tc.getTestCaseInternalID());
+			if ( tcInfo != null ) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	/*
+	 * Create the test case if it does not exist
+	 */
+	private void createTestCase(
+		TestLinkAPIClient apiClient,
+		TestCase tc,
+		String loginUserName)
+	{
+		try {
+			String execType = TestLinkAPIConst.TESTCASE_EXECUTION_TYPE_MANUAL;
+			if ( tc.isAutoExec() ) {
+				execType = TestLinkAPIConst.TESTCASE_EXECUTION_TYPE_AUTO;
+			}
+			String importance = TestLinkAPIConst.MEDIUM;
+			if ( tc.isLowImportance() ) {
+				importance = TestLinkAPIConst.LOW;
+			} else if ( tc.isHighImportance() ){
+				importance = TestLinkAPIConst.HIGH;
+			}
+			apiClient.createTestCase(loginUserName, testProject.getProjectID(), tc.getSuiteID(), tc.getTestCaseName(), tc.getTestCaseSummary(), tc.getTestCaseSteps(), tc.getTestCaseExpectedResults(), tc.getExecOrder(), null, null, null, execType, importance);
+		} catch (Exception e) {
+			// TODO: Report back some kind of error
+		}
+		
 	}
 	
 }
