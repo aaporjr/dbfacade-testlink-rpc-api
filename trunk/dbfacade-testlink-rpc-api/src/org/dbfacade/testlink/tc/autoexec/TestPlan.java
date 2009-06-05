@@ -281,8 +281,10 @@ public class TestPlan
 		}
 	}
 	
-	
-	
+	public TestCase[] getTestCases() {
+		return testCaseRegistry.toArray();
+	}
+
 	/*
 	 * Private methods section
 	 */

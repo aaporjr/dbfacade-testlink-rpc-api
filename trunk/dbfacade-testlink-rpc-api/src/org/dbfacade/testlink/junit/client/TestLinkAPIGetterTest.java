@@ -28,6 +28,7 @@ import org.dbfacade.testlink.api.client.TestLinkAPIConst;
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
 import org.dbfacade.testlink.api.client.TestLinkAPIHelper;
 import org.dbfacade.testlink.api.client.TestLinkAPIResults;
+import org.dbfacade.testlink.junit.constants.TestConst;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -46,15 +47,8 @@ import org.junit.Test;
  * @author Daniel Padilla
  *
  */
-public class TestLinkAPIGetterTest implements TestLinkAPIConst
-{
-	
-	// The URL path to testing TestLink application instance. You want to avoid production.
-	private final String apiURL = "http://localhost/testlink/lib/api/xmlrpc.php";
-	
-	// The user script_key value
-	private final String userKey = "fc7eaf2092095e912af73ce44c26080b";
-	
+public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
+{	
 	// The api instance
 	public static TestLinkAPIClient api=null;
 	

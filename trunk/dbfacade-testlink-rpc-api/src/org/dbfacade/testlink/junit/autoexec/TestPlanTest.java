@@ -23,16 +23,10 @@ package org.dbfacade.testlink.junit.autoexec;
 
 import static org.junit.Assert.fail;
 
-import java.util.Map;
-
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIConst;
-import org.dbfacade.testlink.api.client.TestLinkAPIHelper;
 import org.dbfacade.testlink.junit.constants.TestConst;
-import org.dbfacade.testlink.tc.autoexec.ExecutableTestCase;
-import org.dbfacade.testlink.tc.autoexec.TestCase;
-import org.dbfacade.testlink.tc.autoexec.TestProject;
-import org.dbfacade.testlink.tc.autoexec.TestSuite;
+import org.dbfacade.testlink.tc.autoexec.TestPlanLoader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -46,7 +40,7 @@ import org.junit.Test;
  * @author Daniel Padilla
  *
  */
-public class ExecutableTestCaseTest implements TestLinkAPIConst, TestConst
+public class TestPlanTest implements TestLinkAPIConst, TestConst
 {	
 	// The api instance
 	private TestLinkAPIClient api;
@@ -73,51 +67,21 @@ public class ExecutableTestCaseTest implements TestLinkAPIConst, TestConst
 	@After
 	public void tearDown() throws Exception
 	{}
-	
+		
 	/**
-	 * Test ExecutableTestCase.initExistingCase() method
+	 * Test TestPlanLoader
 	 */
 	@Test
-	public void testTestPlanConstructor()
+	public void testTestPlanLoader()
 	{
 		try {
-			Map projectInfo= TestLinkAPIHelper.getProjectInfo(api, JUNIT_PLAN_PROJECT);
-			TestProject project = new TestProject(projectInfo);
-			project.getProjectID();
+			TestPlanLoader planLoader = new TestPlanLoader(api, JUNIT_PLAN_PROJECT);
+			System.out.println(planLoader.toString());
 		} catch ( Exception e ) {
-			e.printStackTrace();
-			fail("Failed to initialize the existing test case.");
+			fail("Failed to load the test plans.");
 		}
 	}
-
-	/**
-	 * Test ExecutableTestCase.initExistingCase() method
-	 */
-	@Test
-	public void testInitExistingCase()
-	{
-		try {
-			// Get IDs
-			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_PLAN_PROJECT);
-			Integer caseID = TestLinkAPIHelper.getCaseIDByName(api, projectID, JUNIT_PLAN_CASE);
-			
-			// Get information for the ids
-			Map testCaseInfo = TestLinkAPIHelper.getTestCaseInfo(api, projectID, caseID);
-			Map projectInfo= TestLinkAPIHelper.getProjectInfo(api, JUNIT_PLAN_PROJECT);
-			Map suiteInfo = TestLinkAPIHelper.getSuiteInfo(api, projectID, JUNIT_PLAN_SUITE);
-			
-			// Create the classes
-			TestProject testProject = new TestProject(projectInfo);
-			TestSuite testSuite = new TestSuite(suiteInfo);
-			TestCase testCase = new ExecutableTestCase();
-			
-			// Test the initializer
-			testCase.initExistingCase(testProject, testSuite, testCaseInfo);
-			
-		} catch ( Exception e ) {
-			fail("Failed to initialize the existing test case.");
-		}
-	}	
+	
 	
 }
 

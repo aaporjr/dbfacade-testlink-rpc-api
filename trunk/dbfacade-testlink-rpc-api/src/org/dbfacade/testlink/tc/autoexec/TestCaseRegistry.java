@@ -35,7 +35,7 @@ import java.util.Comparator;
 public class TestCaseRegistry
 {
 	Comparator orderByExecOrder = new TestCaseExecOrderCompare();
-	ArrayList caseList = new ArrayList();
+	ArrayList<TestCase> caseList = new ArrayList();
 	
 	/**
 	 * Removes all TestCases from this registry
@@ -179,6 +179,10 @@ public class TestCaseRegistry
 	public int size()
 	{
 		return caseList.size();
+	}
+	
+	public TestCase[] toArray() {
+		return (TestCase[]) caseList.toArray();
 	}
 
 	/*
