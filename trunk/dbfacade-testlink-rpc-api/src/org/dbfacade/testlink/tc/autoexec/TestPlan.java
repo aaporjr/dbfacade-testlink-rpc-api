@@ -46,7 +46,7 @@ import org.dbfacade.testlink.api.client.TestLinkAPIResults;
  * @author Daniel Padilla
  *
  */
-public class TestPlanManager
+public class TestPlan
 {
 	private boolean isAPIReachable = false;
 	private boolean isReportResultsOn = false;
@@ -61,7 +61,7 @@ public class TestPlanManager
 	 * Creates an offline version of the project manager for
 	 * running test offline.
 	 */
-	public TestPlanManager()
+	public TestPlan()
 	{
 		isAPIReachable = false;
 		isReportResultsOn = false;
@@ -73,7 +73,7 @@ public class TestPlanManager
 	 * Creates an offline version of the project manager for
 	 * running test offline.
 	 */
-	public TestPlanManager(
+	public TestPlan(
 		String projectName,
 		String planName)
 	{
@@ -93,7 +93,7 @@ public class TestPlanManager
 	 * @param projectName
 	 * @param planName
 	 */
-	public TestPlanManager(
+	public TestPlan(
 		String projectName,
 		String planName,
 		String devKey,
@@ -118,7 +118,7 @@ public class TestPlanManager
 	 * @param planName
 	 * @param testCaseImplementionClass
 	 */
-	public TestPlanManager(
+	public TestPlan(
 		String projectName,
 		String planName,
 		String testCaseClass,
