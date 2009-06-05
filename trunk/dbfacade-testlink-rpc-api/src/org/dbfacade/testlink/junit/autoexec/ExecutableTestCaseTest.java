@@ -1,7 +1,7 @@
 /*
- * Database Facade
+ * Daniel R Padilla
  *
- * Copyright (c) 2009, Database Facade
+ * Copyright (c) 2009, Daniel R Padilla
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU
@@ -30,6 +30,7 @@ import org.dbfacade.testlink.api.client.TestLinkAPIConst;
 import org.dbfacade.testlink.api.client.TestLinkAPIHelper;
 import org.dbfacade.testlink.tc.autoexec.ExecutableTestCase;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
+import org.dbfacade.testlink.tc.autoexec.TestPlanLoader;
 import org.dbfacade.testlink.tc.autoexec.TestProject;
 import org.dbfacade.testlink.tc.autoexec.TestSuite;
 import org.junit.After;
@@ -125,7 +126,19 @@ public class ExecutableTestCaseTest implements TestLinkAPIConst
 		}
 	}
 	
-	
+	/**
+	 * Test TestPlanLoader
+	 */
+	@Test
+	public void testTestPlanLoader()
+	{
+		try {
+			TestPlanLoader planLoader = new TestPlanLoader(api, JUNIT_PLAN_PROJECT);
+			System.out.println(planLoader.toString());
+		} catch ( Exception e ) {
+			fail("Failed to load the test plans.");
+		}
+	}
 	
 	
 }

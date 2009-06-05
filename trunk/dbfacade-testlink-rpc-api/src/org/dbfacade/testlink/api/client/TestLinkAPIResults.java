@@ -1,7 +1,7 @@
 /*
- * Database Facade
+ * Daniel R Padilla
  *
- * Copyright (c) 2009, Database Facade
+ * Copyright (c) 2009, Daniel R Padilla
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU

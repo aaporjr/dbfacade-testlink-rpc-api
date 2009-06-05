@@ -1,7 +1,7 @@
 /*
- * Database Facade
+ * Daniel R Padilla
  *
- * Copyright (c) 2009, Database Facade
+ * Copyright (c) 2009, Daniel R Padilla
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU
@@ -81,6 +81,27 @@ public class TestPlan
 		isReportResultsOn = false;
 		this.testProject = TestProject.getOffLineProject(projectName);
 		testPlanName = planName;
+	}
+	
+	/**
+	 * When the TestPlanManager is instantiated then it retrieves all the
+	 * test cases that are defined as automated test cases in the test plan.
+	 * <p>
+	 * Reporting of test results is turned on if the API is reachable. If the
+	 * API is not reachable the system defaults to offline mode.
+	 * 
+	 * @param projectName
+	 * @param planName
+	 */
+	public TestPlan(
+		TestLinkAPIClient apiClient,
+		String projectName,
+		String planName)
+	{
+		checkAPIReachability(apiClient, projectName, planName);
+		if ( isAPIReachable ) {
+			init(projectName, planName);
+		}
 	}
 	
 	/**
@@ -275,8 +296,12 @@ public class TestPlan
 		String projectName,
 		String planName) 
 	{
-		
 		apiClient = new TestLinkAPIClient(devKey, url);
+		checkAPIReachability(apiClient, projectName, planName);
+	}
+	
+	private void checkAPIReachability(TestLinkAPIClient apiClient, String projectName, String planName)
+	{
 		
 		// First ping
 		try {
