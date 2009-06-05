@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.commands">
+         
+      <category
+            name="TestLink"
+            id="testlink.eclipse.plugin.commands.category">
+      </category>
+   
+      <command
+            name="TestLink"
+            categoryId="testlink.eclipse.plugin.commands.category"
+            id="testlink.eclipse.plugin.commands.sampleCommand">
+            
+            <commandParameter
+                 id="org.dbfacade.testlink.eclipse.plugin.views.TestLinkView"
+                 name="Name of command parameter"
+                 values="org.dbfacade.testlink.eclipse.plugin.handler.TestLinkHandlerParams" />
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            commandId="testlink.eclipse.plugin.commands.sampleCommand" 
+            class="org.dbfacade.testlink.eclipse.plugin.handlers.TestLinkHandler">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="testlink.eclipse.plugin.commands.sampleCommand"
+            contextId="org.eclipse.ui.contexts.window"
+            sequence="M1+6"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+         <menu
+               label="Sample Menu"
+               mnemonic="M"
+               id="testlink.eclipse.plugin.menus.sampleMenu">
+            <command
+                  commandId="testlink.eclipse.plugin.commands.sampleCommand"
+                  mnemonic="S"
+                  id="testlink.eclipse.plugin.menus.sampleCommand">
+            </command>
+         </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="testlink.eclipse.plugin.toolbars.sampleToolbar">
+            <command
+                  commandId="testlink.eclipse.plugin.commands.sampleCommand"
+                  icon="icons/sample.gif"
+                  tooltip="Say hello world"
+                  id="testlink.eclipse.plugin.toolbars.sampleCommand">
+            </command>
+         </toolbar>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="TestLink"
+            class="org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPage"
+            id="org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPage">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.dbfacade.testlink.eclipse.plugin.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="TestLink"
+            id="testlink.eclipse.plugin">
+      </category>
+      <view
+            name="TestLink Test Plan Execution"
+            icon="icons/sample.gif"
+            category="testlink.eclipse.plugin"
+            class="org.dbfacade.testlink.eclipse.plugin.views.TestLinkView"
+            id="org.dbfacade.testlink.eclipse.plugin.views.TestLinkView">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               ratio="0.5"
+               relative="org.eclipse.ui.views.TaskList"
+               relationship="right"
+               id="org.dbfacade.testlink.eclipse.plugin.views.TestLinkView">
+         </view>
+      </perspectiveExtension>
+   </extension>
+
+</plugin>
