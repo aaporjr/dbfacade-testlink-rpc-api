@@ -36,6 +36,13 @@ public interface TestCaseExecutor {
 	public short getExecutionResult();
 	
 	/**
+	 * Set the results of the test from an external source.
+	 * 
+	 * @param result
+	 */
+	public void setExecutionResult(short result);
+	
+	/**
 	 * Information about the results of the execution.
 	 * 
 	 * @return Information about the results of the execution.

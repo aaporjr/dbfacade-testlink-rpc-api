@@ -21,7 +21,6 @@
 package org.dbfacade.testlink.tc.autoexec;
 
 
-import java.util.Iterator;
 import java.util.Map;
 
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
@@ -32,8 +31,6 @@ import org.dbfacade.testlink.api.client.TestLinkAPIResults;
 
 
 /**
- * Currently not supported (class stub).
- * <p>
  * The class is used to manage the execution of test cases
  * associated with a test plan.
  * <p>
@@ -64,9 +61,10 @@ public class TestPlanManager
 	 * Creates an offline version of the project manager for
 	 * running test offline.
 	 */
-	public TestPlanManager() {
-		isAPIReachable=false;
-		isReportResultsOn=false;
+	public TestPlanManager()
+	{
+		isAPIReachable = false;
+		isReportResultsOn = false;
 		this.testProject = TestProject.getOffLineProject();
 		testPlanName = "Offline plan";
 	}
@@ -75,17 +73,17 @@ public class TestPlanManager
 	 * Creates an offline version of the project manager for
 	 * running test offline.
 	 */
-	public TestPlanManager(String projectName, String planName) {
-		isAPIReachable=false;
-		isReportResultsOn=false;
+	public TestPlanManager(
+		String projectName,
+		String planName)
+	{
+		isAPIReachable = false;
+		isReportResultsOn = false;
 		this.testProject = TestProject.getOffLineProject(projectName);
 		testPlanName = planName;
 	}
 	
-	
 	/**
-	 * Currently not supported (constructor stub).
-	 * <p>
 	 * When the TestPlanManager is instantiated then it retrieves all the
 	 * test cases that are defined as automated test cases in the test plan.
 	 * <p>
@@ -108,8 +106,6 @@ public class TestPlanManager
 	}
 	
 	/**
-	 * Currently not supported (constructor stub).
-	 * <p>
 	 * When the TestPlanManager is instantiated then it retrieves all the
 	 * test cases that are defined as automated test cases in the test plan.
 	 * <p>
@@ -137,10 +133,12 @@ public class TestPlanManager
 	}
 	
 	/**
+	 * Return the name of the test plan for this test plan manager.
 	 * 
 	 * @return
 	 */
-	public String getTestPlanName() {
+	public String getTestPlanName()
+	{
 		return testPlanName;
 	}
 	
@@ -149,36 +147,38 @@ public class TestPlanManager
 	 * 
 	 * @return
 	 */
-	public boolean isOffline() {
+	public boolean isOffline()
+	{
 		return !(isAPIReachable);
 	}
 	
 	/**
+	 * True if reporting of test result to the TestLink API is turned on. 
 	 * 
 	 * @return
 	 */
-	public boolean isReportResultsOn() {
+	public boolean isReportResultsOn()
+	{
 		return isReportResultsOn;
 	}
 	
 	/**
-	 * 
+	 * Turn on report of test result to the TestLink API. 
 	 */
-	public void trunOnResultReporting() {
+	public void trunOnResultReporting()
+	{
 		isReportResultsOn = true;
 	}
 	
 	/**
-	 * 
+	 * Turn off report of test result to the TestLink API. 
 	 */
-	public void trunOffResultReporting() {
+	public void trunOffResultReporting()
+	{
 		isReportResultsOn = false;
 	}
 
-	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Adds a test case to the a project test suite if the test case does
 	 * not exist and then it it adds it to the test plan.
 	 * 
@@ -191,77 +191,47 @@ public class TestPlanManager
 	public void putTestCase(
 		TestCase testCase) throws TestLinkAPIException
 	{
-		throw new TestLinkAPIException("The method is not currently supported.");
+		if ( !isOffline() ) {
+			if ( !doesCaseExist(testCase) ) {
+				createTestCase(testCase);
+			}
+			
+			if ( !isCasePartOfPlan(testCase) ) {
+				addTestCaseToPlan(testCase);
+			}
+		}
+		testCaseRegistry.put(testCase);
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
-	 * Get the test case by name or visible id. The visible identifier can be
-	 * viewed when looking at a test case suite tree in the TestLink web application.
 	 * 
 	 * @param caseNameOrVisibleID
-	 * @return TestCase if found otherwise null
+	 * @param executor
+	 * @throws TestLinkAPIException
 	 */
-	public TestCase getTestCase(
-		String caseNameOrVisibleID) throws TestLinkAPIException
+	public void setTestCaseExecutor(
+		String caseNameOrVisibleID,
+		TestCaseExecutor executor) 
 	{
-		throw new TestLinkAPIException("The method is not currently supported.");
+		TestCase testCase = testCaseRegistry.get(caseNameOrVisibleID);
+		testCase.setExecutor(executor);
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
-	 * Get the test case by internal identifier.
 	 * 
 	 * @param caseID
-	 * @return TestCase if found otherwise null
+	 * @param executor
+	 * @throws TestLinkAPIException
 	 */
-	public TestCase getTestCase(
-		Integer caseID) throws TestLinkAPIException
+	public void setTestCaseExecutor(
+		Integer caseID,
+		TestCaseExecutor executor) 
 	{
-		throw new TestLinkAPIException("The method is not currently supported.");
+		TestCase testCase = testCaseRegistry.get(caseID);
+		testCase.setExecutor(executor);
 	}
 	
 	/**
-	 * Currently not supported (method stub).
-	 * <p>
-	 * Get an iterator for all the existing case names in this plan.
-	 * 
-	 * @return Iterator of test case internal identifiers
-	 */
-	public Iterator getTestCaseNames() throws TestLinkAPIException
-	{
-		throw new TestLinkAPIException("The method is not currently supported.");
-	}
-	
-	/**
-	 * Currently not supported (method stub).
-	 * <p>
-	 * Get an iterator for all the existing case visible identifiers in this plan.
-	 * 
-	 * @return Iterator of test case internal identifiers
-	 */
-	public Iterator getTestCaseVisibleIDs() throws TestLinkAPIException
-	{
-		throw new TestLinkAPIException("The method is not currently supported.");
-	}
-	
-	/**
-	 * Currently not supported (method stub).
-	 * <p>
-	 * Get an iterator for all the existing case internal identifiers in this plan.
-	 * 
-	 * @return Iterator of test case internal identifiers
-	 */
-	public Iterator getTestCaseInternalIDs() throws TestLinkAPIException
-	{
-		throw new TestLinkAPIException("The method is not currently supported.");
-	}
-	
-	/**
-	 * Currently not supported (method stub).
-	 * <p>
 	 * Execute the test cases for the instantiated plan and record the test case
 	 * results. The execution records a failure for any test case that returns an 
 	 * undefined result or throws an exception during execution.
@@ -270,8 +240,33 @@ public class TestPlanManager
 	 */
 	public void executeTestCases() throws TestLinkAPIException
 	{
-		throw new TestLinkAPIException("The method is not currently supported.");
+		for (int i=0; i < testCaseRegistry.size(); i++) {
+			TestCase tc = testCaseRegistry.get(i);
+			executeTestCase(tc);
+		}
 	}
+	
+	public void executeTestCase(
+		TestCase testCase)
+	{
+		TestCaseExecutor executor = testCase.getExecutor();
+		if ( executor == null ) {
+			executor = new EmptyExecutor();
+			testCase.setExecutor(executor);
+		} else {
+			try {
+				executor.execute(testCase);
+			} catch ( Exception e ) {
+				executor.setExecutionResult(TestCaseExecutor.FAILED);
+			}
+		}
+	}
+	
+	
+	
+	/*
+	 * Private methods section
+	 */
 	
 	/*
 	 * Check to see if the TestLINK API can be accessed and the project exists
@@ -324,27 +319,26 @@ public class TestPlanManager
 
 	}
 	
-	/*
-	 * Private methods
-	 */
 	
 	/*
 	 * Method is called by the constructor and it finds all the test cases in a 
 	 * test plan and then instantiates the classes using the initExistingCase()
 	 * method. Once the case is instantiated it is stored in a list.
 	 */
-	private void init(String projectName, String planName)
+	private void init(
+		String projectName,
+		String planName)
 	{
 		try {
 			TestLinkAPIResults caseList = apiClient.getCasesForTestPlan(testPlanID);
-			for (int i=0; i < caseList.size(); i++) {
+			for ( int i = 0; i < caseList.size(); i++ ) {
 				Map caseInfo = caseList.getData(i);
 				TestCase tc = getTestCaseInstance(caseInfo);
 				testCaseRegistry.put(tc);
 			}
-			isReportResultsOn=true;
+			isReportResultsOn = true;
 			testPlanName = planName;
-		} catch (Exception e) {
+		} catch ( Exception e ) {
 			isAPIReachable = false;
 			createDummyOfflineInfo(projectName, planName);
 		}
@@ -353,12 +347,15 @@ public class TestPlanManager
 	/*
 	 * Create an instance of the requested test case class
 	 */
-	private TestCase getTestCaseInstance(Map testCaseInfo) throws Exception {
-		boolean isCreated=false;
-		String tcSuiteName = (String) testCaseInfo.get(TestLinkAPIConst.API_RESULT_TC_SUITE);
+	private TestCase getTestCaseInstance(
+		Map testCaseInfo) throws Exception
+	{
+		boolean isCreated = false;
+		String tcSuiteName = (String) testCaseInfo.get(
+			TestLinkAPIConst.API_RESULT_TC_SUITE);
 		TestCase tc = (TestCase) Class.forName(testCaseClass).newInstance();
 		TestLinkAPIResults suites = apiClient.getTestSuitesForTestPlan(testPlanID);
-		for (int i=0; i < suites.size(); i++) {
+		for ( int i = 0; i < suites.size(); i++ ) {
 			Map suiteInfo = suites.getData(i);
 			String pSuiteName = (String) suiteInfo.get(TestLinkAPIConst.API_RESULT_NAME);
 			if ( tcSuiteName.equals(pSuiteName) ) {
@@ -371,17 +368,106 @@ public class TestPlanManager
 		if ( isCreated ) {
 			return tc;
 		} else {
-			throw new TestLinkAPIException("Unable to find test suite name in the test plan " + tcSuiteName);
+			throw new TestLinkAPIException(
+				"Unable to find test suite name in the test plan " + tcSuiteName);
 		}
 	}
 	
 	/*
 	 * Make sure we are offline with an offline project
 	 */
-	private void createDummyOfflineInfo(String projectName, String planName)
+	private void createDummyOfflineInfo(
+		String projectName,
+		String planName)
 	{
 		isAPIReachable = false;
 		this.testProject = TestProject.getOffLineProject(projectName);
 		testPlanName = planName;
+	}
+	
+	/*
+	 * Check to see if the test case exist.
+	 */
+	private boolean doesCaseExist(
+		TestCase tc)
+	{
+		if ( tc.getTestCaseInternalID() == null ) {
+			return false;
+		}
+		
+		if ( tc.getTestCaseInternalID() < 1 ) {
+			return false;
+		}
+		
+		try {
+			Map tcInfo = TestLinkAPIHelper.getTestCaseInfo(apiClient, testProject.getProjectID(), tc.getTestCaseInternalID());
+			if ( tcInfo != null ) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	/*
+	 * Create the test case if it does not exist
+	 */
+	private void createTestCase(
+		TestCase tc)
+	{
+		try {
+			String execType = TestLinkAPIConst.TESTCASE_EXECUTION_TYPE_MANUAL;
+			if ( tc.isAutoExec() ) {
+				execType = TestLinkAPIConst.TESTCASE_EXECUTION_TYPE_AUTO;
+			}
+			String importance = TestLinkAPIConst.MEDIUM;
+			if ( tc.isLowImportance() ) {
+				importance = TestLinkAPIConst.LOW;
+			} else if ( tc.isHighImportance() ){
+				importance = TestLinkAPIConst.HIGH;
+			}
+			apiClient.createTestCase("admin", testProject.getProjectID(), tc.getSuiteID(), tc.getTestCaseName(), tc.getTestCaseSummary(), tc.getTestCaseSteps(), tc.getTestCaseExpectedResults(), tc.getExecOrder(), null, null, null, execType, importance);
+		} catch (Exception e) {
+			// TODO: Report back some kind of error
+		}
+		
+	}
+	
+	/*
+	 * Check to see if the test plan is part of the test case
+	 */
+	private boolean isCasePartOfPlan(
+		TestCase tc)
+	{
+		try {
+			TestLinkAPIResults results = apiClient.getCasesForTestPlan(testPlanID);
+			for (int i=0; i < results.size(); i++) {
+				Map caseInfo = results.getData(i);
+				Object id = caseInfo.get(TestLinkAPIConst.API_RESULT_IDENTIFIER);
+				if ( id != null ) {
+					Integer caseID = new Integer(id.toString());
+					if ( caseID.equals(tc.getTestCaseInternalID())) {
+						return true;
+					}
+				}
+			}
+			return false;
+		} catch (Exception e) {
+			return false;
+		}
+		
+	}
+	
+	/*
+	 * Add test case to test plan
+	 */
+	private void addTestCaseToPlan(
+		TestCase tc)
+	{
+		try {
+			apiClient.addTestCaseToTestPlan(testProject.getProjectID(), testPlanID, tc.getTestCaseVisibleID(), null, null, null);
+		} catch (Exception e) {}
 	}
 }
