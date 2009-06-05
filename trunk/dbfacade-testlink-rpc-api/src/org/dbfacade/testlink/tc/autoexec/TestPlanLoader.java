@@ -23,6 +23,11 @@ public class TestPlanLoader {
 		
 	}
 	
+	/**
+	 * Returns the list of test plans.
+	 * 
+	 * @return
+	 */
 	public ArrayList getPlans() {
 		return plans;
 	}
