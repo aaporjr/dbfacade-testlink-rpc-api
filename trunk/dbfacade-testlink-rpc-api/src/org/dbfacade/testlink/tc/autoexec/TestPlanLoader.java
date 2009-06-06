@@ -177,7 +177,7 @@ public class TestPlanLoader
 			Object key = keys.next();
 			TestPlan plan = plans.get(key);
 			if ( plan != null ) {
-				prep.setExternalDirectory(externalDir);
+				prep.setExternalPath(externalDir);
 				prep.setTCUser(defaultTestCaseUser);
 				prep.adjust(apiClient, plan);
 			}

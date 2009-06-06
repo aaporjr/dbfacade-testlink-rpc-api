@@ -54,7 +54,7 @@ public interface TestPlanPrepare
 	 * 
 	 * @param directory
 	 */
-	public void setExternalDirectory(String directory);
+	public void setExternalPath(String path);
 	
 	/**
 	 * Optionally made available by callers to the interface
