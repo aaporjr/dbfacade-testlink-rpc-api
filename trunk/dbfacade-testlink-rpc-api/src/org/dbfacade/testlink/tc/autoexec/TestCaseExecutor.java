@@ -38,6 +38,7 @@ public interface TestCaseExecutor
 	public static final short RUNING = 101;
 	public static final short BOMBED = 102;
 	public static final short COMPLETED = 103;
+	public static final short RESET = 104;
 	
 	/**
 	 * Get the state of the execution
