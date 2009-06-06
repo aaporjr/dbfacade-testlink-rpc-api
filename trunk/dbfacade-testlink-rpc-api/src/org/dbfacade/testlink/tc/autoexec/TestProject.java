@@ -23,8 +23,10 @@ package org.dbfacade.testlink.tc.autoexec;
 
 import java.util.Map;
 
+import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIConst;
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
+import org.dbfacade.testlink.api.client.TestLinkAPIHelper;
 
 
 /**
@@ -97,6 +99,19 @@ public class TestProject
 	}
 	
 	/**
+	 * Constructs a project using an api client and project name.
+	 * 
+	 * @param apiClient
+	 * @param projectName
+	 * @throws TestLinkAPIException
+	 */
+	public TestProject(TestLinkAPIClient apiClient, String projectName) throws TestLinkAPIException {
+		Integer projectID = TestLinkAPIHelper.getProjectID(apiClient, projectName);
+		Map projectInfo = TestLinkAPIHelper.getProjectInfo(apiClient, projectID);
+		init(projectInfo);
+	}
+	
+	/**
 	 * Constructs a TestProject instance when provided with information
 	 * about the the project using a Map result from the TestLink API
 	 * for a project. 
@@ -107,6 +122,10 @@ public class TestProject
 	public TestProject(
 		Map projectInfo) throws TestLinkAPIException
 	{
+		init(projectInfo);
+	}
+	
+	private void init(Map projectInfo) throws TestLinkAPIException {
 		if ( projectInfo == null ) {
 			throw new TestLinkAPIException(
 				"The TestProject class object instance could not be created.");
