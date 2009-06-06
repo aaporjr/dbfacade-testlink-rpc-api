@@ -56,6 +56,7 @@ public class TestPlan
 	private TestLinkAPIClient apiClient;
 	private TestCaseRegistry testCaseRegistry = new TestCaseRegistry();
 	private String testCaseClass = "org.dbfacade.testlink.tc.autoexec.ExecutableTestCase";
+	private boolean testCasesInitialized = false;
 	
 	/**
 	 * Creates an offline version of the project manager for
@@ -99,10 +100,7 @@ public class TestPlan
 		String planName)
 	{
 		this.apiClient = apiClient;
-		checkAPIReachability(this.apiClient, projectName, planName);
-		if ( isAPIReachable ) {
-			init(projectName, planName);
-		}
+		initTestPlan(this.apiClient, projectName, planName);
 	}
 	
 	/**
@@ -121,10 +119,7 @@ public class TestPlan
 		String devKey,
 		String urlToAPI)
 	{
-		checkAPIReachability(devKey, urlToAPI, projectName, planName);
-		if ( isAPIReachable ) {
-			init(projectName, planName);
-		}
+		initTestPlan(devKey, urlToAPI, projectName, planName);
 	}
 	
 	/**
@@ -147,11 +142,8 @@ public class TestPlan
 		String devKey,
 		String urlToAPI)
 	{
-		checkAPIReachability(devKey, urlToAPI, projectName, planName);
+		initTestPlan(devKey, urlToAPI, projectName, planName);
 		this.testCaseClass = testCaseClass;
-		if ( isAPIReachable ) {
-			init(projectName, planName);
-		}
 	}
 	
 	/**
@@ -215,6 +207,9 @@ public class TestPlan
 		String loginUserName) throws TestLinkAPIException
 	{
 		if ( !isOffline() ) {
+			if ( isAPIReachable ) {
+				initTestCases(testProject.getProjectName(), testPlanName);
+			}
 			testCase.addToTestLink(apiClient, loginUserName);
 			if ( !isCasePartOfPlan(testCase) ) {
 				addTestCaseToPlan(testCase);
@@ -233,6 +228,9 @@ public class TestPlan
 		String caseNameOrVisibleID,
 		TestCaseExecutor executor) 
 	{
+		if ( isAPIReachable ) {
+			initTestCases(testProject.getProjectName(), testPlanName);
+		}
 		TestCase testCase = testCaseRegistry.get(caseNameOrVisibleID);
 		testCase.setExecutor(executor);
 	}
@@ -247,6 +245,9 @@ public class TestPlan
 		Integer caseID,
 		TestCaseExecutor executor) 
 	{
+		if ( isAPIReachable ) {
+			initTestCases(testProject.getProjectName(), testPlanName);
+		}
 		TestCase testCase = testCaseRegistry.get(caseID);
 		testCase.setExecutor(executor);
 	}
@@ -260,7 +261,10 @@ public class TestPlan
 	 */
 	public void executeTestCases() throws TestLinkAPIException
 	{
-		for (int i=0; i < testCaseRegistry.size(); i++) {
+		if ( isAPIReachable ) {
+			initTestCases(testProject.getProjectName(), testPlanName);
+		}
+		for ( int i = 0; i < testCaseRegistry.size(); i++ ) {
 			TestCase tc = testCaseRegistry.get(i);
 			executeTestCase(tc);
 		}
@@ -269,6 +273,9 @@ public class TestPlan
 	public void executeTestCase(
 		TestCase testCase)
 	{
+		if ( isAPIReachable ) {
+			initTestCases(testProject.getProjectName(), testPlanName);
+		}
 		TestCaseExecutor executor = testCase.getExecutor();
 		if ( executor == null ) {
 			executor = new EmptyExecutor();
@@ -282,7 +289,11 @@ public class TestPlan
 		}
 	}
 	
-	public TestCase[] getTestCases() {
+	public TestCase[] getTestCases()
+	{
+		if ( isAPIReachable ) {
+			initTestCases(testProject.getProjectName(), testPlanName);
+		}
 		return testCaseRegistry.toArray();
 	}
 
@@ -293,17 +304,20 @@ public class TestPlan
 	/*
 	 * Check to see if the TestLINK API can be accessed and the project exists
 	 */
-	private void checkAPIReachability(
+	private void initTestPlan(
 		String devKey,
 		String url,
 		String projectName,
 		String planName) 
 	{
 		apiClient = new TestLinkAPIClient(devKey, url);
-		checkAPIReachability(apiClient, projectName, planName);
+		initTestPlan(apiClient, projectName, planName);
 	}
 	
-	private void checkAPIReachability(TestLinkAPIClient apiClient, String projectName, String planName)
+	private void initTestPlan(
+		TestLinkAPIClient apiClient,
+		String projectName,
+		String planName)
 	{
 		
 		// First ping
@@ -314,7 +328,7 @@ public class TestPlan
 			isAPIReachable = false;
 		}
 		
-		// Check if the test project exists
+		// Check if the test project exist
 		Integer projectID = null;
 		if ( isAPIReachable ) {
 			try {
@@ -345,28 +359,29 @@ public class TestPlan
 
 	}
 	
-	
 	/*
 	 * Method is called by the constructor and it finds all the test cases in a 
 	 * test plan and then instantiates the classes using the initExistingCase()
 	 * method. Once the case is instantiated it is stored in a list.
 	 */
-	private void init(
+	private void initTestCases(
 		String projectName,
 		String planName)
 	{
-		try {
-			TestLinkAPIResults caseList = apiClient.getCasesForTestPlan(testPlanID);
-			for ( int i = 0; i < caseList.size(); i++ ) {
-				Map caseInfo = caseList.getData(i);
-				TestCase tc = getTestCaseInstance(caseInfo);
-				testCaseRegistry.put(tc);
+		if ( testCasesInitialized == false && isAPIReachable ) {
+			try {
+				TestLinkAPIResults caseList = apiClient.getCasesForTestPlan(testPlanID);
+				for ( int i = 0; i < caseList.size(); i++ ) {
+					Map caseInfo = caseList.getData(i);
+					TestCase tc = getTestCaseInstance(caseInfo);
+					testCaseRegistry.put(tc);
+				}
+				isReportResultsOn = true;
+				testPlanName = planName;
+			} catch ( Exception e ) {
+				isAPIReachable = false;
+				createDummyOfflineInfo(projectName, planName);
 			}
-			isReportResultsOn = true;
-			testPlanName = planName;
-		} catch ( Exception e ) {
-			isAPIReachable = false;
-			createDummyOfflineInfo(projectName, planName);
 		}
 	}
 	
@@ -419,18 +434,18 @@ public class TestPlan
 	{
 		try {
 			TestLinkAPIResults results = apiClient.getCasesForTestPlan(testPlanID);
-			for (int i=0; i < results.size(); i++) {
+			for ( int i = 0; i < results.size(); i++ ) {
 				Map caseInfo = results.getData(i);
 				Object id = caseInfo.get(TestLinkAPIConst.API_RESULT_IDENTIFIER);
 				if ( id != null ) {
 					Integer caseID = new Integer(id.toString());
-					if ( caseID.equals(tc.getTestCaseInternalID())) {
+					if ( caseID.equals(tc.getTestCaseInternalID()) ) {
 						return true;
 					}
 				}
 			}
 			return false;
-		} catch (Exception e) {
+		} catch ( Exception e ) {
 			return false;
 		}
 		
@@ -443,7 +458,8 @@ public class TestPlan
 		TestCase tc)
 	{
 		try {
-			apiClient.addTestCaseToTestPlan(testProject.getProjectID(), testPlanID, tc.getTestCaseVisibleID(), null, null, null);
-		} catch (Exception e) {}
+			apiClient.addTestCaseToTestPlan(testProject.getProjectID(), testPlanID,
+				tc.getTestCaseVisibleID(), null, null, null);
+		} catch ( Exception e ) {}
 	}
 }
