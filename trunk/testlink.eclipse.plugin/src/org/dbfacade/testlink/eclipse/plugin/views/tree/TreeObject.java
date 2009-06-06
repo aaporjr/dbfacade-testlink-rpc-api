@@ -26,7 +26,6 @@ import org.eclipse.core.runtime.IAdaptable;
 
 public class TreeObject implements IAdaptable
 {
-	private Object content;
 	private String name;
 	private TreeParent parent;
 	
@@ -61,23 +60,5 @@ public class TreeObject implements IAdaptable
 		Class key)
 	{
 		return null;
-	}
-
-	/**
-	 * Get the type of object in this tree
-	 */
-	public Object getContent()
-	{
-		return content;
-	}
-
-	/**
-	 * Set the content that created this tree object
-	 * @param content
-	 */
-	public void setContent(
-		Object content)
-	{
-		this.content = content;
 	}
 }
