@@ -277,7 +277,7 @@ public class TestPlan
 			try {
 				executor.execute(testCase);
 			} catch ( Exception e ) {
-				executor.setExecutionResult(TestCaseExecutor.FAILED);
+				executor.setExecutionResult(TestCaseExecutor.RESULT_FAILED);
 			}
 		}
 	}

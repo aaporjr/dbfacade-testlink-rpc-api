@@ -21,20 +21,37 @@
 package org.dbfacade.testlink.tc.autoexec;
 
 
+import java.util.Random;
+
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
 
 
 public class EmptyExecutor implements TestCaseExecutor
 {
-	private short testState = READY;
-	private short testResult = FAILED;
+	public static final short MODE_BOMB = 1;
+	public static final short MODE_TEST = 2;
+	private short mode = MODE_BOMB;
+	private short testState = STATE_READY;
+	private short testResult = RESULT_FAILED; 
+	
+	public EmptyExecutor()
+	{
+		mode = MODE_BOMB;
+	}
+	
+	public EmptyExecutor(
+		short mode)
+	{
+		this.mode = mode;
+	}
 	
 	/**
 	 * Get the state of the execution
 	 * 
 	 * @return
 	 */
-	public short getExecutionState() {
+	public short getExecutionState()
+	{
 		return testState;
 	}
 	
@@ -44,10 +61,10 @@ public class EmptyExecutor implements TestCaseExecutor
 	 * @param newState
 	 */
 	public void setExecutionState(
-		short newState) {
+		short newState)
+	{
 		this.testState = newState;
 	}
-	
 	
 	/**
 	 * Return FAILED result state of the test case execution.
@@ -58,15 +75,16 @@ public class EmptyExecutor implements TestCaseExecutor
 	{
 		return testResult;
 	}
+
 	/**
 	 * Set the results of the test from an external source.
 	 * 
 	 * @param result
 	 */
-	public void setExecutionResult(short result) {
-		if ( result == FAILED || result == BLOCKED ) {
+	public void setExecutionResult(
+		short result)
+	{
 			testResult = result;
-		}
 	}
 	
 	/**
@@ -88,9 +106,33 @@ public class EmptyExecutor implements TestCaseExecutor
 	public void execute(
 		TestCase testCase) throws TestLinkAPIException
 	{
-		setExecutionState(BOMBED);
-		throw new TestLinkAPIException(
-			"This is an empty executor to hold failed test result.");
+		if ( mode == MODE_BOMB ) {
+			setExecutionState(STATE_BOMBED);
+			throw new TestLinkAPIException(
+				"This is an empty executor to hold failed test results.");
+		} else {
+			Random rand = new Random();
+			int v = rand.nextInt(10);
+			if ( v < 2 ) {
+				setExecutionState(STATE_READY);
+			} else if ( v >= 2 && v < 4 ) {
+				setExecutionState(STATE_RUNNING);
+			} else if ( v >= 4 && v < 7 ) {
+				setExecutionState(STATE_COMPLETED);
+				if ( v == 4 ) {
+					setExecutionResult(RESULT_FAILED);
+				} else if ( v == 5 ) {
+					setExecutionResult(RESULT_PASSED);
+				} else {
+					setExecutionResult(RESULT_BLOCKED);
+				}
+			} else if ( v >= 7 && v < 9 ) {
+				setExecutionState(STATE_RESET);
+			} else {
+				setExecutionState(STATE_BOMBED);
+			}
+			
+		}
 	}
 
 }

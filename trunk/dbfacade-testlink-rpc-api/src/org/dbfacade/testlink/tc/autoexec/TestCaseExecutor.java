@@ -28,17 +28,17 @@ public interface TestCaseExecutor
 {
 	
 	// Results
-	public static final short UNKNOWN = -1;
-	public static final short PASSED = 0;
-	public static final short FAILED = 1;
-	public static final short BLOCKED = 2;
+	public static final short RESULT_UNKNOWN = -1;
+	public static final short RESULT_PASSED = 0;
+	public static final short RESULT_FAILED = 1;
+	public static final short RESULT_BLOCKED = 2;
 	
 	// States
-	public static final short READY = 100;
-	public static final short RUNING = 101;
-	public static final short BOMBED = 102;
-	public static final short COMPLETED = 103;
-	public static final short RESET = 104;
+	public static final short STATE_READY = 100;
+	public static final short STATE_RUNNING = 101;
+	public static final short STATE_BOMBED = 102;
+	public static final short STATE_COMPLETED = 103;
+	public static final short STATE_RESET = 104;
 	
 	/**
 	 * Get the state of the execution
