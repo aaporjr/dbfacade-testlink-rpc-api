@@ -20,13 +20,39 @@
  */
 package org.dbfacade.testlink.tc.autoexec;
 
+
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
 
-public interface TestCaseExecutor {
-	public static final short UNKNOWN=-1;
-	public static final short PASSED=0;
-	public static final short FAILED=1;
-	public static final short BLOCKED=2;
+
+public interface TestCaseExecutor
+{
+	
+	// Results
+	public static final short UNKNOWN = -1;
+	public static final short PASSED = 0;
+	public static final short FAILED = 1;
+	public static final short BLOCKED = 2;
+	
+	// States
+	public static final short READY = 100;
+	public static final short RUNING = 101;
+	public static final short BOMBED = 102;
+	public static final short COMPLETED = 103;
+	
+	/**
+	 * Get the state of the execution
+	 * 
+	 * @return
+	 */
+	public short getExecutionState();
+	
+	/**
+	 * Set the new state of the executor
+	 *  
+	 * @param newState
+	 */
+	public void setExecutionState(
+		short newState);
 	
 	/**
 	 * Return the result state of the test case execution.
@@ -40,7 +66,8 @@ public interface TestCaseExecutor {
 	 * 
 	 * @param result
 	 */
-	public void setExecutionResult(short result);
+	public void setExecutionResult(
+		short result);
 	
 	/**
 	 * Information about the results of the execution.
@@ -55,5 +82,6 @@ public interface TestCaseExecutor {
 	 * @param testCase
 	 * @throws TestLinkAPIException
 	 */
-	public void execute(TestCase testCase) throws TestLinkAPIException;
+	public void execute(
+		TestCase testCase) throws TestLinkAPIException;
 }

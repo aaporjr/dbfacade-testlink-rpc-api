@@ -26,7 +26,29 @@ import org.dbfacade.testlink.api.client.TestLinkAPIException;
 
 public class EmptyExecutor implements TestCaseExecutor
 {
+	private short testState = READY;
 	private short testResult = FAILED;
+	
+	/**
+	 * Get the state of the execution
+	 * 
+	 * @return
+	 */
+	public short getExecutionState() {
+		return testState;
+	}
+	
+	/**
+	 * Set the new state of the executor
+	 *  
+	 * @param newState
+	 */
+	public void setExecutionState(
+		short newState) {
+		this.testState = newState;
+	}
+	
+	
 	/**
 	 * Return FAILED result state of the test case execution.
 	 * 
@@ -66,6 +88,7 @@ public class EmptyExecutor implements TestCaseExecutor
 	public void execute(
 		TestCase testCase) throws TestLinkAPIException
 	{
+		setExecutionState(BOMBED);
 		throw new TestLinkAPIException(
 			"This is an empty executor to hold failed test result.");
 	}
