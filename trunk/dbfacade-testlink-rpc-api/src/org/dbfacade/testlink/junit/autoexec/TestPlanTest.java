@@ -24,6 +24,7 @@ package org.dbfacade.testlink.junit.autoexec;
 import static org.junit.Assert.fail;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIConst;
@@ -97,7 +98,9 @@ public class TestPlanTest implements TestLinkAPIConst, TestConst
 	{
 		try {
 			planLoader = new TestPlanLoader(JUNIT_PLAN_PROJECT, api);
+			Map plans = planLoader.getPlans();
 			System.out.println(planLoader.toString());
+			System.out.println(plans.toString());
 		} catch ( Exception e ) {
 			e.printStackTrace();
 			fail("Failed to load the test plans.");

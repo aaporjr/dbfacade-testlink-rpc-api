@@ -356,7 +356,12 @@ public class TestPlan
 				createDummyOfflineInfo(projectName, planName);
 			}
 		}
-
+		
+		if ( isAPIReachable ) {
+			isReportResultsOn = true;
+		}
+		
+		testPlanName = planName;
 	}
 	
 	/*
@@ -376,8 +381,6 @@ public class TestPlan
 					TestCase tc = getTestCaseInstance(caseInfo);
 					testCaseRegistry.put(tc);
 				}
-				isReportResultsOn = true;
-				testPlanName = planName;
 			} catch ( Exception e ) {
 				isAPIReachable = false;
 				createDummyOfflineInfo(projectName, planName);
