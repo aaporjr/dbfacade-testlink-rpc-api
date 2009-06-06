@@ -52,6 +52,8 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 * the following is a way to cache the information
 	 * if the user of the api chooses to cache.
 	 */
+	public boolean isConnected=false;
+	public String connectErrorMsg="";
 	boolean useCache = false;
 	Map cacheList = new HashMap();
 	
@@ -68,14 +70,14 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	 * <p>
 	 * DEV_KEY = "AnyStringYouWant"
 	 */
-	public static String DEV_KEY; 
+	public String DEV_KEY; 
 	
 	/**
 	 * The TestLink API URL. See the TestLink API documentation for more information.
 	 * <p>
 	 * Example: http://localhost/testlink/lib/api/xmlrpc.php
 	 */
-	public static String SERVER_URL; 
+	public String SERVER_URL; 
 	
 	/**
 	 * Construct an instance with cache capabilities turned off.
@@ -89,6 +91,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	{
 		DEV_KEY = devKey;
 		SERVER_URL = url;
+		check();
 	}
 	
 	/**
@@ -116,6 +119,17 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		DEV_KEY = devKey;
 		SERVER_URL = url;
 		this.useCache = useCache;
+		check();
+	}
+	
+	private void check() {
+		try {
+			about();
+			isConnected = true;
+		} catch (Exception e) {
+			isConnected=false;
+			connectErrorMsg = e.getMessage();
+		}
 	}
 	
 	/**
