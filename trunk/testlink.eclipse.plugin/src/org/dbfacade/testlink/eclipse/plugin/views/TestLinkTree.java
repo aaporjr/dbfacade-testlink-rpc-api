@@ -20,8 +20,16 @@
  */
 package org.dbfacade.testlink.eclipse.plugin.views;
 
+import java.util.Iterator;
+import java.util.Map;
+
+import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
+import org.dbfacade.testlink.eclipse.plugin.views.tree.TreeObject;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.TreeParent;
+import org.dbfacade.testlink.tc.autoexec.TestCase;
+import org.dbfacade.testlink.tc.autoexec.TestPlan;
+import org.dbfacade.testlink.tc.autoexec.TestPlanLoader;
 import org.dbfacade.testlink.tc.autoexec.TestProject;
 
 public class TestLinkTree {
@@ -45,9 +53,33 @@ public class TestLinkTree {
 		
 		try {
 			TestLinkPreferences pref = new TestLinkPreferences();
-			TestProject project = new TestProject(pref.getTestLinkAPIClient(), projectName);
+			TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
+			TestProject project = new TestProject(apiClient, projectName);
 			root = new TreeParent(projectName);
 			root.setContent(project);
+			
+			TestPlanLoader loader = new TestPlanLoader(projectName, apiClient);
+			Map<Integer, TestPlan> plans = loader.getPlans();
+			
+			Iterator planIDs = plans.keySet().iterator();
+			while (planIDs.hasNext()) {
+				
+				// Get the plan information
+				Object planID = planIDs.next();
+				TestPlan plan = plans.get(planID);
+				TreeParent planRoot = new TreeParent(plan.getTestPlanName());
+				planRoot.setContent(plan);
+				root.addChild(planRoot);
+				
+				// Get Test Cases
+				TestCase[] cases = plan.getTestCases();
+				for (int i=0; i < cases.length; i++) {
+					TestCase tc = cases[i];
+					TreeObject tcLeaf = new TreeObject(tc.getTestCaseName());
+					planRoot.addChild(tcLeaf);
+				}
+			}
+			
 		} catch (Exception e) {
 			root = new TreeParent("Unable to build project tree: " + projectName);
 		}
