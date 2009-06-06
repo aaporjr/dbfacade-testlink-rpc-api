@@ -45,26 +45,29 @@ public class TestProject
 	private Integer projectID;
 	private Integer active = new Integer(1);
 	private Integer auto = new Integer(1);
-	private boolean isOfflineVersion=false;
+	private boolean isOfflineVersion = false;
 
 	/**
 	 * Used to create an offline dummy project
 	 */
-	private TestProject() {
+	private TestProject()
+	{
 		projectName = "Offline project";
 		tcPrefix = "offline";
 		projectID = new Integer(-1);
-		isOfflineVersion=true;
+		isOfflineVersion = true;
 	}
 	
 	/**
 	 * Used to create an offline dummy project
 	 */
-	private TestProject(String projectName) {
+	private TestProject(
+		String projectName)
+	{
 		this.projectName = projectName;
 		tcPrefix = "offline";
 		projectID = new Integer(-1);
-		isOfflineVersion=true;
+		isOfflineVersion = true;
 	}
 	
 	/**
@@ -72,14 +75,16 @@ public class TestProject
 	 * 
 	 * @param otherProject
 	 */
-	public TestProject(TestProject otherProject) {
+	public TestProject(
+		TestProject otherProject)
+	{
 		
 		if ( otherProject.projectName != null ) {
 			this.projectName = new String(otherProject.projectName);
 		}
 		
 		if ( otherProject.tcPrefix != null ) {
-		this.tcPrefix = new String(otherProject.tcPrefix);
+			this.tcPrefix = new String(otherProject.tcPrefix);
 		}
 		
 		if ( otherProject.projectID != null ) {
@@ -105,9 +110,45 @@ public class TestProject
 	 * @param projectName
 	 * @throws TestLinkAPIException
 	 */
-	public TestProject(TestLinkAPIClient apiClient, String projectName) throws TestLinkAPIException {
-		Integer projectID = TestLinkAPIHelper.getProjectID(apiClient, projectName);
-		Map projectInfo = TestLinkAPIHelper.getProjectInfo(apiClient, projectID);
+	public TestProject(
+		TestLinkAPIClient apiClient,
+		String projectName) throws TestLinkAPIException
+	{
+		
+		// Check constructor parameters
+		if ( apiClient == null ) {
+			throw new TestLinkAPIException(
+				"The apiClient cannot be null for this constructor.");
+		}
+		if ( projectName == null ) {
+			throw new TestLinkAPIException(
+				"The project name cannot be null for this constructor.");
+		}
+		
+		// Get project ID
+		Integer projectID = null;
+		try {
+			projectID = TestLinkAPIHelper.getProjectID(apiClient, projectName);
+		} catch ( Exception e ) {
+			throw new TestLinkAPIException("The project ID could not be acquired.", e);
+		}
+		if ( projectID == null ) {
+			throw new TestLinkAPIException(
+				"The project ID cannot be null for this constructor.");
+		}
+		
+		// Get project info
+		Map projectInfo = null;
+		try {
+			projectInfo = TestLinkAPIHelper.getProjectInfo(apiClient, projectID);
+		} catch ( Exception e ) {
+			throw new TestLinkAPIException("The project info could not be acquired.", e);
+		}
+		if ( projectID == null ) {
+			throw new TestLinkAPIException(
+				"The project information cannot be null for this constructor.");
+		}
+		
 		init(projectInfo);
 	}
 	
@@ -125,7 +166,9 @@ public class TestProject
 		init(projectInfo);
 	}
 	
-	private void init(Map projectInfo) throws TestLinkAPIException {
+	private void init(
+		Map projectInfo) throws TestLinkAPIException
+	{
 		if ( projectInfo == null ) {
 			throw new TestLinkAPIException(
 				"The TestProject class object instance could not be created.");
@@ -236,7 +279,8 @@ public class TestProject
 	 * 
 	 * @return
 	 */
-	public boolean isOfflineVersion() {
+	public boolean isOfflineVersion()
+	{
 		return isOfflineVersion;
 	}
 	
@@ -245,17 +289,19 @@ public class TestProject
 	 * 
 	 * @return
 	 */
-	public static TestProject getOffLineProject() {
+	public static TestProject getOffLineProject()
+	{
 		return new TestProject();
 	}
-	
 	
 	/**
 	 * Return dummy offline version of a project with the parameter name
 	 * 
 	 * @return
 	 */
-	public static TestProject getOffLineProject(String projectName) {
+	public static TestProject getOffLineProject(
+		String projectName)
+	{
 		return new TestProject(projectName);
 	}
 }
