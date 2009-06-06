@@ -23,8 +23,8 @@ public class TestPlanLoader
 	 * @param projectName
 	 */
 	public TestPlanLoader(
-		TestLinkAPIClient apiClient,
-		String projectName)
+		String projectName,
+		TestLinkAPIClient apiClient)
 	{
 		try {
 			fillPlanList(apiClient, projectName);
@@ -40,8 +40,8 @@ public class TestPlanLoader
 	 * @param planName
 	 */
 	public TestPlanLoader(
-		TestLinkAPIClient apiClient,
 		String projectName,
+		TestLinkAPIClient apiClient,
 		String planName)
 	{
 		try {
@@ -64,10 +64,12 @@ public class TestPlanLoader
 	public TestPlanLoader(
 		TestLinkAPIClient apiClient,
 		String projectName,
+		String defaultTestCaseUser,
+		String externalDir,
 		TestPlanPrepare prep) throws TestLinkAPIException
 	{
-		this(apiClient, projectName);
-		preparePlans(prep);
+		this(projectName, apiClient);
+		preparePlans(apiClient, prep, defaultTestCaseUser, externalDir);
 	}
 	
 	/**
@@ -80,10 +82,12 @@ public class TestPlanLoader
 		TestLinkAPIClient apiClient,
 		String projectName,
 		String planName,
+		String defaultTestCaseUser,
+		String externalDir,
 		TestPlanPrepare prep) throws TestLinkAPIException
 	{
-		this(apiClient, projectName, planName);
-		preparePlans(prep);
+		this(projectName, apiClient, planName);
+		preparePlans(apiClient, prep, defaultTestCaseUser, externalDir);
 	}
 	
 	/**
@@ -163,14 +167,19 @@ public class TestPlanLoader
 	}
 	
 	private void preparePlans(
-		TestPlanPrepare prep) throws TestLinkAPIException
+		TestLinkAPIClient apiClient,
+		TestPlanPrepare prep,
+		String defaultTestCaseUser,
+		String externalDir) throws TestLinkAPIException
 	{
 		Iterator keys = plans.keySet().iterator();
 		while ( keys.hasNext() ) {
 			Object key = keys.next();
 			TestPlan plan = plans.get(key);
 			if ( plan != null ) {
-				prep.adjust(plan);
+				prep.setExternalDirectory(externalDir);
+				prep.setTCUser(defaultTestCaseUser);
+				prep.adjust(apiClient, plan);
 			}
 		}
 	}

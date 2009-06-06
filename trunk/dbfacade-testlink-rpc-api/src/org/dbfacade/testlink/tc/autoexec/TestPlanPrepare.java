@@ -21,6 +21,7 @@
 package org.dbfacade.testlink.tc.autoexec;
 
 
+import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
 
 
@@ -49,6 +50,21 @@ public interface TestPlanPrepare
 {
 
 	/**
+	 * Optionally made available by callers to the interface
+	 * 
+	 * @param directory
+	 */
+	public void setExternalDirectory(String directory);
+	
+	/**
+	 * Optionally made available by callers to the interface
+	 * 
+	 * @param user
+	 */
+	public void setTCUser(String user);
+	
+	
+	/**
 	 * Make changes to the contents of the test plan and test cases.	 
 	 * 
 	 * @param plan
@@ -56,5 +72,6 @@ public interface TestPlanPrepare
 	 * 
 	 */
 	public TestPlan adjust(
+		TestLinkAPIClient apiClient,
 		TestPlan plan) throws TestLinkAPIException;
 }

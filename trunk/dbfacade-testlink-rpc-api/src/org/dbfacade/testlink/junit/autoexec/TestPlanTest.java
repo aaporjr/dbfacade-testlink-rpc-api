@@ -81,7 +81,7 @@ public class TestPlanTest implements TestLinkAPIConst, TestConst
 	public void testTestPlanLoader()
 	{
 		try {
-			planLoader = new TestPlanLoader(api, JUNIT_PLAN_PROJECT);
+			planLoader = new TestPlanLoader(JUNIT_PLAN_PROJECT, api);
 			System.out.println(planLoader.toString());
 		} catch ( Exception e ) {
 			e.printStackTrace();
