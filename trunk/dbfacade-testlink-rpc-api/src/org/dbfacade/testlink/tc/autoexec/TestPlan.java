@@ -98,7 +98,8 @@ public class TestPlan
 		String projectName,
 		String planName)
 	{
-		checkAPIReachability(apiClient, projectName, planName);
+		this.apiClient = apiClient;
+		checkAPIReachability(this.apiClient, projectName, planName);
 		if ( isAPIReachable ) {
 			init(projectName, planName);
 		}

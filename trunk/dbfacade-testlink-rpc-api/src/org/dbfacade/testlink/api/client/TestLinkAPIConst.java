@@ -135,7 +135,9 @@ public interface TestLinkAPIConst
 	public static final String API_RESULT_NAME = "name";
 	public static final String API_RESULT_PREFIX = "prefix";
 	public static final String API_RESULT_NODE_ORDER = "node_order";
+	public static final String API_RESULT_TC_INTERNAL_ID="tc_id";
 	public static final String API_RESULT_TC_EXTERNAL_ID="tc_external_id";
+	public static final String API_RESULT_TC_ALT_EXTERNAL_ID="external_id";
 	public static final String API_RESULT_MESSAGE="message";
 	public static final String API_RESULT_CODE="code";
 	public static final String API_RESULT_AUTO_OPTION = "option_automation";
@@ -145,6 +147,7 @@ public interface TestLinkAPIConst
 	public static final String API_RESULT_NOTES = "notes";
 	public static final String API_RESULT_SUMMARY = "summary";
 	public static final String API_RESULT_EXEC_TYPE = "execution_type";
+	public static final String API_RESULT_EXEC_ORDER = "execution_order";
 	public static final String API_RESULT_IS_OPEN = "is_open"; 
 	public static final String API_RESULT_STEPS = "steps";
 	public static final String API_RESULT_TC_SUITE = "tsuite_name";

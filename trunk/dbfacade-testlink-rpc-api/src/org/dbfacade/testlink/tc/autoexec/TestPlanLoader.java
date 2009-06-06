@@ -98,6 +98,22 @@ public class TestPlanLoader
 	}
 	
 	/**
+	 * Get all the plan identifiers in the list
+	 * 
+	 * @return
+	 */
+	public Iterator getPlanIDs() {
+		return plans.keySet().iterator();
+	}
+	
+	/**
+	 * Get test plan
+	 */
+	public TestPlan getPlan(Object id) {
+		return plans.get(id);
+	}
+	
+	/**
 	 * Print out the results
 	 * 
 	 * @param results

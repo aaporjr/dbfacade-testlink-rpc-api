@@ -182,7 +182,13 @@ public class TestCaseRegistry
 	}
 	
 	public TestCase[] toArray() {
-		return (TestCase[]) caseList.toArray();
+		int count = caseList.size();
+		TestCase cases[] = new TestCase[count];
+		for (int i=0; i < caseList.size(); i++) {
+			TestCase tc = (TestCase) caseList.get(i);
+			cases[i] = tc;
+		}
+		return cases;
 	}
 
 	/*

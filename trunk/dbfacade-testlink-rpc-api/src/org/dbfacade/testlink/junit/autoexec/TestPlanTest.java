@@ -23,9 +23,14 @@ package org.dbfacade.testlink.junit.autoexec;
 
 import static org.junit.Assert.fail;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIConst;
 import org.dbfacade.testlink.junit.constants.TestConst;
+import org.dbfacade.testlink.tc.autoexec.TestCase;
+import org.dbfacade.testlink.tc.autoexec.TestPlan;
 import org.dbfacade.testlink.tc.autoexec.TestPlanLoader;
 import org.junit.After;
 import org.junit.Before;
@@ -44,6 +49,7 @@ public class TestPlanTest implements TestLinkAPIConst, TestConst
 {	
 	// The api instance
 	private TestLinkAPIClient api;
+	private static TestPlanLoader planLoader;
 	
 	/**
 	 * @throws java.lang.Exception
@@ -75,10 +81,40 @@ public class TestPlanTest implements TestLinkAPIConst, TestConst
 	public void testTestPlanLoader()
 	{
 		try {
-			TestPlanLoader planLoader = new TestPlanLoader(api, JUNIT_PLAN_PROJECT);
+			planLoader = new TestPlanLoader(api, JUNIT_PLAN_PROJECT);
 			System.out.println(planLoader.toString());
 		} catch ( Exception e ) {
+			e.printStackTrace();
 			fail("Failed to load the test plans.");
+		}
+	}
+	
+	/**
+	 * Test ToArray
+	 */
+	@Test
+	public void testToArray()
+	{
+		try {
+			int cnt=0;
+			Iterator ids = planLoader.getPlanIDs();
+			while (ids.hasNext()) {
+				Object id = ids.next();
+				TestPlan plan = planLoader.getPlan(id);
+				TestCase[] cases = plan.getTestCases();
+				for (int i=0; i < cases.length; i++) {
+					TestCase tc = cases[i];
+					String name = tc.getTestCaseName();
+					System.out.println(name);
+					cnt++;
+				}
+			}
+			if ( cnt == 0 ) {
+				fail("No test cases were printed and some were expected.");
+			}
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Make sure we can get an array of test cases.");
 		}
 	}
 	

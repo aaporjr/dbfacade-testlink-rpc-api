@@ -269,7 +269,7 @@ public interface TestCase
 	 * See TestLink documenation for the meaning of this flag
 	 * @return
 	 */
-	public boolean isOpen();
+	public boolean isActive();
 	
 	/**
 	 * Add this test case to the TestLink Database if it does not exist

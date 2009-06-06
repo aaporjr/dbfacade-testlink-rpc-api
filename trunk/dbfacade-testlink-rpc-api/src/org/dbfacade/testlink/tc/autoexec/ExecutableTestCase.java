@@ -54,12 +54,13 @@ public class ExecutableTestCase implements TestCase
 	private String testCaseImportance = TestLinkAPIConst.MEDIUM;
 	private Map custom = new HashMap();
 	private TestCaseExecutor autoTestExecutor = null;
-	private boolean isOpen = true;
+	private boolean isActive = true;
 	
 	/**
 	 * Default empty constructor.
 	 */
-	public ExecutableTestCase() {}
+	public ExecutableTestCase()
+	{}
 	
 	/**
 	 * Make a copy of the test case and return it as a new instance.
@@ -69,7 +70,9 @@ public class ExecutableTestCase implements TestCase
 	 * 
 	 * @param testCaseOther
 	 */
-	public ExecutableTestCase(ExecutableTestCase testCaseOther) {
+	public ExecutableTestCase(
+		ExecutableTestCase testCaseOther)
+	{
 		this.copy(testCaseOther);
 	}
 	
@@ -124,12 +127,17 @@ public class ExecutableTestCase implements TestCase
 		this.testSuite = suiteInfo;
 		
 		// Identifier
-		Object value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_IDENTIFIER);
+		Object value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_TC_INTERNAL_ID);
 		if ( value != null ) {
 			this.testCaseID = new Integer(value.toString());
 		} else {
-			throw new TestLinkAPIException(
-				"The test case identifier cannot be null for existing test case.");
+			value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_IDENTIFIER);
+			if ( value != null ) {
+				this.testCaseID = new Integer(value.toString());
+			} else {
+				throw new TestLinkAPIException(
+					"The test case identifier cannot be null for existing test case.");
+			}
 		}
 		
 		// Name
@@ -138,16 +146,21 @@ public class ExecutableTestCase implements TestCase
 			this.testCaseName = value.toString();
 		} else {
 			throw new TestLinkAPIException(
-				"The test case identifier cannot be null for existing test case.");
+				"The test case name cannot be null for existing test case.");
 		}
 		
 		// Execution Order
-		value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_NODE_ORDER);
+		value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_EXEC_ORDER);
 		if ( value != null ) {
 			this.execOrder = new Integer(value.toString());
 		} else {
-			throw new TestLinkAPIException(
-				"The test case identifier cannot be null for existing test case.");
+			value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_NODE_ORDER);
+			if ( value != null ) {
+				this.execOrder = new Integer(value.toString());
+			} else {
+				throw new TestLinkAPIException(
+					"The test case exec order cannot be null for existing test case.");
+			}
 		}
 		
 		// Visible ID
@@ -156,8 +169,14 @@ public class ExecutableTestCase implements TestCase
 			this.testCaseVisibleID = this.testProject.getTestCasePrefix() + '-'
 				+ value.toString();
 		} else {
-			throw new TestLinkAPIException(
-				"The test case identifier cannot be null for existing test case.");
+			value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_TC_ALT_EXTERNAL_ID);
+			if ( value != null ) {
+				this.testCaseVisibleID = this.testProject.getTestCasePrefix() + '-'
+				+ value.toString();
+			} else {
+				throw new TestLinkAPIException(
+					"The test case external identifier cannot be null for existing test case.");
+			}
 		}
 		
 		// Summary
@@ -172,14 +191,14 @@ public class ExecutableTestCase implements TestCase
 			this.execType = new Integer(value.toString());
 		} else {
 			throw new TestLinkAPIException(
-				"The test case identifier cannot be null for existing test case.");
+				"The test case execution type cannot be null for existing test case.");
 		}
 		
-		// Is Open
-		value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_IS_OPEN); 
+		// Is Active
+		value = testCaseInfo.get(TestLinkAPIConst.API_RESULT_ACTIVE); 
 		if ( value != null ) {
 			if ( new Integer(value.toString()).intValue() < 1 ) {
-				isOpen = false;
+				isActive = false;
 			}
 		}
 		
@@ -200,7 +219,8 @@ public class ExecutableTestCase implements TestCase
 			}
 		} else {
 			throw new TestLinkAPIException(
-				"The test case identifier cannot be null for existing test case.");
+				"The test case suite name cannot be null for existing test case.");
+			
 		}
 		
 		// TC Version
@@ -402,13 +422,14 @@ public class ExecutableTestCase implements TestCase
 		return execOrder.intValue();
 	}
 
-	
 	/**
 	 * Set the execution order for the test case.
 	 * 
 	 * @param order
 	 */
-	public void setExecOrder(int order) {
+	public void setExecOrder(
+		int order)
+	{
 		this.execOrder = order;
 	}
 	
@@ -516,11 +537,15 @@ public class ExecutableTestCase implements TestCase
 	/**
 	 * See test link documentation for the meaning of this flag
 	 */
-	public boolean isOpen() {
-		return isOpen;
+	public boolean isActive()
+	{
+		return isActive;
 	}
 	
-	public void addToTestLink(TestLinkAPIClient apiClient, String loginUserName) throws TestLinkAPIException {
+	public void addToTestLink(
+		TestLinkAPIClient apiClient,
+		String loginUserName) throws TestLinkAPIException
+	{
 		if ( !doesCaseExist(apiClient, this) ) {
 			createTestCase(apiClient, this, loginUserName);
 		}
@@ -550,7 +575,9 @@ public class ExecutableTestCase implements TestCase
 	 * Private methods
 	 */
 
-	private void copy(ExecutableTestCase otherTC) {
+	private void copy(
+		ExecutableTestCase otherTC)
+	{
 		this.testProject = new TestProject(otherTC.testProject);
 		
 		if ( otherTC.testSuite != null ) {
@@ -562,23 +589,23 @@ public class ExecutableTestCase implements TestCase
 		}
 		
 		if ( otherTC.execOrder != null ) {
-		this.execOrder = new Integer(otherTC.execOrder.intValue());
+			this.execOrder = new Integer(otherTC.execOrder.intValue());
 		}
 		
 		if ( otherTC.execType != null ) {
-		this.execType = new Integer(otherTC.execType.intValue());
+			this.execType = new Integer(otherTC.execType.intValue());
 		}
 		
 		if ( otherTC.testCaseName != null ) {
-		this.testCaseName = new String(otherTC.testCaseName);
+			this.testCaseName = new String(otherTC.testCaseName);
 		}
 		
 		if ( otherTC.testCaseVisibleID != null ) {
-		this.testCaseVisibleID = new String(otherTC.testCaseVisibleID);
+			this.testCaseVisibleID = new String(otherTC.testCaseVisibleID);
 		}
 		
 		if ( otherTC.testCaseSummary != null ) {
-		this.testCaseSummary = new String(otherTC.testCaseSummary);
+			this.testCaseSummary = new String(otherTC.testCaseSummary);
 		}
 		
 		if ( otherTC.testCaseSteps != null ) {
@@ -610,11 +637,12 @@ public class ExecutableTestCase implements TestCase
 		}
 		this.custom = tmp;
 		
-		this.isOpen = otherTC.isOpen;
+		this.isActive = otherTC.isActive;
 		
 		this.autoTestExecutor = otherTC.autoTestExecutor;
 		
 	}
+
 	/*
 	 * Check to see if the test case exist.
 	 */
@@ -631,13 +659,14 @@ public class ExecutableTestCase implements TestCase
 		}
 		
 		try {
-			Map tcInfo = TestLinkAPIHelper.getTestCaseInfo(apiClient, testProject.getProjectID(), tc.getTestCaseInternalID());
+			Map tcInfo = TestLinkAPIHelper.getTestCaseInfo(apiClient,
+				testProject.getProjectID(), tc.getTestCaseInternalID());
 			if ( tcInfo != null ) {
 				return true;
 			} else {
 				return false;
 			}
-		} catch (Exception e) {
+		} catch ( Exception e ) {
 			return false;
 		}
 	}
@@ -658,12 +687,14 @@ public class ExecutableTestCase implements TestCase
 			String importance = TestLinkAPIConst.MEDIUM;
 			if ( tc.isLowImportance() ) {
 				importance = TestLinkAPIConst.LOW;
-			} else if ( tc.isHighImportance() ){
+			} else if ( tc.isHighImportance() ) {
 				importance = TestLinkAPIConst.HIGH;
 			}
-			apiClient.createTestCase(loginUserName, testProject.getProjectID(), tc.getSuiteID(), tc.getTestCaseName(), tc.getTestCaseSummary(), tc.getTestCaseSteps(), tc.getTestCaseExpectedResults(), tc.getExecOrder(), null, null, null, execType, importance);
-		} catch (Exception e) {
-			// TODO: Report back some kind of error
+			apiClient.createTestCase(loginUserName, testProject.getProjectID(),
+				tc.getSuiteID(), tc.getTestCaseName(), tc.getTestCaseSummary(),
+				tc.getTestCaseSteps(), tc.getTestCaseExpectedResults(), tc.getExecOrder(),
+				null, null, null, execType, importance);
+		} catch ( Exception e ) {// TODO: Report back some kind of error
 		}
 		
 	}
