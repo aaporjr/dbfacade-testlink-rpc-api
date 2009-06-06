@@ -374,6 +374,7 @@ public class TestPlan
 		String planName)
 	{
 		if ( testCasesInitialized == false && isAPIReachable ) {
+			testCasesInitialized = true;
 			try {
 				TestLinkAPIResults caseList = apiClient.getCasesForTestPlan(testPlanID);
 				for ( int i = 0; i < caseList.size(); i++ ) {
