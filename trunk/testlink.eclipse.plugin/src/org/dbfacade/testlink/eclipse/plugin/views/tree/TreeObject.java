@@ -50,6 +50,10 @@ public class TreeObject implements IAdaptable
 	{
 		return parent;
 	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public String toString()
 	{

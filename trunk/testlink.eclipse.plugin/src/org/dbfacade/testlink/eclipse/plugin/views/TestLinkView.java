@@ -20,6 +20,7 @@
  */
 package org.dbfacade.testlink.eclipse.plugin.views;
 
+
 import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.TestLinkTree;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ViewContentProvider;
@@ -34,6 +35,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.DrillDownAdapter;
@@ -44,32 +46,37 @@ import org.eclipse.ui.part.ViewPart;
  * Add documentation here
  */
 
-public class TestLinkView extends ViewPart {
+public class TestLinkView extends ViewPart
+{
 	private DrillDownAdapter drillDownAdapter;
 	private TreeViewer viewer;
 	private Action doubleClickAction;
 	private TestPlanActions testPlanActions = new TestPlanActions();
 
-	class NameSorter extends ViewerSorter {
-	}
-
+	class NameSorter extends ViewerSorter
+	{}
 
 	/**
 	 * The constructor.
 	 */
-	public TestLinkView() {
-	}
+	public TestLinkView()
+	{}
 
 	/**
 	 * This is a callback that will allow us
 	 * to create the viewer and initialize it.
 	 */
-	public void createPartControl(Composite parent) {
+	public void createPartControl(
+		Composite parent)
+	{
+		
+		// Initialize view
 		TestLinkPreferences prefs = new TestLinkPreferences();
-		TestLinkTree projectTree = new TestLinkTree(prefs.getDefaultProject());
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		drillDownAdapter = new DrillDownAdapter(viewer);
-		viewer.setContentProvider(new ViewContentProvider(getViewSite(), projectTree.getInvisibleRoot()));
+		final TestLinkTree testLinkTree = new TestLinkTree(prefs.getDefaultProject());
+		viewer.setContentProvider(
+			new ViewContentProvider(getViewSite(), testLinkTree.getInvisibleRoot()));
 		viewer.setLabelProvider(new ViewLabelProvider(this.getConfigurationElement()));
 		viewer.setSorter(new NameSorter());
 		viewer.setInput(getViewSite());
@@ -77,15 +84,37 @@ public class TestLinkView extends ViewPart {
 		hookContextMenu();
 		hookDoubleClickAction();
 		contributeToActionBars();
-		this.setTitleToolTip(projectTree.getToolTip());
+
+		
+		// Finish initialization in the background
+		new Thread(new Runnable()
+		{
+			public void run()
+			{
+				Display.getDefault().asyncExec(new Runnable()
+				{
+					public void run()
+					{
+						testLinkTree.completeInitialization(viewer);
+					}
+				});
+			}
+		}).start();
+		
 	}
 
-	private void hookContextMenu() {
+	private void hookContextMenu()
+	{
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager manager) {
-				TestLinkView.this.testPlanActions.fillContextMenu(drillDownAdapter, manager);
+		menuMgr.addMenuListener(
+			new IMenuListener()
+		{
+			public void menuAboutToShow(
+				IMenuManager manager)
+			{
+				TestLinkView.this.testPlanActions.fillContextMenu(drillDownAdapter,
+					manager);
 			}
 		});
 		Menu menu = menuMgr.createContextMenu(viewer.getControl());
@@ -93,28 +122,30 @@ public class TestLinkView extends ViewPart {
 		getSite().registerContextMenu(menuMgr, viewer);
 	}
 
-	private void contributeToActionBars() {
+	private void contributeToActionBars()
+	{
 		IActionBars bars = getViewSite().getActionBars();
 		testPlanActions.fillLocalPullDown(bars.getMenuManager());
 		testPlanActions.fillLocalToolBar(drillDownAdapter, bars.getToolBarManager());
 	}
 
-
-
-	private void hookDoubleClickAction() {
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
+	private void hookDoubleClickAction()
+	{
+		viewer.addDoubleClickListener(new IDoubleClickListener()
+		{
+			public void doubleClick(
+				DoubleClickEvent event)
+			{
 				doubleClickAction.run();
 			}
 		});
 	}
 	
-
-
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
-	public void setFocus() {
+	public void setFocus()
+	{
 		viewer.getControl().setFocus();
 	}
 }
