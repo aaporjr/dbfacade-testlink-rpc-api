@@ -20,29 +20,64 @@
  */
 package org.dbfacade.testlink.eclipse.plugin.views.tree;
 
+
 import org.eclipse.core.runtime.IAdaptable;
 
-public class TreeObject implements IAdaptable {
+
+public class TreeObject implements IAdaptable
+{
+	private Object content;
 	private String name;
 	private TreeParent parent;
 	
-	public TreeObject(String name) {
+	public TreeObject(
+		String name)
+	{
 		this.name = name;
 	}
-	public String getName() {
+
+	public String getName()
+	{
 		return name;
 	}
-	public void setParent(TreeParent parent) {
+
+	public void setParent(
+		TreeParent parent)
+	{
 		this.parent = parent;
 	}
-	public TreeParent getParent() {
+
+	public TreeParent getParent()
+	{
 		return parent;
 	}
-	public String toString() {
+
+	public String toString()
+	{
 		return getName();
 	}
-	public Object getAdapter(Class key) {
+
+	public Object getAdapter(
+		Class key)
+	{
 		return null;
 	}
 
+	/**
+	 * Get the type of object in this tree
+	 */
+	public Object getContent()
+	{
+		return content;
+	}
+
+	/**
+	 * Set the content that created this tree object
+	 * @param content
+	 */
+	public void setContent(
+		Object content)
+	{
+		this.content = content;
+	}
 }

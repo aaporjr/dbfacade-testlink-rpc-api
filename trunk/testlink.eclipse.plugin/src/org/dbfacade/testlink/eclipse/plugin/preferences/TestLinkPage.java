@@ -1,9 +1,11 @@
 package org.dbfacade.testlink.eclipse.plugin.preferences;
 
+
 import org.dbfacade.testlink.eclipse.plugin.Activator;
 import org.eclipse.jface.preference.*;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.IWorkbench;
+
 
 /**
  * This class represents a preference page that
@@ -19,14 +21,23 @@ import org.eclipse.ui.IWorkbench;
  * be accessed directly via the preference store.
  */
 
-public class TestLinkPage
-	extends FieldEditorPreferencePage
-	implements IWorkbenchPreferencePage {
+public class TestLinkPage extends FieldEditorPreferencePage
+	implements IWorkbenchPreferencePage
+{
 
-	public TestLinkPage() {
+	public TestLinkPage()
+	{
 		super(GRID);
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
-		setDescription("A demonstration of a preference page implementation");
+		String msg = "\n" +
+		             "Project Name - The default project that is open by TestLink.\n" +
+		             "Dev Key - TestLink API Acces key. See TestLink API documentation.\n" +
+		             "TestLink API URL - See TestLink API documentation.\n" +
+		             "User Login Name - Used to assign new test case.\n" +
+		             "Plan Prepare Class - See TestPlanPrepare interface javadoc.\n" +
+		             "Report Results - Default results reporting to TestLink flag.\n" +
+		             "External Directory (Optional) - Made available to TestPlanPrepare.\n\n";             
+		setDescription(msg);
 	}
 	
 	/**
@@ -35,30 +46,53 @@ public class TestLinkPage
 	 * of preferences. Each field editor knows how to save and
 	 * restore itself.
 	 */
-	public void createFieldEditors() {
-		addField(new DirectoryFieldEditor(PreferenceConstants.P_PATH, 
-				"&Directory preference:", getFieldEditorParent()));
-		addField(
-			new BooleanFieldEditor(
-				PreferenceConstants.P_BOOLEAN,
-				"&An example of a boolean preference",
-				getFieldEditorParent()));
+	public void createFieldEditors()
+	{
 
-		addField(new RadioGroupFieldEditor(
-				PreferenceConstants.P_CHOICE,
-			"An example of a multiple-choice preference",
-			1,
-			new String[][] { { "&Choice 1", "choice1" }, {
-				"C&hoice 2", "choice2" }
-		}, getFieldEditorParent()));
 		addField(
-			new StringFieldEditor(PreferenceConstants.P_STRING, "A &text preference:", getFieldEditorParent()));
+				new StringFieldEditor(PreferenceConstants.P_DEFAULT_PROJECT_NAME,
+				"Project Name:", getFieldEditorParent()));
+		
+		addField(
+			new StringFieldEditor(PreferenceConstants.P_DEV_KEY,
+			"Dev Key:", getFieldEditorParent()));
+		
+		addField(
+			new StringFieldEditor(PreferenceConstants.P_TESTLINK_API_URL,
+			"TestLink API URL:", getFieldEditorParent()));
+		addField(
+				new StringFieldEditor(PreferenceConstants.P_TEST_CASE_CREATION_USER,
+				"User Login Name:", getFieldEditorParent()));
+		
+		addField(
+			new StringFieldEditor(PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS,
+			"Plan Prepare Class:", getFieldEditorParent()));
+		
+		addField(
+			new BooleanFieldEditor(PreferenceConstants.P_REPORT_RESULTS_AFTER_TEST,
+			"Enable TestLink API results reporting after test.", getFieldEditorParent()));
+		
+		addField(
+			new DirectoryFieldEditor(PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE, 
+			"External Directory:",
+			getFieldEditorParent()));
+
+		/*
+		 addField(new RadioGroupFieldEditor(
+		 PreferenceConstants.P_CHOICE,
+		 "An example of a multiple-choice preference",
+		 1,
+		 new String[][] { { "&Choice 1", "choice1" }, {
+		 "C&hoice 2", "choice2" }
+		 }, getFieldEditorParent()));
+		 */
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
-	public void init(IWorkbench workbench) {
-	}
+	public void init(
+		IWorkbench workbench)
+	{}
 	
 }

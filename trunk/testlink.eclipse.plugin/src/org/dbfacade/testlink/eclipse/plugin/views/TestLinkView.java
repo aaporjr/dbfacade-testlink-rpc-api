@@ -20,6 +20,7 @@
  */
 package org.dbfacade.testlink.eclipse.plugin.views;
 
+import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ViewContentProvider;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ViewLabelProvider;
 import org.eclipse.jface.action.Action;
@@ -63,7 +64,8 @@ public class TestLinkView extends ViewPart {
 	 * to create the viewer and initialize it.
 	 */
 	public void createPartControl(Composite parent) {
-		TestLinkTree projectTree = new TestLinkTree();
+		TestLinkPreferences prefs = new TestLinkPreferences();
+		TestLinkTree projectTree = new TestLinkTree(prefs.getDefaultProject());
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		drillDownAdapter = new DrillDownAdapter(viewer);
 		viewer.setContentProvider(new ViewContentProvider(getViewSite(), projectTree.getInvisibleRoot()));
