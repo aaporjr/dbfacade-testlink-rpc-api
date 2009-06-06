@@ -24,7 +24,6 @@ package org.dbfacade.testlink.junit.autoexec;
 import static org.junit.Assert.fail;
 
 import java.util.Iterator;
-import java.util.Map;
 
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIConst;
@@ -32,6 +31,7 @@ import org.dbfacade.testlink.junit.constants.TestConst;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
 import org.dbfacade.testlink.tc.autoexec.TestPlan;
 import org.dbfacade.testlink.tc.autoexec.TestPlanLoader;
+import org.dbfacade.testlink.tc.autoexec.TestProject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -73,6 +73,21 @@ public class TestPlanTest implements TestLinkAPIConst, TestConst
 	@After
 	public void tearDown() throws Exception
 	{}
+	
+	/**
+	 * Test TestPlanLoader
+	 */
+	@Test
+	public void testTestProject()
+	{
+		try {
+			TestProject proj = new TestProject(api, JUNIT_PLAN_PROJECT);
+			System.out.println(proj.toString());
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Failed to create test project.");
+		}
+	}
 		
 	/**
 	 * Test TestPlanLoader
