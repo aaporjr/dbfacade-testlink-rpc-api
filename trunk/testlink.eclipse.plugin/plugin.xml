@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-
    <extension
          point="org.eclipse.ui.commands">
          
@@ -11,14 +10,9 @@
       </category>
    
       <command
-            name="TestLink"
+            name="Open Test Plans Viewer"
             categoryId="testlink.eclipse.plugin.commands.category"
             id="testlink.eclipse.plugin.commands.sampleCommand">
-            
-            <commandParameter
-                 id="org.dbfacade.testlink.eclipse.plugin.views.TestLinkView"
-                 name="Name of command parameter"
-                 values="org.dbfacade.testlink.eclipse.plugin.handler.TestLinkHandlerParams" />
       </command>
    </extension>
    <extension
@@ -42,7 +36,7 @@
       <menuContribution
             locationURI="menu:org.eclipse.ui.main.menu?after=additions">
          <menu
-               label="Sample Menu"
+               label="TestLink"
                mnemonic="M"
                id="testlink.eclipse.plugin.menus.sampleMenu">
             <command
@@ -86,7 +80,7 @@
             id="testlink.eclipse.plugin">
       </category>
       <view
-            name="TestLink Test Plan Execution"
+            name="TestLink Test Plans Viewer"
             icon="icons/sample.gif"
             category="testlink.eclipse.plugin"
             class="org.dbfacade.testlink.eclipse.plugin.views.TestLinkView"
