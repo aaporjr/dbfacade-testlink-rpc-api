@@ -3,6 +3,8 @@ package org.dbfacade.testlink.eclipse.plugin.preferences;
 
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.eclipse.plugin.Activator;
+import org.dbfacade.testlink.tc.autoexec.TestCase;
+import org.dbfacade.testlink.tc.autoexec.TestPlanPrepare;
 import org.eclipse.core.runtime.Preferences;
 
 
@@ -72,5 +74,10 @@ public class TestLinkPreferences
 	public TestLinkAPIClient getTestLinkAPIClient()
 	{
 		return testLinkAPIClient;
+	}
+	
+	public TestPlanPrepare getTestPlanPrepare() throws Exception {
+		TestPlanPrepare tpp = (TestPlanPrepare) Class.forName(testPlanPrepareClass).newInstance();
+		return tpp;
 	}
 }

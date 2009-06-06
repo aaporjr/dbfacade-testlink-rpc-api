@@ -31,7 +31,9 @@ public class DefaultFailTestPlanPrep implements TestPlanPrepare
 	{}
 	
 	/**
-	 * This is just a dummy test executor creator	 
+	 * This is just a dummy test executor creator. This is not
+	 * a good example since you do not want to run the test
+	 * at creation. 
 	 * 
 	 * @param plan
 	 * @return A test plan which has had the executors set for each test case.
@@ -44,7 +46,9 @@ public class DefaultFailTestPlanPrep implements TestPlanPrepare
 		TestCase[] cases = plan.getTestCases();
 		for ( int i = 0; i < cases.length; i++ ) {
 			TestCase tc = cases[i];
-			tc.setExecutor(new EmptyExecutor());
+			EmptyExecutor te = new EmptyExecutor(EmptyExecutor.MODE_TEST);
+			te.execute(tc);
+			tc.setExecutor(te);
 		}
 		return plan;
 	}

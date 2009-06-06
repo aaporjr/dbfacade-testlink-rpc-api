@@ -21,6 +21,7 @@
 package org.dbfacade.testlink.eclipse.plugin.views;
 
 import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
+import org.dbfacade.testlink.eclipse.plugin.views.tree.TestLinkTree;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ViewContentProvider;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ViewLabelProvider;
 import org.eclipse.jface.action.Action;
@@ -69,13 +70,14 @@ public class TestLinkView extends ViewPart {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		drillDownAdapter = new DrillDownAdapter(viewer);
 		viewer.setContentProvider(new ViewContentProvider(getViewSite(), projectTree.getInvisibleRoot()));
-		viewer.setLabelProvider(new ViewLabelProvider());
+		viewer.setLabelProvider(new ViewLabelProvider(this.getConfigurationElement()));
 		viewer.setSorter(new NameSorter());
 		viewer.setInput(getViewSite());
 		testPlanActions.makeActions(viewer, doubleClickAction);
 		hookContextMenu();
 		hookDoubleClickAction();
 		contributeToActionBars();
+		this.setTitleToolTip(projectTree.getToolTip());
 	}
 
 	private void hookContextMenu() {
