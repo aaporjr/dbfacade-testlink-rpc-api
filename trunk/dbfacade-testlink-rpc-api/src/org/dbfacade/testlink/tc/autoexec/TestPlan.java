@@ -147,6 +147,14 @@ public class TestPlan
 	}
 	
 	/**
+	 * Return the project for thsi plan.
+	 * @return
+	 */
+	public TestProject getProject() {
+		return testProject;
+	}
+	
+	/**
 	 * Return the name of the test plan for this test plan manager.
 	 * 
 	 * @return
