@@ -21,6 +21,7 @@
 package org.dbfacade.testlink.eclipse.plugin.views;
 
 
+import org.dbfacade.testlink.eclipse.plugin.UserMsg;
 import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.TestLinkTree;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ViewContentProvider;
@@ -51,7 +52,7 @@ public class TestLinkView extends ViewPart
 	private DrillDownAdapter drillDownAdapter;
 	private TreeViewer viewer;
 	private Action doubleClickAction;
-	private TestPlanActions testPlanActions = new TestPlanActions();
+	private TestLinkActions testPlanActions = new TestLinkActions();
 
 	class NameSorter extends ViewerSorter
 	{}
@@ -69,35 +70,45 @@ public class TestLinkView extends ViewPart
 	public void createPartControl(
 		Composite parent)
 	{
+		try {
+			// Initialize view
+			viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		
-		// Initialize view
-		TestLinkPreferences prefs = new TestLinkPreferences();
-		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		drillDownAdapter = new DrillDownAdapter(viewer);
-		final TestLinkTree testLinkTree = new TestLinkTree(viewer,
-			prefs.getDefaultProject());
+			// Setup user message display
+			UserMsg.shell = viewer.getControl().getShell();
+			
+			// Setup preferences
+			TestLinkPreferences prefs = new TestLinkPreferences();
 		
-		// Setup content provider
-		ViewContentProvider contentProvider = new ViewContentProvider(getViewSite(),
-			testLinkTree.getInvisibleRoot());
-		viewer.setContentProvider(contentProvider);
+			// Setup adapter
+			drillDownAdapter = new DrillDownAdapter(viewer);
+			final TestLinkTree testLinkTree = new TestLinkTree(viewer,
+				prefs.getDefaultProject());
 		
-		// Setup label provider
-		ViewLabelProvider labelProvider = new ViewLabelProvider(
-			this.getConfigurationElement());
-		viewer.setLabelProvider(labelProvider);
+			// Setup content provider
+			ViewContentProvider contentProvider = new ViewContentProvider(getViewSite(),
+				testLinkTree.getInvisibleRoot());
+			viewer.setContentProvider(contentProvider);
 		
-		// Complete tree setup
-		// viewer.setSorter(new NameSorter()); -- No sorting we want it in our order of setup
-		viewer.setInput(getViewSite());
+			// Setup label provider
+			ViewLabelProvider labelProvider = new ViewLabelProvider(
+				this.getConfigurationElement());
+			viewer.setLabelProvider(labelProvider);
 		
-		// Create actions
-		testPlanActions.makeActions(viewer, doubleClickAction, labelProvider);
+			// Complete tree setup
+			// viewer.setSorter(new NameSorter()); -- No sorting we want it in our order of setup
+			viewer.setInput(getViewSite());
 		
-		// Assign actions
-		hookContextMenu(viewer);
-		hookDoubleClickAction();
-		contributeToActionBars();		
+			// Create actions
+			testPlanActions.makeActions(viewer, doubleClickAction, labelProvider);
+		
+			// Assign actions
+			hookContextMenu(viewer);
+			hookDoubleClickAction();
+			contributeToActionBars();	
+		} catch ( Exception e ) {
+			UserMsg.error(e, "Failed to create the TestLink view.");
+		}
 	}
 
 	private void hookContextMenu(
