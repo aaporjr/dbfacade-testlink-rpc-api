@@ -1,4 +1,4 @@
-package org.dbfacade.testlink.eclipse.plugin;
+package org.dbfacade.testlink.eclipse.plugin.example;
 
 
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
