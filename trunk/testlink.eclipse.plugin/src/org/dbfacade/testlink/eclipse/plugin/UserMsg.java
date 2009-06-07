@@ -1,6 +1,9 @@
 package org.dbfacade.testlink.eclipse.plugin;
 
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -9,7 +12,7 @@ import org.eclipse.ui.PlatformUI;
 public class UserMsg
 {
 	public static final String title = "TestLink View";
-	public static Shell shell=PlatformUI.getWorkbench().getDisplay().getActiveShell();
+	public static Shell shell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
 	public static String packageName = "org.dbfacade.testlink.eclipse.plugin";
 	
 	public static void error(
@@ -21,17 +24,26 @@ public class UserMsg
 	public static void error(
 		Exception e,
 		String message)
-	{
-		// Build exception message portion
-		String emsg = buildExceptionMessage(e);
-		
-		// Build the final message
-		if ( emsg != null ) {
-			message = message + "\n\nDetails:\n\n" + emsg;
-		}
-		
+	{		
 		// Show error
-		MessageDialog.openError(shell, title, message);
+		try {
+			Exception show = new Exception("No details available.");
+			String details = getFirstPluginStackTraceElement(e);
+			if ( details != null ) {
+				show = new Exception(details);
+			} 
+			Status status = new Status(IStatus.ERROR, title, 0, e.toString(), show);
+			ErrorDialog.openError(shell, title, message, status);
+		} catch ( Exception de ) {
+			// Build exception message portion
+			String emsg = buildExceptionMessage(e);
+			
+			// Build the final message
+			if ( emsg != null ) {
+				message = message + "\n\nDetails:\n\n" + emsg;
+			}
+			MessageDialog.openError(shell, title, message);
+		}
 	}
 	
 	public static void message(
@@ -50,16 +62,10 @@ public class UserMsg
 		if ( e != null ) {
 			
 			// Setup Exception message
-			emsg = e.getMessage();
-			if ( emsg == null ) {
-				emsg = "Possible null pointer exception";	
+			emsg = e.toString();
+			if ( e.getMessage() != null ) {
+				emsg += "\n" + e.getMessage();
 			} 
-			
-			if ( e.getLocalizedMessage() != null ) {
-				if ( !emsg.equals(e.getLocalizedMessage()) ) {
-					emsg = "\n" + e.getLocalizedMessage();
-				}
-			}
 			
 			// Add some trace details
 			StackTraceElement[] elements = e.getStackTrace();
@@ -77,5 +83,22 @@ public class UserMsg
 			}
 		}
 		return emsg;
+	}
+	
+	private static String getFirstPluginStackTraceElement(
+		Exception e)
+	{
+		String first = null;
+		StackTraceElement[] elements = e.getStackTrace();
+		if ( elements.length > 0 ) {
+			first = elements[0].toString();
+		}
+		for ( int i = 0; i < elements.length; i++ ) {
+			StackTraceElement element = elements[i];
+			if ( element.toString().contains(packageName) ) {
+				return element.toString();
+			}
+		}
+		return first;
 	}
 }

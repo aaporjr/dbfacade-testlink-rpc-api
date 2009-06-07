@@ -24,56 +24,12 @@ package org.dbfacade.testlink.eclipse.plugin.example;
 import java.util.Random;
 
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
+import org.dbfacade.testlink.tc.autoexec.EmptyExecutor;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
-import org.dbfacade.testlink.tc.autoexec.TestCaseExecutor;
 
 
-public class RandomTestResultExecutor implements TestCaseExecutor
+public class RandomTestResultExecutor extends EmptyExecutor
 {
-	private short testState = STATE_READY;
-	private short testResult = RESULT_FAILED; 
-	
-	/**
-	 * Get the state of the execution
-	 * 
-	 * @return
-	 */
-	public short getExecutionState()
-	{
-		return testState;
-	}
-	
-	/**
-	 * Set the new state of the executor
-	 *  
-	 * @param newState
-	 */
-	public void setExecutionState(
-		short newState)
-	{
-		this.testState = newState;
-	}
-	
-	/**
-	 * Return random result based on what is set by the executor
-	 * 
-	 * @return The result of the test case. Implementers should set the initial status to UNKNOWN.
-	 */
-	public short getExecutionResult()
-	{
-		return testResult;
-	}
-
-	/**
-	 * Set the results of the test from an external source.
-	 * 
-	 * @param result
-	 */
-	public void setExecutionResult(
-		short result)
-	{
-			testResult = result;
-	}
 	
 	/**
 	 * Information about the results of the execution.
@@ -103,16 +59,18 @@ public class RandomTestResultExecutor implements TestCaseExecutor
 		TestCase testCase) throws TestLinkAPIException
 	{
 		setExecutionState(STATE_RUNNING);
-		
-			Random rand = new Random();
-			int v = rand.nextInt(10);
-			if ( v < 2 ) {
-				setExecutionResult(RESULT_FAILED);
-			} else if ( v >= 2 && v < 9 ) {
-				setExecutionResult(RESULT_PASSED);
-			} else {
-				setExecutionResult(RESULT_BLOCKED);
-			}
+		try {
+			Thread.sleep(1000);
+		} catch ( Exception e ) {}
+		Random rand = new Random();
+		int v = rand.nextInt(10);
+		if ( v < 3 ) {
+			setExecutionResult(RESULT_FAILED);
+		} else if ( v >= 3 && v < 9 ) {
+			setExecutionResult(RESULT_PASSED);
+		} else {
+			setExecutionResult(RESULT_BLOCKED);
+		}
 		setExecutionState(STATE_COMPLETED);
 	}
 

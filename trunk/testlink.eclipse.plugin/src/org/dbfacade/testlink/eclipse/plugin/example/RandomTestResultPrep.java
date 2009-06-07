@@ -3,13 +3,13 @@ package org.dbfacade.testlink.eclipse.plugin.example;
 
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
-import org.dbfacade.testlink.tc.autoexec.EmptyExecutor;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
+import org.dbfacade.testlink.tc.autoexec.TestCaseExecutor;
 import org.dbfacade.testlink.tc.autoexec.TestPlan;
 import org.dbfacade.testlink.tc.autoexec.TestPlanPrepare;
 
 
-public class DefaultFailTestPlanPrep implements TestPlanPrepare
+public class RandomTestResultPrep implements TestPlanPrepare
 {
 
 	/**
@@ -46,7 +46,7 @@ public class DefaultFailTestPlanPrep implements TestPlanPrepare
 		TestCase[] cases = plan.getTestCases();
 		for ( int i = 0; i < cases.length; i++ ) {
 			TestCase tc = cases[i];
-			EmptyExecutor te = new EmptyExecutor(EmptyExecutor.MODE_TEST);
+			TestCaseExecutor te = new RandomTestResultExecutor();
 			tc.setExecutor(te);
 		}
 		return plan;
