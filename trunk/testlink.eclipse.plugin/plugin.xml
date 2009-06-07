@@ -52,8 +52,8 @@
                id="testlink.eclipse.plugin.toolbars.sampleToolbar">
             <command
                   commandId="testlink.eclipse.plugin.commands.sampleCommand"
-                  icon="icons/sample.gif"
-                  tooltip="Say hello world"
+                  icon="icons/testlink_logo.png"
+                  tooltip="Open TestLink Test Plan Viewer"
                   id="testlink.eclipse.plugin.toolbars.sampleCommand">
             </command>
          </toolbar>
@@ -81,7 +81,7 @@
       </category>
       <view
             name="TestLink Test Plans Viewer"
-            icon="icons/sample.gif"
+            icon="icons/testlink_logo.png"
             category="testlink.eclipse.plugin"
             class="org.dbfacade.testlink.eclipse.plugin.views.TestLinkView"
             id="org.dbfacade.testlink.eclipse.plugin.views.TestLinkView">

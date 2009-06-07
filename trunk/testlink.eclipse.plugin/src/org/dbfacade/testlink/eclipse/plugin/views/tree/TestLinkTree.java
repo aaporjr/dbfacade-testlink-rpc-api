@@ -21,14 +21,9 @@
 package org.dbfacade.testlink.eclipse.plugin.views.tree;
 
 
-import java.util.Iterator;
-import java.util.Map;
-
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
+import org.dbfacade.testlink.eclipse.plugin.UserMsg;
 import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
-import org.dbfacade.testlink.tc.autoexec.TestPlan;
-import org.dbfacade.testlink.tc.autoexec.TestPlanLoader;
-import org.dbfacade.testlink.tc.autoexec.TestPlanPrepare;
 import org.dbfacade.testlink.tc.autoexec.TestProject;
 import org.eclipse.jface.viewers.TreeViewer;
 
@@ -37,71 +32,28 @@ public class TestLinkTree
 {
 	private TreeParent invisibleRoot;
 	private ProjectTree visibleRoot;
-	private String projectName;
 	
 	public TestLinkTree(
+		TreeViewer viewer,
 		String projectName)
 	{
-		this.projectName = projectName;
-		visibleRoot = new ProjectTree("Loading " + projectName + "....instantiate");
-		invisibleRoot = new TreeParent("");
-		invisibleRoot.addChild(visibleRoot);
+		try {
+			TestLinkPreferences pref = new TestLinkPreferences();
+			TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
+			TestProject project = new TestProject(apiClient, projectName);
+			visibleRoot = new ProjectTree(viewer, project);
+			invisibleRoot = new TreeParent("");
+			invisibleRoot.addChild(visibleRoot);
+		} catch ( Exception e ) {
+			visibleRoot = new ProjectTree(viewer, "Unable to build : " + projectName);
+			invisibleRoot = new TreeParent("");
+			invisibleRoot.addChild(visibleRoot);
+			UserMsg.error(e, "Failed to build the project root node.");
+		}			
 	}
 	
 	public TreeParent getInvisibleRoot()
 	{
 		return invisibleRoot;
 	}
-	
-	public void completeInitialization(
-		TreeViewer viewer)
-	{
-			
-		try {
-			updateMessage(viewer, "init TestLink API Client");
-			TestLinkPreferences pref = new TestLinkPreferences();
-			TestPlanPrepare prep = pref.getTestPlanPrepare();
-			TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
-			TestProject project = new TestProject(apiClient, projectName);
-
-			updateMessage(viewer, "getting test plans");
-			TestPlanLoader loader = new TestPlanLoader(projectName, apiClient);
-			Map<Integer,
-				TestPlan> plans = loader.getPlans();
-			
-			Iterator planIDs = plans.keySet().iterator();
-			while ( planIDs.hasNext() ) {
-				Object planID = planIDs.next();
-				TestPlan plan = plans.get(planID);
-
-				updateMessage(viewer, "prepare test plan " + plan.getTestPlanName());
-				prep.setTCUser(pref.getTestCaseCreator());
-				prep.setExternalDirectory(pref.getExternalDirectory());
-				prep.adjust(apiClient, plan);
-				PlanTree planRoot = new PlanTree(plan);
-				visibleRoot.addChild(planRoot);
-			}
-			visibleRoot.setProject(project);
-		} catch ( Exception e ) {
-			visibleRoot.setName("Unable to load " + projectName);
-			if ( e.getMessage() != null ) {
-				StackTraceElement[] trace = e.getStackTrace();
-				for ( int i = 0; i < trace.length; i++ ) {
-					StackTraceElement et = trace[i];
-					if ( i > 10 ) {
-						break;
-					}
-				}
-			}
-		}
-		
-		// Refresh the tree
-		viewer.refresh();
-	}
-	
-	private void updateMessage(TreeViewer viewer, String message) {
-		visibleRoot.setName("Loading " + projectName + "..." + message);
-		viewer.refresh();
-	}
-
 }

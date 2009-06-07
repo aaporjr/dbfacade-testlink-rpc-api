@@ -36,7 +36,7 @@ public class TestLinkPage extends FieldEditorPreferencePage
 		             "User Login Name - Used to assign new test case.\n" +
 		             "Plan Prepare Class - See TestPlanPrepare interface javadoc.\n" +
 		             "Report Results - Default results reporting to TestLink flag.\n" +
-		             "External Directory (Optional) - Made available to TestPlanPrepare.\n\n";             
+		             "External Path (Optional) - Made available to TestPlanPrepare.\n\n";             
 		setDescription(msg);
 	}
 	
@@ -74,7 +74,7 @@ public class TestLinkPage extends FieldEditorPreferencePage
 		
 		addField(
 			new DirectoryFieldEditor(PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE, 
-			"External Directory:",
+			"External Path:",
 			getFieldEditorParent()));
 
 		/*

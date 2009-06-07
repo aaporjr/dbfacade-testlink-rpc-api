@@ -31,11 +31,11 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.DrillDownAdapter;
@@ -74,46 +74,58 @@ public class TestLinkView extends ViewPart
 		TestLinkPreferences prefs = new TestLinkPreferences();
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		drillDownAdapter = new DrillDownAdapter(viewer);
-		final TestLinkTree testLinkTree = new TestLinkTree(prefs.getDefaultProject());
-		viewer.setContentProvider(
-			new ViewContentProvider(getViewSite(), testLinkTree.getInvisibleRoot()));
-		viewer.setLabelProvider(new ViewLabelProvider(this.getConfigurationElement()));
-		viewer.setSorter(new NameSorter());
+		final TestLinkTree testLinkTree = new TestLinkTree(viewer,
+			prefs.getDefaultProject());
+		
+		// Setup content provider
+		ViewContentProvider contentProvider = new ViewContentProvider(getViewSite(),
+			testLinkTree.getInvisibleRoot());
+		viewer.setContentProvider(contentProvider);
+		
+		// Setup label provider
+		ViewLabelProvider labelProvider = new ViewLabelProvider(
+			this.getConfigurationElement());
+		viewer.setLabelProvider(labelProvider);
+		
+		// Complete tree setup
+		// viewer.setSorter(new NameSorter()); -- No sorting we want it in our order of setup
 		viewer.setInput(getViewSite());
-		testPlanActions.makeActions(viewer, doubleClickAction);
-		hookContextMenu();
+		
+		// Create actions
+		testPlanActions.makeActions(viewer, doubleClickAction, labelProvider);
+		
+		// Assign actions
+		hookContextMenu(viewer);
 		hookDoubleClickAction();
-		contributeToActionBars();
-
-		
-		// Finish initialization in the background
-		new Thread(new Runnable()
-		{
-			public void run()
-			{
-				Display.getDefault().asyncExec(new Runnable()
-				{
-					public void run()
-					{
-						testLinkTree.completeInitialization(viewer);
-					}
-				});
-			}
-		}).start();
-		
+		contributeToActionBars();		
 	}
 
-	private void hookContextMenu()
+	private void hookContextMenu(
+		TreeViewer viewer)
 	{
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
+		final TreeViewer v = viewer;
 		menuMgr.addMenuListener(
 			new IMenuListener()
 		{
 			public void menuAboutToShow(
 				IMenuManager manager)
 			{
-				TestLinkView.this.testPlanActions.fillContextMenu(drillDownAdapter,
+
+				/*
+				 * Using the selection is a way to decide what we want
+				 * filled in as actions on the menu.
+				 */
+				IStructuredSelection selection = (IStructuredSelection) v
+					.getSelection();
+				
+				Object node = null;
+				if ( selection != null ) {
+					node = selection.getFirstElement();
+				}
+
+				TestLinkView.this.testPlanActions.fillContextMenu(node, drillDownAdapter,
 					manager);
 			}
 		});

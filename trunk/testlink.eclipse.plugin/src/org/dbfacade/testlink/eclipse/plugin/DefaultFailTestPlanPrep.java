@@ -17,8 +17,8 @@ public class DefaultFailTestPlanPrep implements TestPlanPrepare
 	 * 
 	 * @param directory
 	 */
-	public void setExternalDirectory(
-		String directory)
+	public void setExternalPath(
+		String path)
 	{}
 	
 	/**
@@ -47,7 +47,6 @@ public class DefaultFailTestPlanPrep implements TestPlanPrepare
 		for ( int i = 0; i < cases.length; i++ ) {
 			TestCase tc = cases[i];
 			EmptyExecutor te = new EmptyExecutor(EmptyExecutor.MODE_TEST);
-			te.execute(tc);
 			tc.setExecutor(te);
 		}
 		return plan;

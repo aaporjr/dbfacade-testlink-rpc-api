@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 
 public class TreeParent extends TreeObject {
-	private ArrayList children;
+	protected ArrayList children;
 	public TreeParent(String name) {
 		super(name);
 		children = new ArrayList();
@@ -38,10 +38,20 @@ public class TreeParent extends TreeObject {
 		child.setParent(null);
 	}
 	public TreeObject [] getChildren() {
+		if ( children.size() == 0 ) {
+			findChildren();
+		}
 		return (TreeObject [])children.toArray(new TreeObject[children.size()]);
 	}
 	public boolean hasChildren() {
 		return children.size()>0;
+	}
+	
+	/**
+	 * place holder
+	 */
+	public void findChildren() {
+		
 	}
 }
 

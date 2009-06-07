@@ -24,6 +24,7 @@ package org.dbfacade.testlink.eclipse.plugin.views.tree;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
 import org.dbfacade.testlink.tc.autoexec.TestCaseExecutor;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -36,31 +37,37 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 public class ViewLabelProvider extends LabelProvider
 {
 	private IConfigurationElement configElement;
-	private Image drawer;
 	private Image folder;
 	private Image bombed;
-	private Image running;
+	private Image running_auto;
+	private Image wait_manual_feedback;
 	private Image passed;
 	private Image failed;
 	private Image blocked;
 	private Image auto_exec_bad;
 	private Image auto_exec_good;
 	private Image manual_exec;
+	private Image projectClose;
+	private Image projectOpen;
+	private Image projectSwitch;
 
 	public ViewLabelProvider(
 		IConfigurationElement cfg)
 	{
 		this.configElement = cfg;
-		drawer = getImage("icons/drawer.png");
-		folder = getImage("icons/folder.png");
+		projectOpen = getImage("icons/drawer_open.png");
+		projectSwitch = getImage("icons/drawer_switch.png");
+		projectClose = getImage("icons/drawer.png");
+		folder = getImage("icons/folder_yellow.png");
 		bombed = getImage("icons/bomb.png");
-		running = getImage("icons/wait.png");
+		running_auto = getImage("icons/wait.png");
+		wait_manual_feedback = getImage("icons/hand.png");
 		passed = getImage("icons/accept.png");
 		failed = getImage("icons/cancel.png");
 		blocked = getImage("icons/lock.png");
-		auto_exec_bad = getImage("icons/page.png");
+		auto_exec_bad = getImage("icons/page_white_delete.png");
 		auto_exec_good = getImage("icons/page_white_cup.png");
-		manual_exec = getImage("icons/hand.png");
+		manual_exec = getImage("icons/page_manual.png");
 	}
 	
 	public String getText(
@@ -73,12 +80,30 @@ public class ViewLabelProvider extends LabelProvider
 		Object obj)
 	{
 		String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
-		if ( obj instanceof ProjectTree ) {
-			return drawer;
+		
+		// Take care of action requests
+		if ( obj instanceof Action) {
+			Action a = (Action) obj;
 		}
+		
+		
+		// Take care of project tree requests
+		if ( obj instanceof ProjectTree ) {
+			ProjectTree tree = (ProjectTree) obj;
+			if ( tree.isOpen() ) {
+				return projectOpen;
+			} else {
+				return projectClose;
+			}
+		}
+		
+		// Take care of plan requests
 		if ( obj instanceof PlanTree ) {
 			return folder;
 		}
+		
+		
+		// Test care of test case requests
 		if ( obj instanceof TestCaseLeaf ) {
 			
 			TestCaseLeaf tcLeaf = (TestCaseLeaf) obj;
@@ -90,7 +115,11 @@ public class ViewLabelProvider extends LabelProvider
 				if ( te.getExecutionState() == TestCaseExecutor.STATE_BOMBED ) {
 					return bombed;
 				} else if ( te.getExecutionState() == TestCaseExecutor.STATE_RUNNING ) {
-					return running;
+					if ( tc.isAutoExec() ) {
+						return running_auto;
+					} else {
+						return wait_manual_feedback;
+					}
 				} else if ( te.getExecutionState() == TestCaseExecutor.STATE_COMPLETED ) {
 					if ( te.getExecutionResult() == TestCaseExecutor.RESULT_BLOCKED ) {
 						return blocked;
@@ -118,9 +147,12 @@ public class ViewLabelProvider extends LabelProvider
 				}
 			}
 		}
+		
+		// Default at the end
 		if ( obj instanceof TreeParent ) {
 			imageKey = ISharedImages.IMG_OBJ_FOLDER;
 		}
+		
 		return PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
 	}
 	
