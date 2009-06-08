@@ -163,6 +163,19 @@ public class ExecuteTestCases extends Thread
 				throw new TestLinkAPIException("All the variables have not been set so tests cannot be executed.");
 			}
 			hasTestFailed = false;
+			
+			// Reset the test cases to ready or reset
+			for ( int i = 0; i < cases.length; i++ ) {
+				TestCase tc = cases[i];
+				TestCaseExecutor te = tc.getExecutor();
+				if ( te.getExecutionState() != TestCaseExecutor.STATE_READY ) {
+					te.setExecutionState(TestCaseExecutor.STATE_RESET);
+				}
+				te.setExecutionResult(TestCaseExecutor.RESULT_UNKNOWN);
+			}
+			testCasesReset();
+			
+			// Execute the tests
 			for ( int i = 0; i < cases.length; i++ ) {
 			
 				TestCase tc = cases[i];
@@ -218,6 +231,22 @@ public class ExecuteTestCases extends Thread
 	/*
 	 * Private methods
 	 */
+	
+	/*
+	 * Called when all the each test is reset before execution
+	 * 
+	 * @param event
+	 */
+	private void testCasesReset() {
+		ExecuteTestCaseEvent event = new ExecuteTestCaseEvent();
+		event.eventType = ExecuteTestCaseEvent.TEST_CASES_RESET;
+		event.testPlan = testPlan;
+		for (int i=0; i < listeners.size(); i++) {
+			ExecuteTestCaseListener listener = listeners.get(i);
+			listener.testCasesReset(event);
+		}
+	}
+	
 	
 	/*
 	 * Called before the test case runs

@@ -60,6 +60,11 @@ public class ExecuteTestCaseEvent {
 	public static final short EXECUTION_FAILED=5;
 	
 	/**
+	 * Indicates that the test case has been reset.
+	 */
+	public static final short TEST_CASES_RESET=6;
+	
+	/**
 	 * The event type
 	 */
 	short eventType;

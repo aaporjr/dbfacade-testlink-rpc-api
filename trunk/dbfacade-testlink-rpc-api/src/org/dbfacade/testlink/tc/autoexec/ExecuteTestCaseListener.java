@@ -37,6 +37,15 @@ public interface ExecuteTestCaseListener {
 	public void executionFailed(ExecuteTestCaseEvent event);
 	
 	/**
+	 * Called after the test cases has been reset as part of 
+	 * preparation to start execution.
+	 * 
+	 * @param event
+	 */
+	public void testCasesReset(ExecuteTestCaseEvent event);
+	
+	
+	/**
 	 * Called before the test case runs
 	 * 
 	 * @param event
