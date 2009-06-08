@@ -41,6 +41,7 @@ public class EmptyExecutor implements TestCaseExecutor
 	private short testState = STATE_READY;
 	private short testResult = RESULT_UNKNOWN; 
 	private short defaultResult = RESULT_FAILED;
+	private String notes="Empty executor generated to report executor missing from test case.";
 	
 	/**
 	 * Constructor in which the execution of the test
@@ -109,7 +110,17 @@ public class EmptyExecutor implements TestCaseExecutor
 	 */
 	public String getExecutionNotes()
 	{
-		return "Empty executor generated to report executor missing from test case.";
+		return notes;
+	}
+	
+	
+	/**
+	 * Set the execution notes
+	 * 
+	 * @param notes
+	 */
+	public void setExecutionNotes(String notes) {
+		this.notes = notes;
 	}
 	
 	/**

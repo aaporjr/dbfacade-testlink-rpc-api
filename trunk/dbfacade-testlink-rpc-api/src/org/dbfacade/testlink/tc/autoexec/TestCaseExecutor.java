@@ -78,6 +78,13 @@ public interface TestCaseExecutor
 	public String getExecutionNotes();
 	
 	/**
+	 * Set the execution notes
+	 * 
+	 * @param notes
+	 */
+	public void setExecutionNotes(String notes);
+	
+	/**
 	 * Execute the test case that has been passed into the execute method.
 	 * 
 	 * @param testCase
