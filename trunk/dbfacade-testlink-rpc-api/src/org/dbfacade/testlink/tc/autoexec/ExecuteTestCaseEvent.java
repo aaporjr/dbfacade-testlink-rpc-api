@@ -95,6 +95,16 @@ public class ExecuteTestCaseEvent {
 	Exception e;
 	
 	/**
+	 * Return the remaining tests that have not executed
+	 */
+	int remainingTest=0;
+	
+	/**
+	 * Return the total cases that will/were tested.
+	 */
+	int totalTest=0;
+	
+	/**
 	 * Returns the event type for this event
 	 * 
 	 * @return
