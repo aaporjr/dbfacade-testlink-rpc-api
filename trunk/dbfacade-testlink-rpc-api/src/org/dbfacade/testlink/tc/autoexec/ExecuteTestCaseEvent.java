@@ -57,12 +57,22 @@ public class ExecuteTestCaseEvent {
 	/**
 	 * Indicates test cases could not be individually tested for even larger errors.
 	 */
-	public static final short EXECUTION_FAILED=5;
+	public static final short EXECUTION_START=5;
+	
+	/**
+	 * Indicates test cases could not be individually tested for even larger errors.
+	 */
+	public static final short EXECUTION_FAILED=6;
+	
+	/**
+	 * Indicates test cases could not be individually tested for even larger errors.
+	 */
+	public static final short EXECUTION_SUCCESS=7;
 	
 	/**
 	 * Indicates that the test case has been reset.
 	 */
-	public static final short TEST_CASES_RESET=6;
+	public static final short TEST_CASES_RESET=8;
 	
 	/**
 	 * The event type

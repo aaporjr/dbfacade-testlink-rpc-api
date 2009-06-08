@@ -162,6 +162,7 @@ public class ExecuteTestCases extends Thread
 	{
 		hasTestRun = false;
 		try {
+			executionStart();
 			if ( this.testPlan == null ||
 			     this.cases == null) {
 				throw new TestLinkAPIException("All the variables have not been set so tests cannot be executed.");
@@ -229,8 +230,11 @@ public class ExecuteTestCases extends Thread
 		} catch ( Exception e ) {
 			hasTestFailed = true;
 			executionFailed(e);
+			hasTestRun = true;
+			return;
 		}
 		hasTestRun = true;
+		executionSuccess();
 	}
 	
 	/*
@@ -353,6 +357,40 @@ public class ExecuteTestCases extends Thread
 	}
 	
 	/*
+	 * Called before execution
+	 * 
+	 * @param event
+	 */
+	private void executionStart() {
+		ExecuteTestCaseEvent event = new ExecuteTestCaseEvent();
+		event.eventType = ExecuteTestCaseEvent.EXECUTION_START;
+		event.testPlan = testPlan;
+		event.totalTest = total;
+		event.remainingTest = remain;
+		for (int i=0; i < listeners.size(); i++) {
+			ExecuteTestCaseListener listener = listeners.get(i);
+			listener.executionStart(event);
+		}
+	}
+	
+	/*
+	 * Called if test complete without exception.
+	 * 
+	 * @param event
+	 */
+	private void executionSuccess() {
+		ExecuteTestCaseEvent event = new ExecuteTestCaseEvent();
+		event.eventType = ExecuteTestCaseEvent.EXECUTION_SUCCESS;
+		event.testPlan = testPlan;
+		event.totalTest = total;
+		event.remainingTest = remain;
+		for (int i=0; i < listeners.size(); i++) {
+			ExecuteTestCaseListener listener = listeners.get(i);
+			listener.executionSuccess(event);
+		}
+	}
+	
+	/*
 	 * Called when the test case has completed and the results
 	 * have been registered.
 	 * 
@@ -360,7 +398,7 @@ public class ExecuteTestCases extends Thread
 	 */
 	private void executionFailed(Exception e) {
 		ExecuteTestCaseEvent event = new ExecuteTestCaseEvent();
-		event.eventType = ExecuteTestCaseEvent.TEST_CASE_COMPLETED;
+		event.eventType = ExecuteTestCaseEvent.EXECUTION_FAILED;
 		event.testPlan = testPlan;
 		event.e = e;
 		event.totalTest = total;

@@ -28,13 +28,27 @@ package org.dbfacade.testlink.tc.autoexec;
  *
  */
 public interface ExecuteTestCaseListener {
+	
+	/**
+	 * Called before execution
+	 * 
+	 * @param event
+	 */
+	public void executionStart(ExecuteTestCaseEvent event);
 
 	/**
-	 * Called if the testing of individual test cases cannot take place
+	 * Called if execution fails
 	 * 
 	 * @param event
 	 */
 	public void executionFailed(ExecuteTestCaseEvent event);
+	
+	/**
+	 * Called if execution completes without an exception. This does not mean all test passed.
+	 * 
+	 * @param event
+	 */
+	public void executionSuccess(ExecuteTestCaseEvent event);
 	
 	/**
 	 * Called after the test cases has been reset as part of 
