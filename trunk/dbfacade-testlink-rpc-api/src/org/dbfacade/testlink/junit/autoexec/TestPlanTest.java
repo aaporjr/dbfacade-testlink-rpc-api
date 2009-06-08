@@ -29,7 +29,10 @@ import java.util.Map;
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIConst;
 import org.dbfacade.testlink.junit.constants.TestConst;
+import org.dbfacade.testlink.tc.autoexec.EmptyExecutor;
+import org.dbfacade.testlink.tc.autoexec.ExecuteTestCases;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
+import org.dbfacade.testlink.tc.autoexec.TestCaseExecutor;
 import org.dbfacade.testlink.tc.autoexec.TestPlan;
 import org.dbfacade.testlink.tc.autoexec.TestPlanLoader;
 import org.dbfacade.testlink.tc.autoexec.TestProject;
@@ -136,6 +139,51 @@ public class TestPlanTest implements TestLinkAPIConst, TestConst
 		}
 	}
 	
+	/**
+	 * Test test execution
+	 */
+	@Test
+	public void testTestExecution()
+	{
+		try {
+			int cnt=0;
+			Iterator ids = planLoader.getPlanIDs();
+			while (ids.hasNext()) {
+				Object id = ids.next();
+				TestPlan plan = planLoader.getPlan(id);
+				TestCase[] cases = plan.getTestCases();
+				for (int i=0; i < cases.length; i++) {
+					TestCase tc = cases[i];
+					tc.setExecutor(new EmptyExecutor(TestCaseExecutor.RESULT_PASSED));
+					String name = tc.getTestCaseName();
+					System.out.println(name);
+					cnt++;
+				}
+				ExecuteTestCases execution = new ExecuteTestCases(api, plan, new EmptyExecutor(TestCaseExecutor.RESULT_PASSED));
+				execution.executeTestCases(true, false);
+				
+				/**
+				 * All the test should have passed
+				 */
+				if ( !execution.hasTestPassed() ) {
+					throw new Exception("The tests all did not come back as passed.");
+				}
+				
+				/**
+				 * All the test should have passed
+				 */
+				if ( !execution.hasTestRun() ) {
+					throw new Exception("The tests did not run.");
+				}
+			}
+			if ( cnt == 0 ) {
+				fail("No test cases were printed and some were expected.");
+			}
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			fail("Make sure we can get an array of test cases.");
+		}
+	}
 	
 }
 
