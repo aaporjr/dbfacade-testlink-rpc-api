@@ -38,7 +38,6 @@ public class TestLinkAction extends Action
 			setToolTipText(actionToolTip);
 			setImageDescriptor(labelProvider.getImageDescriptor(this));
 		}
-		this.
 	}
 	
 	public String getActionName()
