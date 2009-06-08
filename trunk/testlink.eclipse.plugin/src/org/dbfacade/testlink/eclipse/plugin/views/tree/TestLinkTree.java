@@ -25,7 +25,6 @@ import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.eclipse.plugin.UserMsg;
 import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
 import org.dbfacade.testlink.tc.autoexec.TestProject;
-import org.eclipse.jface.viewers.TreeViewer;
 
 
 public class TestLinkTree
@@ -34,18 +33,17 @@ public class TestLinkTree
 	private ProjectTree visibleRoot;
 	
 	public TestLinkTree(
-		TreeViewer viewer,
 		String projectName)
 	{
 		try {
 			TestLinkPreferences pref = new TestLinkPreferences();
 			TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
 			TestProject project = new TestProject(apiClient, projectName);
-			visibleRoot = new ProjectTree(viewer, project);
+			visibleRoot = new ProjectTree(project);
 			invisibleRoot = new TreeParent("");
 			invisibleRoot.addChild(visibleRoot);
 		} catch ( Exception e ) {
-			visibleRoot = new ProjectTree(viewer, "Unable to build : " + projectName);
+			visibleRoot = new ProjectTree("Unable to build : " + projectName);
 			invisibleRoot = new TreeParent("");
 			invisibleRoot.addChild(visibleRoot);
 			UserMsg.error(e, "Failed to build the project root node.");

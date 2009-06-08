@@ -28,7 +28,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.DrillDownAdapter;
 
@@ -51,41 +50,40 @@ public class TestLinkActions
 	 * @param labels
 	 */
 	public void makeActions(
-		TreeViewer viewer,
 		Action doubleClickAction,
 		ViewLabelProvider labels)
 	{
 		
-		openProject = new TestLinkAction(viewer, labels, TestLinkAction.OPEN_PROJECT,
+		openProject = new TestLinkAction(labels, TestLinkAction.OPEN_PROJECT,
 			"Open an additional TestLink project.");
 	
-		closeProject = new TestLinkAction(viewer, labels, TestLinkAction.CLOSE_PROJECT,
+		closeProject = new TestLinkAction(labels, TestLinkAction.CLOSE_PROJECT,
 			"Close this project.");
 
-		switchProject = new TestLinkAction(viewer, labels, TestLinkAction.SWITCH_PROJECT,
+		switchProject = new TestLinkAction(labels, TestLinkAction.SWITCH_PROJECT,
 			"Close this project and open a new project in its place.");
 
-		executeTestDefault = new TestLinkAction(viewer, labels,
+		executeTestDefault = new TestLinkAction(labels,
 			TestLinkAction.PLAN_EXEC_DEFAULT,
 			"Execute the test and use the default results reporting flag.");
 		
-		executeTestNoReport = new TestLinkAction(viewer, labels,
+		executeTestNoReport = new TestLinkAction(labels,
 			TestLinkAction.PLAN_EXEC_NO_REPORT,
 			"Execute the test and do not report the results to the TestLink database.");
 	
-		executeTestReport = new TestLinkAction(viewer, labels,
+		executeTestReport = new TestLinkAction(labels,
 			TestLinkAction.PLAN_EXEC_REPORT,
 			"Execute the test and report the results to the TestLink database regardless of default setting.");
 
-		executeTestDefault = new TestLinkAction(viewer, labels,
+		executeTestDefault = new TestLinkAction(labels,
 				TestLinkAction.PLAN_EXEC_DEFAULT,
 				"Execute the test and use the default results reporting flag.");
 		
-		resubmitPreparation = new TestLinkAction(viewer, labels,
+		resubmitPreparation = new TestLinkAction(labels,
 				TestLinkAction.RESUBMIT_PREPARE,
 				"Resubmits the plan to the preparation class defined in the preferences dialog.");
 		
-		doubleClickAction = new TestLinkAction(viewer, labels, TestLinkAction.DOUBLE_CLICK,
+		doubleClickAction = new TestLinkAction(labels, TestLinkAction.DOUBLE_CLICK,
 			null);
 	}
 	

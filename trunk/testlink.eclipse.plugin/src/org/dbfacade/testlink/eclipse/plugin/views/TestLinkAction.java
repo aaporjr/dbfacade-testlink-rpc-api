@@ -2,6 +2,7 @@ package org.dbfacade.testlink.eclipse.plugin.views;
 
 
 import org.dbfacade.testlink.eclipse.plugin.UserMsg;
+import org.dbfacade.testlink.eclipse.plugin.views.tree.PlanTree;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ViewLabelProvider;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -24,17 +25,14 @@ public class TestLinkAction extends Action
 	public static final String DOUBLE_CLICK = "doble click";
 
 	// private
-	private TreeViewer viewer;
 	private String actionName;
 	
 	public TestLinkAction(
-		TreeViewer viewer,
 		ViewLabelProvider labelProvider,
 		String actionName,
 		String actionToolTip)
 	{
 		this.actionName = actionName;
-		this.viewer = viewer;
 		if ( !actionName.equals(DOUBLE_CLICK) ) {
 			setText(actionName);
 			setToolTipText(actionToolTip);
@@ -50,18 +48,84 @@ public class TestLinkAction extends Action
 	public void run()
 	{
 		try {
-			ISelection selection = viewer.getSelection();
+			ISelection selection = TestLinkView.viewer.getSelection();
 			Object obj = ((IStructuredSelection) selection).getFirstElement();
-			showMessage(viewer,
-				"The " + actionName + " action for " + obj.toString()
-				+ " is not implemented at this time.");
+			if ( actionName.equals(PLAN_EXEC_DEFAULT) ) {
+				executeTestCases(obj, null);
+			} else if ( actionName.equals(PLAN_EXEC_NO_REPORT) ) {
+				executeTestCases(obj, new Boolean(false));
+			} else if ( actionName.equals(PLAN_EXEC_REPORT) ) {
+				executeTestCases(obj, new Boolean(true));
+			} else if ( actionName.equals(RESUBMIT_PREPARE) ) {
+				resubmitPlanToPrepare(obj);
+			} else {
+				showMessage(TestLinkView.viewer,
+					"The " + actionName + " action for " + obj.toString()
+					+ " is not implemented at this time.");
+			}
 		} catch ( Exception e ) {
 			UserMsg.error(e,
 				"Unable to perform the action " + actionName + " due to an exception.");
 		}
 	}
 	
-	public void showMessage(
+	
+	/*
+	 * Private methods
+	 */
+	
+	/*
+	 * Casting done inside method because we want to
+	 * trap and report all errors associated with running 
+	 * the test cases.
+	 * 
+	 */
+	private void executeTestCases(
+		Object obj,
+		Boolean reportFlag)
+	{
+		PlanTree tree = null;
+		
+		try {
+			tree = (PlanTree) obj;
+		} catch ( Exception e ) {
+			UserMsg.error(e,
+				"The execution of the test case is not possible on the selected node.");
+			return;
+		}
+		
+		try {		
+			tree.setName(tree.getName() + " (Testing inprogress)");
+			TestLinkView.refresh(tree);
+			tree.resetTestCases();
+			if ( reportFlag != null ) {
+				tree.executeTestCases(reportFlag.booleanValue());
+			} else {
+				tree.executeTestCases();
+			}
+		} catch ( Exception e ) {
+			UserMsg.error(e,
+				"The execution of the test cases failed and did not complete.");
+		}
+		tree.setName(tree.getTestPlan().getTestPlanName());
+		TestLinkView.refresh(tree);
+	}
+	
+	private void resubmitPlanToPrepare(
+		Object obj)
+	{
+		try {
+			PlanTree tree = (PlanTree) obj;
+			tree.prepareTestPlanCases();
+			tree.resetTestCases();
+			showMessage(TestLinkView.viewer,
+				obj.toString() + " has completed preparation.");
+		} catch ( Exception e ) {
+			UserMsg.error(e, "Could not prepare test plan again due to exception.");
+		}
+	}
+	
+	private void showMessage(
 		TreeViewer viewer,
 		String message)
 	{

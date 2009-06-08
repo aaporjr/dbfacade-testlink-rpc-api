@@ -9,15 +9,13 @@ import org.dbfacade.testlink.eclipse.plugin.UserMsg;
 import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
 import org.dbfacade.testlink.tc.autoexec.TestPlan;
 import org.dbfacade.testlink.tc.autoexec.TestPlanLoader;
-import org.dbfacade.testlink.tc.autoexec.TestProject;
-import org.eclipse.jface.viewers.TreeViewer;
+import org.dbfacade.testlink.tc.autoexec.TestProject;;
 
 
 public class ProjectTree extends TreeParent
 {
 	private String projectName;
 	private TestProject project = null;
-	private TreeViewer viewer;
 	
 	/**
 	 * Used for initial display
@@ -25,12 +23,10 @@ public class ProjectTree extends TreeParent
 	 * @param projectName
 	 */
 	public ProjectTree(
-		TreeViewer viewer,
 		String projectName)
 	{
 		super(projectName);
 		this.projectName = projectName;
-		this.viewer = viewer;
 	}
 	
 	/**
@@ -39,13 +35,11 @@ public class ProjectTree extends TreeParent
 	 * @param project
 	 */
 	public ProjectTree(
-		TreeViewer viewer,
 		TestProject project)
 	{
 		super(project.getProjectName());
 		this.project = project;
 		this.projectName = project.getProjectName();
-		this.viewer = viewer;
 	}
 	
 	public boolean isOpen() {
@@ -91,7 +85,7 @@ public class ProjectTree extends TreeParent
 			while ( planIDs.hasNext() ) {
 				Object planID = planIDs.next();
 				TestPlan plan = plans.get(planID);
-				PlanTree planRoot = new PlanTree(viewer, plan);
+				PlanTree planRoot = new PlanTree(plan);
 				this.addChild(planRoot);
 			}
 		} catch ( Exception e ) {
@@ -99,7 +93,7 @@ public class ProjectTree extends TreeParent
 		}
 		
 		if ( children.size() == 0 ) {
-			PlanTree planRoot = new PlanTree(viewer, "No test plans acquired");
+			PlanTree planRoot = new PlanTree("No test plans acquired");
 			this.addChild(planRoot);
 		}
 	}

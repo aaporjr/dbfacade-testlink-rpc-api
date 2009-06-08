@@ -49,8 +49,8 @@ import org.eclipse.ui.part.ViewPart;
 
 public class TestLinkView extends ViewPart
 {
+	public static TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
-	private TreeViewer viewer;
 	private Action doubleClickAction;
 	private TestLinkActions testPlanActions = new TestLinkActions();
 
@@ -82,8 +82,7 @@ public class TestLinkView extends ViewPart
 		
 			// Setup adapter
 			drillDownAdapter = new DrillDownAdapter(viewer);
-			final TestLinkTree testLinkTree = new TestLinkTree(viewer,
-				prefs.getDefaultProject());
+			final TestLinkTree testLinkTree = new TestLinkTree(prefs.getDefaultProject());
 		
 			// Setup content provider
 			ViewContentProvider contentProvider = new ViewContentProvider(getViewSite(),
@@ -100,7 +99,7 @@ public class TestLinkView extends ViewPart
 			viewer.setInput(getViewSite());
 		
 			// Create actions
-			testPlanActions.makeActions(viewer, doubleClickAction, labelProvider);
+			testPlanActions.makeActions(doubleClickAction, labelProvider);
 		
 			// Assign actions
 			hookContextMenu(viewer);
@@ -110,7 +109,26 @@ public class TestLinkView extends ViewPart
 			UserMsg.error(e, "Failed to create the TestLink view.");
 		}
 	}
-
+	
+	public static void refresh(Object element) {
+		/*
+		Object[] expanded = viewer.getExpandedElements();
+		viewer.refresh();
+		viewer.setExpandedElements(expanded);
+		*/
+        viewer.refresh(element, true);
+        viewer.setExpandedState(element, true);
+        
+        // Stumbled across this way of making the tree finally refresh during a test
+        // TODO: Need to figure how to get the test to refresh in an expanded way
+        //       much like the junit plugin
+        viewer.collapseToLevel(element, TreeViewer.ALL_LEVELS);
+        viewer.expandToLevel(element, TreeViewer.ALL_LEVELS);
+    }
+	
+	/*
+	 * Private methods
+	 */
 	private void hookContextMenu(
 		TreeViewer viewer)
 	{
