@@ -14,14 +14,33 @@ public class ManualResultsInput
 	 * 
 	 * @param args the command line arguments
 	 */
-	public static void getManualTestResults(
+	public static void setManualTestResults(
 		TestCase tc,
 		TestCaseExecutor te)
 	{
+		// Open the dialog and get the information
 		ManualResultsDialog dlg = new ManualResultsDialog(tc, new LengthValidator());
 		dlg.open();
-		dlg.getValue();
-		dlg.getReturnCode();
+		
+		// Assign the text
+		String note = dlg.getValue();
+		te.setExecutionNotes(note);
+		
+		// Assign the status results
+		int ret = dlg.getReturnCode();
+		if ( ret == ManualResultsDialog.PASSED) {
+			te.setExecutionResult(TestCaseExecutor.RESULT_PASSED);
+		} else if ( ret == ManualResultsDialog.BLOCKED) {
+			te.setExecutionResult(TestCaseExecutor.RESULT_BLOCKED);
+		} else {
+			te.setExecutionResult(TestCaseExecutor.RESULT_FAILED);
+		}
+		
+		if ( te.getExecutionState() != TestCaseExecutor.STATE_BOMBED ) {
+			te.setExecutionState(TestCaseExecutor.STATE_COMPLETED);
+		} else {
+			te.setExecutionResult(TestCaseExecutor.RESULT_FAILED);
+		}
 	}
 }
 
@@ -44,13 +63,11 @@ class LengthValidator implements IInputValidator
 	{
 		int len = newText.length();
 
-		// Determine if input is too short or too long
-		if ( len < 10 ) {
+		// Determine if input is too short 
+		if ( len < 11 ) {
 			return "Too short";
 		}
-		if ( len > 15000 ) {
-			return "Too long";
-		}
+
 
 		// Input must be OK
 		return null;

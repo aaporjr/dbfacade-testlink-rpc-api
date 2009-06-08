@@ -37,7 +37,9 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 public class ViewLabelProvider extends LabelProvider
 {
 	private IConfigurationElement configElement;
-	private Image folder;
+	private Image plan_ready;
+	private Image plan_passed;
+	private Image plan_failed;
 	private Image bombed;
 	private Image running_auto;
 	private Image wait_manual_feedback;
@@ -51,9 +53,9 @@ public class ViewLabelProvider extends LabelProvider
 	private Image projectOpen;
 	
 	// Image Files
-	private String fileProjectOpen="icons/drawer_open.png";
-	private String fileProjectClose="icons/drawer.png";
-	private String fileProjectSwitch="icons/drawer_switch.png";
+	private String fileProjectOpen = "icons/drawer_open.png";
+	private String fileProjectClose = "icons/drawer.png";
+	private String fileProjectSwitch = "icons/drawer_switch.png";
 
 	public ViewLabelProvider(
 		IConfigurationElement cfg)
@@ -61,7 +63,9 @@ public class ViewLabelProvider extends LabelProvider
 		this.configElement = cfg;
 		projectOpen = getImage(fileProjectOpen);
 		projectClose = getImage(fileProjectClose);
-		folder = getImage("icons/folder_yellow.png");
+		plan_ready = getImage("icons/folder_yellow.png");
+		plan_passed = getImage("icons/folder.png");
+		plan_failed = getImage("icons/folder_red.png");
 		bombed = getImage("icons/bomb.png");
 		running_auto = getImage("icons/wait.png");
 		wait_manual_feedback = getImage("icons/hand.png");
@@ -84,7 +88,6 @@ public class ViewLabelProvider extends LabelProvider
 	{
 		String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
 
-		
 		// Take care of project tree requests
 		if ( obj instanceof ProjectTree ) {
 			ProjectTree tree = (ProjectTree) obj;
@@ -97,9 +100,15 @@ public class ViewLabelProvider extends LabelProvider
 		
 		// Take care of plan requests
 		if ( obj instanceof PlanTree ) {
-			return folder;
+			PlanTree tree = (PlanTree) obj;
+			if ( tree.hasTestFailed() && tree.hasTestRun() ) {
+				return plan_failed;
+			} else if ( tree.hasTestPassed() && tree.hasTestRun() ) {
+				return plan_passed;
+			} else {
+				return plan_ready;
+			}
 		}
-		
 		
 		// Test care of test case requests
 		if ( obj instanceof TestCaseLeaf ) {
@@ -134,12 +143,10 @@ public class ViewLabelProvider extends LabelProvider
 			}
 			
 			if ( !isImageSet ) {
-				if ( tc.isAutoExec() ) {
-					if ( te != null ) {
-						return auto_exec_good;
-					} else {
-						return auto_exec_bad;
-					}
+				if ( tcLeaf.getTestType() == TestCaseLeaf.AUTOMATED_WITH_EXECUTOR ) {
+					return auto_exec_good;
+				} else if ( tcLeaf.getTestType() == TestCaseLeaf.AUTOMATED_AND_INCOMPLETE ) {
+					return auto_exec_bad;
 				} else {
 					return manual_exec;
 				}
@@ -154,11 +161,12 @@ public class ViewLabelProvider extends LabelProvider
 		return PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
 	}
 	
-	
-	public ImageDescriptor getImageDescriptor(Object obj) {
+	public ImageDescriptor getImageDescriptor(
+		Object obj)
+	{
 		
 		// Take care of action requests
-		if ( obj instanceof TestLinkAction) {
+		if ( obj instanceof TestLinkAction ) {
 			TestLinkAction a = (TestLinkAction) obj;
 			if ( a.getActionName().equals(TestLinkAction.OPEN_PROJECT) ) {
 				return getImageDescriptor(fileProjectOpen);
@@ -171,16 +179,17 @@ public class ViewLabelProvider extends LabelProvider
 			}
 		}
 		return PlatformUI.getWorkbench().getSharedImages().
-		getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK);
+			getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK);
 	}
 	
-
 	/*
 	 * Private methods
 	 */
-	private ImageDescriptor getImageDescriptor(String strIcon) {
+	private ImageDescriptor getImageDescriptor(
+		String strIcon)
+	{
 		ImageDescriptor imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(
-				configElement.getNamespaceIdentifier(), strIcon);
+			configElement.getNamespaceIdentifier(), strIcon);
 		return imageDescriptor;
 	}
 	

@@ -8,7 +8,7 @@ public class ManualExecutor extends EmptyExecutor {
 	public void execute(TestCase tc) {
 		this.setExecutionState(STATE_RUNNING);
 		try {
-			ManualResultsInput.getManualTestResults(tc, this);
+			ManualResultsInput.setManualTestResults(tc, this);
 		} catch (Exception e) {
 			this.setExecutionResult(RESULT_FAILED);
 			this.setExecutionState(STATE_BOMBED);

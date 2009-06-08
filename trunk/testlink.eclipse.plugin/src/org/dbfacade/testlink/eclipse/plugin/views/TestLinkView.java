@@ -110,6 +110,10 @@ public class TestLinkView extends ViewPart
 		}
 	}
 	
+	public static void update(Object element) {
+        viewer.update(element, null);
+    }
+	
 	public static void refresh(Object element) {
 		/*
 		Object[] expanded = viewer.getExpandedElements();

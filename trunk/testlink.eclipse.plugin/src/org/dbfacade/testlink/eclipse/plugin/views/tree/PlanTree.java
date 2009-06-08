@@ -192,8 +192,8 @@ public class PlanTree extends TreeParent
 				TestCaseExecutor te = tc.getExecutor();
 				
 				this.setName(
-					plan.getTestPlanName() + " (Testing inprogress [Case: "
-					+ tc.getTestCaseName() + "])");
+					plan.getTestPlanName() + " (Testing case " + i + " of " + children.size() 
+					+ " [" + tc.getTestCaseName() + "])");
 				TestLinkView.refresh(this);
 			
 				// If no executor is registered then create empty and run empty
@@ -235,7 +235,7 @@ public class PlanTree extends TreeParent
 					}
 				}
 			
-				TestLinkView.refresh(tcf);
+				TestLinkView.update(tcf);
 			}
 		} catch ( Exception e ) {
 			hasTestFailed = true;
