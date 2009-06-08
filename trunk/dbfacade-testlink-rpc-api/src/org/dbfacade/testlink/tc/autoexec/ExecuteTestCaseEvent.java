@@ -156,4 +156,22 @@ public class ExecuteTestCaseEvent {
 	public Exception getFaulure() {
 		return e;
 	}
+	
+	/**
+	 * Get the total number of test cases that will/were tested.
+	 * 
+	 * @return
+	 */
+	public int getTotalCases() {
+		return this.totalTest;
+	}
+	
+	/**
+	 * Get the total number of cases that remain untested.
+	 * 
+	 * @return
+	 */
+	public int getTotalRemainingCases() {
+		return this.remainingTest;
+	}
 }
