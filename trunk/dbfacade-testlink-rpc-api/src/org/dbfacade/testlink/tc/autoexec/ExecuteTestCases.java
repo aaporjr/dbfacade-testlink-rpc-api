@@ -128,7 +128,7 @@ public class ExecuteTestCases extends Thread
 	 * @param listener
 	 */
 	public void addListener(ExecuteTestCaseListener listener) {
-		
+		listeners.add(listener);
 	}
 	
 
