@@ -2,8 +2,12 @@ package org.dbfacade.testlink.eclipse.plugin.views;
 
 
 import org.dbfacade.testlink.eclipse.plugin.UserMsg;
+import org.dbfacade.testlink.eclipse.plugin.handlers.ExecuteTestListener;
+import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.PlanTree;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ViewLabelProvider;
+import org.dbfacade.testlink.tc.autoexec.ExecuteTestCases;
+import org.dbfacade.testlink.tc.autoexec.TestCase;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -51,11 +55,11 @@ public class TestLinkAction extends Action
 			ISelection selection = TestLinkView.viewer.getSelection();
 			Object obj = ((IStructuredSelection) selection).getFirstElement();
 			if ( actionName.equals(PLAN_EXEC_DEFAULT) ) {
-				executeTestCases(obj, null);
+				executeTestCases(obj, null, false);
 			} else if ( actionName.equals(PLAN_EXEC_NO_REPORT) ) {
-				executeTestCases(obj, new Boolean(false));
+				executeTestCases(obj, new Boolean(false), false);
 			} else if ( actionName.equals(PLAN_EXEC_REPORT) ) {
-				executeTestCases(obj, new Boolean(true));
+				executeTestCases(obj, new Boolean(true), false);
 			} else if ( actionName.equals(RESUBMIT_PREPARE) ) {
 				resubmitPlanToPrepare(obj);
 			} else {
@@ -69,7 +73,6 @@ public class TestLinkAction extends Action
 		}
 	}
 	
-	
 	/*
 	 * Private methods
 	 */
@@ -82,44 +85,48 @@ public class TestLinkAction extends Action
 	 */
 	private void executeTestCases(
 		Object obj,
-		Boolean reportFlag)
+		Boolean reportFlag,
+		boolean runInBackground)
 	{
 		PlanTree tree = null;
+		ExecuteTestCases exec = null;
+		TestLinkPreferences pref = null;
 		
 		try {
 			tree = (PlanTree) obj;
+			pref = new TestLinkPreferences();
+			TestCase[] cases = tree.getChildrenAsTestCases();
+			exec = new ExecuteTestCases(pref.getTestLinkAPIClient(), tree.getTestPlan(),
+					cases, null, "org.dbfacade.testlink.eclipse.plugin.views.ManualExecutor");
+			ExecuteTestListener listener = new ExecuteTestListener(tree);
+			exec.addListener(listener);
 		} catch ( Exception e ) {
 			UserMsg.error(e,
 				"The execution of the test case is not possible on the selected node.");
 			return;
 		}
 		
-		try {		
+		try {	
 			tree.setName(tree.getName() + " (Testing inprogress)");
 			TestLinkView.refresh(tree);
-			tree.resetTestCases();
+			
 			if ( reportFlag != null ) {
-				tree.executeTestCases(reportFlag.booleanValue());
+				exec.executeTestCases(reportFlag, runInBackground);
 			} else {
-				tree.executeTestCases();
+				exec.executeTestCases(pref.useResultReporting(), runInBackground);
 			}
 		} catch ( Exception e ) {
 			UserMsg.error(e,
 				"The execution of the test cases failed and did not complete.");
 		}
-		tree.setName(tree.getTestPlan().getTestPlanName());
-		TestLinkView.refresh(tree);
 	}
-	
+
 	private void resubmitPlanToPrepare(
 		Object obj)
 	{
 		try {
 			PlanTree tree = (PlanTree) obj;
 			tree.prepareTestPlanCases();
-			tree.resetTestCases();
-			showMessage(TestLinkView.viewer,
-				obj.toString() + " has completed preparation.");
 		} catch ( Exception e ) {
 			UserMsg.error(e, "Could not prepare test plan again due to exception.");
 		}
