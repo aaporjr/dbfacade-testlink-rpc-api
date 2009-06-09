@@ -25,7 +25,7 @@ public class ExecuteTestListener implements ExecuteTestCaseListener
 		boolean runInBackground)
 	{
 		tree = node;
-		this.isBackgroundExecution=runInBackground;
+		this.isBackgroundExecution = runInBackground;
 	}
 
 	/**
@@ -124,11 +124,18 @@ public class ExecuteTestListener implements ExecuteTestCaseListener
 	 */
 	public void testCaseReportResultsFailed(
 		ExecuteTestCaseEvent event)
-	{}
+	{
+		if ( !isBackgroundExecution ) {
+			TestLinkView.refresh(tree);
+			TestLinkView.refresh(event.getTestCase());
+			UserMsg.error(event.getFaulure(),
+				"The test results could not be reported to TestLink.");
+		}
+	}
 	
 	/**
 	 * Called at any time the test cases is being processed
-	 * and has not reached completion and there is an execption.
+     * and has not reached completion and there is an exception.
 	 * 
 	 * @param event
 	 */
