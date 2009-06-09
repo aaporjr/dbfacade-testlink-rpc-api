@@ -151,6 +151,9 @@ public class PlanTree extends TreeParent
 	 */
 	public TestCase[] prepareTestPlanCases() throws Exception
 	{
+		hasTestRun = false;
+		hasTestFailed = false;
+		
 		// Lazy load test cases
 		TestCase[] cases = this.plan.getTestCases();
 		
@@ -162,6 +165,10 @@ public class PlanTree extends TreeParent
 		prep.setTCUser(pref.getTestCaseCreator());
 		prep.setExternalPath(pref.getExternalPath());
 		prep.adjust(apiClient, this.plan);
+		
+	
+		hasTestRun = false;
+		hasTestFailed = false;
 		
 		return cases;
 	}

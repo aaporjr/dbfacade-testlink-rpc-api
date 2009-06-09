@@ -63,7 +63,7 @@ public class TestLinkAction extends Action
 				executeTestCases(obj, new Boolean(true));
 			} else if ( actionName.equals(RESUBMIT_PREPARE) ) {
 				resubmitPlanToPrepare(obj);
-			} else if (actionName.equals(REFRESH)) {
+			} else if ( actionName.equals(REFRESH) ) {
 				TestLinkView.refresh();
 			} else {
 				showMessage(TestLinkView.viewer,
@@ -101,9 +101,9 @@ public class TestLinkAction extends Action
 			TestCase[] cases = tree.getChildrenAsTestCases();
 			exec = new ExecuteTestCases(pref.getTestLinkAPIClient(), tree.getTestPlan(),
 				cases, null, "org.dbfacade.testlink.eclipse.plugin.views.ManualExecutor");
-			runInBackground = MessageDialog.openQuestion(TestLinkView.viewer.getControl().getShell(), 
-					"Execute Test Cases",
-					"Run the test cases in the background (Must manual refresh to check completion)?");
+			runInBackground = MessageDialog.openQuestion(
+				TestLinkView.viewer.getControl().getShell(), "Execute Test Cases",
+				"Run in the background (no refresh) ?");
 			ExecuteTestListener listener = new ExecuteTestListener(tree, runInBackground);
 			exec.addListener(listener);
 		} catch ( Exception e ) {
@@ -135,8 +135,17 @@ public class TestLinkAction extends Action
 		Object obj)
 	{
 		try {
-			PlanTree tree = (PlanTree) obj;
-			tree.prepareTestPlanCases();
+			final PlanTree tree = (PlanTree) obj;
+			MonitoredAction action = new MonitoredAction()
+			{
+				public void action() throws Exception
+				{
+					tree.prepareTestPlanCases();
+				}
+			};
+			MonitorActionProgress runAction = 
+				new MonitorActionProgress("Re-running the prepare operation on test plan " + tree.getName(),  action);
+			runAction.startAndWait();
 		} catch ( Exception e ) {
 			UserMsg.error(e, "Could not prepare test plan again due to exception.");
 		}
