@@ -1,6 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
+
+ <!-- Launch section of code -->
+ <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            name="Blah"
+            delegateDescription="Bleh"
+            delegateName="Blih"
+            delegate="org.dbfacade.testlink.eclipse.plugin.launcher.TestLinkLaunchConfigurationDelegate"
+            modes="run, debug"
+            id="org.dbfacade.testlink.eclipse.plugin.launchconfig"
+            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
+            sourcePathComputerId="org.eclipse.jdt.launching.sourceLookup.javaSourcePathComputer">
+            <!-- migrationDelegate="org.eclipse.jdt.internal.junit.launcher.JUnitMigrationDelegate" -->
+      </launchConfigurationType>
+   </extension>
+ 
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationComparators">
+      <launchConfigurationComparator
+            attribute="org.dbfacade.testlink.eclipse.plugin.CONTAINER"
+            class="org.dbfacade.testlink.eclipse.plugin.launcher.TestLinkContainerComparator"
+            id="org.dbfacade.testlink.eclipse.plugin.containerComparator">
+      </launchConfigurationComparator>
+   </extension>
+   
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            icon="icons/testlink_logo.png"
+            configTypeID="org.dbfacade.testlink.eclipse.plugin.launchconfig"
+            id="org.eclipse.jdt.junit.launchimage">
+      </launchConfigurationTypeImage>
+   </extension>
+   
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            type="org.dbfacade.testlink.eclipse.plugin.launchconfig"
+            helpContextId="org.dbfacade.testlink.eclipse.plugin.testlink_tab_group"
+            class="org.dbfacade.testlink.eclipse.plugin.launcher.TestLinkTabGroup"
+            id="org.dbfacade.testlink.eclipse.plugin.launchConfigurationTabGroup.testlink">
+         <launchMode
+               perspective="org.eclipse.debug.ui.DebugPerspective"
+               description="testlink.debug"
+               mode="debug">
+         </launchMode>
+         <launchMode
+               description="testlink.run"
+               mode="run">
+         </launchMode>
+      </launchConfigurationTabGroup>
+   </extension>
+  
+  <!-- Command only support. None launch section -->
    <extension
          point="org.eclipse.ui.commands">
          
