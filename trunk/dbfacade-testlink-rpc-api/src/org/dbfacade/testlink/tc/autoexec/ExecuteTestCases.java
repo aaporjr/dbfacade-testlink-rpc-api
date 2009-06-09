@@ -40,6 +40,7 @@ public class ExecuteTestCases extends Thread
 	private String buildName=null;
 	private int total=0;
 	private int remain=0;
+	private TestCase tc;
 	
 	/**
 	 * Executes the tests for test cases in a test plan.
@@ -183,7 +184,7 @@ public class ExecuteTestCases extends Thread
 			// Execute the tests
 			for ( int i = 0; i < cases.length; i++ ) {
 			
-				TestCase tc = cases[i];
+				tc = cases[i];
 				TestCaseExecutor te = tc.getExecutor();
 				
 				testCaseStart(tc);
@@ -384,6 +385,7 @@ public class ExecuteTestCases extends Thread
 		event.testPlan = testPlan;
 		event.totalTest = total;
 		event.remainingTest = remain;
+		event.testCase = tc;
 		for (int i=0; i < listeners.size(); i++) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.executionSuccess(event);
@@ -400,6 +402,7 @@ public class ExecuteTestCases extends Thread
 		ExecuteTestCaseEvent event = new ExecuteTestCaseEvent();
 		event.eventType = ExecuteTestCaseEvent.EXECUTION_FAILED;
 		event.testPlan = testPlan;
+		event.testCase = tc;
 		event.e = e;
 		event.totalTest = total;
 		event.remainingTest = remain;
