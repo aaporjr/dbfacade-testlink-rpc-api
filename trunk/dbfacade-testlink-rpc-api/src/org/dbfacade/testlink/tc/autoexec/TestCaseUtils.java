@@ -81,6 +81,6 @@ public class TestCaseUtils
 			result = TestLinkAPIConst.TEST_BLOCKED;
 		}
 		apiClient.reportTestCaseResult(testPlan.getProject().getProjectName(),
-			testPlan.getTestPlanName(), tc.getTestCaseName(), buildName, null, result);
+			testPlan.getTestPlanName(), tc.getTestCaseName(), buildName, te.getExecutionNotes(), result);
 	}
 }
