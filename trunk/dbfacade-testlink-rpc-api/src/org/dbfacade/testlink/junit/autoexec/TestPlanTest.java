@@ -49,7 +49,8 @@ import org.junit.Test;
  * @author Daniel Padilla
  *
  */
-public class TestPlanTest implements TestLinkAPIConst, TestConst
+public class TestPlanTest implements TestLinkAPIConst,
+	TestConst
 {	
 	// The api instance
 	private TestLinkAPIClient api;
@@ -117,13 +118,13 @@ public class TestPlanTest implements TestLinkAPIConst, TestConst
 	public void testToArray()
 	{
 		try {
-			int cnt=0;
+			int cnt = 0;
 			Iterator ids = planLoader.getPlanIDs();
-			while (ids.hasNext()) {
+			while ( ids.hasNext() ) {
 				Object id = ids.next();
 				TestPlan plan = planLoader.getPlan(id);
 				TestCase[] cases = plan.getTestCases();
-				for (int i=0; i < cases.length; i++) {
+				for ( int i = 0; i < cases.length; i++ ) {
 					TestCase tc = cases[i];
 					String name = tc.getTestCaseName();
 					System.out.println(name);
@@ -146,20 +147,21 @@ public class TestPlanTest implements TestLinkAPIConst, TestConst
 	public void testTestExecution()
 	{
 		try {
-			int cnt=0;
+			int cnt = 0;
 			Iterator ids = planLoader.getPlanIDs();
-			while (ids.hasNext()) {
+			while ( ids.hasNext() ) {
 				Object id = ids.next();
 				TestPlan plan = planLoader.getPlan(id);
 				TestCase[] cases = plan.getTestCases();
-				for (int i=0; i < cases.length; i++) {
+				for ( int i = 0; i < cases.length; i++ ) {
 					TestCase tc = cases[i];
 					tc.setExecutor(new EmptyExecutor(TestCaseExecutor.RESULT_PASSED));
 					String name = tc.getTestCaseName();
 					System.out.println(name);
 					cnt++;
 				}
-				ExecuteTestCases execution = new ExecuteTestCases(api, plan, new EmptyExecutor(TestCaseExecutor.RESULT_PASSED));
+				ExecuteTestCases execution = new ExecuteTestCases(api, plan,
+					"org.dbfacade.testlink.junit.autoexec.PassExecutor");
 				execution.executeTestCases(true, false);
 				
 				/**

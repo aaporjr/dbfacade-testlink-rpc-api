@@ -35,7 +35,7 @@ public class ExecuteTestCases extends Thread
 	private boolean hasTestFailed = false;
 	private boolean reportResultsToTestLink=true;
 	private TestCase[] cases;
-	private TestCaseExecutor manualExecutor;
+	private String manualExecutorClass;
 	private ArrayList<ExecuteTestCaseListener> listeners = new ArrayList();
 	private String buildName=null;
 	private int total=0;
@@ -47,14 +47,14 @@ public class ExecuteTestCases extends Thread
 	 * 
 	 * @param apiClient             Optional
 	 * @param plan					Required
-	 * @param manualTestExecutor	Required
+	 * @param manualExecutorClass	Required
 	 */
 	public ExecuteTestCases(
 		TestLinkAPIClient apiClient,
 		TestPlan plan,
-		TestCaseExecutor manualTestExecutor)
+		String manualExecutorClass)
 	{
-		this(apiClient, plan, null, manualTestExecutor);
+		this(apiClient, plan, null, manualExecutorClass);
 	}
 	
 	/**
@@ -63,15 +63,15 @@ public class ExecuteTestCases extends Thread
 	 * @param apiClient             Optional
 	 * @param plan					Required
 	 * @param buildName				Required
-	 * @param manualTestExecutor	Required
+	 * @param manualExecutorClass	Required
 	 */
 	public ExecuteTestCases(
 		TestLinkAPIClient apiClient,
 		TestPlan plan,
 		String buildName,
-		TestCaseExecutor manualTestExecutor)
+		String manualExecutorClass)
 	{
-		this(apiClient, plan, plan.getTestCases(), buildName, manualTestExecutor);
+		this(apiClient, plan, plan.getTestCases(), buildName, manualExecutorClass);
 	}
 	
 	/**
@@ -81,20 +81,20 @@ public class ExecuteTestCases extends Thread
 	 * @param plan					Required
 	 * @param cases					Required
 	 * @param buildName				Required
-	 * @param manualTestExecutor	Required
+	 * @param manualExecutorClass	Required
 	 */
 	public ExecuteTestCases(
 			TestLinkAPIClient apiClient,
 		TestPlan plan,
 		TestCase[] cases,
 		String buildName,
-		TestCaseExecutor manualTestExecutor)
+		String manualExecutorClass)
 	{
 		this.apiClient = apiClient;
 		this.testPlan = plan;
 		this.cases = cases;
 		this.buildName = buildName;
-		this.manualExecutor = manualTestExecutor;
+		this.manualExecutorClass = manualExecutorClass;
 		this.total = cases.length;
 		this.remain = this.total;
 	}
@@ -198,7 +198,7 @@ public class ExecuteTestCases extends Thread
 				// Execute the test case exception does not mean failure
 				try {
 					if ( tc.isManualExec() ) {
-						te = manualExecutor;
+						te = (TestCaseExecutor) Class.forName(manualExecutorClass).newInstance();
 						if ( te == null ) {
 							te = new EmptyExecutor();
 							testCaseWithoutExecutor(tc);
