@@ -253,6 +253,7 @@ public class ExecuteTestCases extends Thread
 		event.testPlan = testPlan;
 		event.totalTest = total;
 		event.remainingTest = remain;
+		event.hasTestFailed = hasTestFailed;
 		for (int i=0; i < listeners.size(); i++) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.testCasesReset(event);
@@ -272,6 +273,7 @@ public class ExecuteTestCases extends Thread
 		event.testCase = tc;
 		event.totalTest = total;
 		event.remainingTest = remain;
+		event.hasTestFailed = hasTestFailed;
 		for (int i=0; i < listeners.size(); i++) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.testCaseStart(event);
@@ -290,6 +292,7 @@ public class ExecuteTestCases extends Thread
 		event.testCase = tc;
 		event.totalTest = total;
 		event.remainingTest = remain;
+		event.hasTestFailed = hasTestFailed;
 		for (int i=0; i < listeners.size(); i++) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.testCaseWithoutExecutor(event);
@@ -310,6 +313,7 @@ public class ExecuteTestCases extends Thread
 		event.e = e;
 		event.totalTest = total;
 		event.remainingTest = remain;
+		event.hasTestFailed = hasTestFailed;
 		for (int i=0; i < listeners.size(); i++) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.testCaseReportResultsFailed(event);
@@ -331,6 +335,7 @@ public class ExecuteTestCases extends Thread
 		event.e = e;
 		event.totalTest = total;
 		event.remainingTest = remain;
+		event.hasTestFailed = hasTestFailed;
 		for (int i=0; i < listeners.size(); i++) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.testCaseBombed(event);
@@ -351,6 +356,7 @@ public class ExecuteTestCases extends Thread
 		event.testExecutor=te;
 		event.totalTest = total;
 		event.remainingTest = remain;
+		event.hasTestFailed = hasTestFailed;
 		for (int i=0; i < listeners.size(); i++) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.testCaseCompleted(event);
@@ -368,6 +374,7 @@ public class ExecuteTestCases extends Thread
 		event.testPlan = testPlan;
 		event.totalTest = total;
 		event.remainingTest = remain;
+		event.hasTestFailed = hasTestFailed;
 		for (int i=0; i < listeners.size(); i++) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.executionStart(event);
@@ -386,6 +393,7 @@ public class ExecuteTestCases extends Thread
 		event.totalTest = total;
 		event.remainingTest = remain;
 		event.testCase = tc;
+		event.hasTestFailed = hasTestFailed;
 		for (int i=0; i < listeners.size(); i++) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.executionSuccess(event);
@@ -406,6 +414,7 @@ public class ExecuteTestCases extends Thread
 		event.e = e;
 		event.totalTest = total;
 		event.remainingTest = remain;
+		event.hasTestFailed = hasTestFailed;
 		for (int i=0; i < listeners.size(); i++) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.executionFailed(event);

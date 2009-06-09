@@ -115,6 +115,11 @@ public class ExecuteTestCaseEvent {
 	int totalTest=0;
 	
 	/**
+	 * 
+	 */
+	boolean hasTestFailed = false;
+	
+	/**
 	 * Returns the event type for this event
 	 * 
 	 * @return
@@ -173,5 +178,14 @@ public class ExecuteTestCaseEvent {
 	 */
 	public int getTotalRemainingCases() {
 		return this.remainingTest;
+	}
+	
+	/**
+	 * Truee if all test so far have passed
+	 * 
+	 * @return
+	 */
+	public boolean getExecutionPassStatus() {
+		return !(hasTestFailed);
 	}
 }
