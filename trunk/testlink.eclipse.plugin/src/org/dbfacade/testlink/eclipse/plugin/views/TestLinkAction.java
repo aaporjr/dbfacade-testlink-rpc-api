@@ -27,6 +27,7 @@ public class TestLinkAction extends Action
 	public static final String PLAN_EXEC_REPORT = "Execute Test (Report results)";
 	public static final String RESUBMIT_PREPARE = "Resubmit to preparation step";
 	public static final String DOUBLE_CLICK = "doble click";
+	public static final String REFRESH = "Refresh";
 
 	// private
 	private String actionName;
@@ -54,14 +55,16 @@ public class TestLinkAction extends Action
 		try {
 			ISelection selection = TestLinkView.viewer.getSelection();
 			Object obj = ((IStructuredSelection) selection).getFirstElement();
-			if ( actionName.equals(PLAN_EXEC_DEFAULT) ) {
-				executeTestCases(obj, null, false);
-			} else if ( actionName.equals(PLAN_EXEC_NO_REPORT) ) {
-				executeTestCases(obj, new Boolean(false), false);
-			} else if ( actionName.equals(PLAN_EXEC_REPORT) ) {
-				executeTestCases(obj, new Boolean(true), false);
+			if ( actionName.startsWith(PLAN_EXEC_DEFAULT) ) {
+				executeTestCases(obj, null);
+			} else if ( actionName.startsWith(PLAN_EXEC_NO_REPORT) ) {
+				executeTestCases(obj, new Boolean(false));
+			} else if ( actionName.startsWith(PLAN_EXEC_REPORT) ) {
+				executeTestCases(obj, new Boolean(true));
 			} else if ( actionName.equals(RESUBMIT_PREPARE) ) {
 				resubmitPlanToPrepare(obj);
+			} else if (actionName.equals(REFRESH)) {
+				TestLinkView.refresh();
 			} else {
 				showMessage(TestLinkView.viewer,
 					"The " + actionName + " action for " + obj.toString()
@@ -85,20 +88,23 @@ public class TestLinkAction extends Action
 	 */
 	private void executeTestCases(
 		Object obj,
-		Boolean reportFlag,
-		boolean runInBackground)
+		Boolean reportFlag)
 	{
 		PlanTree tree = null;
 		ExecuteTestCases exec = null;
 		TestLinkPreferences pref = null;
+		boolean runInBackground = false;
 		
 		try {
 			tree = (PlanTree) obj;
 			pref = new TestLinkPreferences();
 			TestCase[] cases = tree.getChildrenAsTestCases();
 			exec = new ExecuteTestCases(pref.getTestLinkAPIClient(), tree.getTestPlan(),
-					cases, null, "org.dbfacade.testlink.eclipse.plugin.views.ManualExecutor");
-			ExecuteTestListener listener = new ExecuteTestListener(tree);
+				cases, null, "org.dbfacade.testlink.eclipse.plugin.views.ManualExecutor");
+			runInBackground = MessageDialog.openQuestion(TestLinkView.viewer.getControl().getShell(), 
+					"Execute Test Cases",
+					"Run the test cases in the background (Must manual refresh to check completion)?");
+			ExecuteTestListener listener = new ExecuteTestListener(tree, runInBackground);
 			exec.addListener(listener);
 		} catch ( Exception e ) {
 			UserMsg.error(e,
@@ -107,7 +113,11 @@ public class TestLinkAction extends Action
 		}
 		
 		try {	
-			tree.setName(tree.getName() + " (Testing inprogress)");
+			if ( runInBackground ) {
+				tree.setName(tree.getName() + " (Testing inprogress in background)");
+			} else {
+				tree.setName(tree.getName() + " (Testing inprogress)");
+			}
 			TestLinkView.refresh(tree);
 			
 			if ( reportFlag != null ) {

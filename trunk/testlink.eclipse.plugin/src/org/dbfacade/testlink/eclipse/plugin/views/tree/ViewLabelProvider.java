@@ -56,6 +56,8 @@ public class ViewLabelProvider extends LabelProvider
 	private String fileProjectOpen = "icons/drawer_open.png";
 	private String fileProjectClose = "icons/drawer.png";
 	private String fileProjectSwitch = "icons/drawer_switch.png";
+	private String fileExec="icons/exec.gif";
+	private String filePrep="icons/new_con.gif";
 
 	public ViewLabelProvider(
 		IConfigurationElement cfg)
@@ -70,7 +72,7 @@ public class ViewLabelProvider extends LabelProvider
 		running_auto = getImage("icons/wait.png");
 		wait_manual_feedback = getImage("icons/hand.png");
 		passed = getImage("icons/accept.png");
-		failed = getImage("icons/cancel.png");
+		failed = getImage("icons/cancel.gif");
 		blocked = getImage("icons/lock.png");
 		auto_exec_bad = getImage("icons/page_white_delete.png");
 		auto_exec_good = getImage("icons/page_white_cup.png");
@@ -177,9 +179,16 @@ public class ViewLabelProvider extends LabelProvider
 			if ( a.getActionName().equals(TestLinkAction.SWITCH_PROJECT) ) {
 				return getImageDescriptor(fileProjectSwitch);
 			}
+			if ( a.getActionName().startsWith(TestLinkAction.PLAN_EXEC_DEFAULT.substring(0,5)) ) {
+				return getImageDescriptor(fileExec);
+			}
+			if ( a.getActionName().equals(TestLinkAction.RESUBMIT_PREPARE) ) {
+				return getImageDescriptor(filePrep);
+			}
 		}
-		return PlatformUI.getWorkbench().getSharedImages().
-			getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK);
+		return null;
+		/* PlatformUI.getWorkbench().getSharedImages().
+			getImageDescriptor(ISharedImages.IMG_TOOL_REDO); //IMG_OBJS_INFO_TSK); */
 	}
 	
 	/*

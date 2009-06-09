@@ -41,6 +41,7 @@ public class TestLinkActions
 	private Action executeTestNoReport;
 	private Action executeTestReport;
 	private Action resubmitPreparation;
+	private Action refresh;
 
 	/**
 	 * Create all the actions for the view.
@@ -53,6 +54,8 @@ public class TestLinkActions
 		Action doubleClickAction,
 		ViewLabelProvider labels)
 	{
+		refresh = new TestLinkAction(labels, TestLinkAction.REFRESH,
+		"Refresh the tree node.");
 		
 		openProject = new TestLinkAction(labels, TestLinkAction.OPEN_PROJECT,
 			"Open an additional TestLink project.");
@@ -119,11 +122,13 @@ public class TestLinkActions
 			manager.add(closeProject);
 			manager.add(switchProject);
 		} else if ( node instanceof PlanTree ) {
+			manager.add(resubmitPreparation);
 			manager.add(executeTestDefault);
 			manager.add(executeTestNoReport);
 			manager.add(executeTestReport);
-			manager.add(resubmitPreparation);
 		}
+		manager.add(new Separator());
+		manager.add(refresh);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here

@@ -21,9 +21,11 @@ public class ExecuteTestListener implements ExecuteTestCaseListener
 	 * @param node
 	 */
 	public ExecuteTestListener(
-		PlanTree node)
+		PlanTree node,
+		boolean runInBackground)
 	{
 		tree = node;
+		this.isBackgroundExecution=runInBackground;
 	}
 
 	/**
@@ -50,9 +52,12 @@ public class ExecuteTestListener implements ExecuteTestCaseListener
 		tree.setName(tp.getTestPlanName());
 		tree.setHasTestFailed(true);
 		tree.setHasTestRun(true);
-		TestLinkView.refresh(tree);
-		TestLinkView.refresh(event.getTestCase());
-		UserMsg.error(event.getFaulure(), "The execution of the test cases failed and did not complete.");
+		if ( !isBackgroundExecution ) {
+			TestLinkView.refresh(tree);
+			TestLinkView.refresh(event.getTestCase());
+			UserMsg.error(event.getFaulure(),
+				"The execution of the test cases failed and did not complete.");
+		}
 	}
 	
 	/**
@@ -67,8 +72,10 @@ public class ExecuteTestListener implements ExecuteTestCaseListener
 		tree.setName(tp.getTestPlanName());
 		tree.setHasTestFailed(!(event.getExecutionPassStatus()));
 		tree.setHasTestRun(true);
-		TestLinkView.refresh(tree);
-		TestLinkView.refresh(event.getTestCase());
+		if ( !isBackgroundExecution ) {
+			TestLinkView.refresh(tree);
+			TestLinkView.refresh(event.getTestCase());
+		}
 	}
 	
 	/**
@@ -94,10 +101,9 @@ public class ExecuteTestListener implements ExecuteTestCaseListener
 			TestCase tc = event.getTestCase();
 			int c = ((event.getTotalCases() - event.getTotalRemainingCases()) + 1);
 			tree.setName(
-				tp.getTestPlanName() + " (Testing " + c + " of "
-				+ event.getTotalCases() + " [" + tc.getTestCaseName() + "]");
+				tp.getTestPlanName() + " (Testing " + c + " of " + event.getTotalCases()
+				+ " [" + tc.getTestCaseName() + "])");
 			TestLinkView.refresh(tree);
-			//TestLinkView.refresh(event.getTestCase());
 		}
 	}
 	
@@ -141,7 +147,6 @@ public class ExecuteTestListener implements ExecuteTestCaseListener
 	{
 		if ( !isBackgroundExecution ) {
 			TestLinkView.refresh(tree);
-			//TestLinkView.refresh(event.getTestCase());
 		}
 	}
 }
