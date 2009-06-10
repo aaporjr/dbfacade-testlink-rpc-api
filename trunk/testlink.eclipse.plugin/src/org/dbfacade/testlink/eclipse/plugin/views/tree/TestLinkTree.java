@@ -29,10 +29,37 @@ import org.dbfacade.testlink.tc.autoexec.TestProject;
 
 public class TestLinkTree
 {
-	private TreeParent invisibleRoot;
+	// Singleton for a single viewer
+	private static TreeParent invisibleRoot;
+	
+	// First visible root
 	private ProjectTree visibleRoot;
 	
 	public TestLinkTree(
+		String failMessage)
+	{
+		if ( invisibleRoot == null ) {
+			invisibleRoot = new TreeParent("");
+		}
+		addPreferedProject(visibleRoot, failMessage);
+	}
+	
+	public static void addPreferedProject(
+		ProjectTree visibleRoot,
+		String failMessage)
+	{
+		try {
+			TestLinkPreferences pref = new TestLinkPreferences();
+			addProject(visibleRoot, pref.getDefaultProject());
+		} catch ( Exception e ) {
+			visibleRoot = new ProjectTree("Unable to build : " + failMessage);
+			invisibleRoot.addChild(visibleRoot);
+			UserMsg.error(e, "Failed to build the project root node.");
+		}	
+	}
+	
+	public static void addProject(
+		ProjectTree visibleRoot,
 		String projectName)
 	{
 		try {
@@ -40,17 +67,15 @@ public class TestLinkTree
 			TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
 			TestProject project = new TestProject(apiClient, projectName);
 			visibleRoot = new ProjectTree(project);
-			invisibleRoot = new TreeParent("");
 			invisibleRoot.addChild(visibleRoot);
 		} catch ( Exception e ) {
 			visibleRoot = new ProjectTree("Unable to build : " + projectName);
-			invisibleRoot = new TreeParent("");
 			invisibleRoot.addChild(visibleRoot);
 			UserMsg.error(e, "Failed to build the project root node.");
 		}			
 	}
 	
-	public TreeParent getInvisibleRoot()
+	public static TreeParent getInvisibleRoot()
 	{
 		return invisibleRoot;
 	}

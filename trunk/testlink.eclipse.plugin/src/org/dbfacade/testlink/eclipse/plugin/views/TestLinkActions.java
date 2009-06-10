@@ -119,7 +119,8 @@ public class TestLinkActions
 	{
 		if ( node instanceof ProjectTree ) {
 			manager.add(openProject);
-			manager.add(closeProject);
+			// TODO: Eventually it is needed but not a priority
+			// manager.add(closeProject);
 			manager.add(switchProject);
 		} else if ( node instanceof PlanTree ) {
 			manager.add(resubmitPreparation);

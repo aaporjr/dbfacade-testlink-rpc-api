@@ -78,8 +78,8 @@ public class ChooseProjectHandler extends SelectorHandler
 			JavaElementLabelProvider.SHOW_DEFAULT);
 		ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(),
 			labelProvider);
-		dialog.setTitle("Blah (choose project");
-		dialog.setMessage("Bleh (choose project)");
+		dialog.setTitle("Choose Project");
+		dialog.setMessage("Choose Project");
 		dialog.setElements(projects);
         
 		IJavaProject javaProject = getJavaProject();

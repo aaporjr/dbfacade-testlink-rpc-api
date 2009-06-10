@@ -6,9 +6,9 @@
  <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            name="Blah"
-            delegateDescription="Bleh"
-            delegateName="Blih"
+            name="TestLink"
+            delegateDescription="TestLink test plan execution runner."
+            delegateName="TestLink"
             delegate="org.dbfacade.testlink.eclipse.plugin.launcher.TestLinkLaunchConfigurationDelegate"
             modes="run, debug"
             id="org.dbfacade.testlink.eclipse.plugin.launchconfig"
@@ -135,7 +135,7 @@
             id="testlink.eclipse.plugin">
       </category>
       <view
-            name="TestLink Test Plans Viewer"
+            name="TestLink Test Plan Execution"
             icon="icons/testlink_logo.png"
             category="testlink.eclipse.plugin"
             class="org.dbfacade.testlink.eclipse.plugin.views.TestLinkView"

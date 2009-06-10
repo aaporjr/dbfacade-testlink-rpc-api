@@ -9,6 +9,8 @@ import org.dbfacade.testlink.eclipse.plugin.handlers.ExecuteTestListener;
 import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.PlanTree;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ProjectTree;
+import org.dbfacade.testlink.eclipse.plugin.views.tree.TestLinkTree;
+import org.dbfacade.testlink.eclipse.plugin.views.tree.TreeParent;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ViewLabelProvider;
 import org.dbfacade.testlink.tc.autoexec.ExecuteTestCases;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
@@ -163,7 +165,7 @@ public class TestLinkAction extends Action
 		}
 	}
 	
-	private void handleProjectAction(Object obj, boolean isSwitchAction) {
+	private void handleProjectAction(Object obj, boolean useSwitchAction) {
 		ProjectTree tree=null;
 		
 		if ( obj instanceof ProjectTree ) {
@@ -199,9 +201,33 @@ public class TestLinkAction extends Action
 		dialog.setMessage("TestLink Projects");
 		dialog.setElements(projects);
         
+		String newProject;
 		if ( dialog.open() == Window.OK ) {
-			String newProject = (String) dialog.getFirstResult();
+			newProject = (String) dialog.getFirstResult();
+			if ( newProject == null || newProject.equals(currentProject) ) {
+				return;
+			}
+		} else {
+			return;
 		}
+		
+		if ( useSwitchAction ) {
+			openProject(tree, newProject, true);
+		} else {
+			openProject(tree, newProject, false);
+		}
+	}
+	
+	private void openProject(ProjectTree tree, String projectName, boolean replaceRoot) {
+		TreeParent invisibleRoot = TestLinkTree.getInvisibleRoot();
+		ProjectTree visibleRoot=null;
+		if ( replaceRoot ) {
+			invisibleRoot.removeChild(tree);
+			TestLinkTree.addProject(visibleRoot, projectName);
+		} else {
+			TestLinkTree.addProject(visibleRoot, projectName);
+		}
+		TestLinkView.refresh();
 	}
 	
 	private void showMessage(
