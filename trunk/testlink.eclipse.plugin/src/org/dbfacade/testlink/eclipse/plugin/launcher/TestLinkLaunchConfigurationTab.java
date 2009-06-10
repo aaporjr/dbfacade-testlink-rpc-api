@@ -16,9 +16,12 @@ package org.dbfacade.testlink.eclipse.plugin.launcher;
  *******************************************************************************/
 
 import org.dbfacade.testlink.eclipse.plugin.handlers.ChooseProjectHandler;
+import org.dbfacade.testlink.eclipse.plugin.handlers.ChooseTestLinkProjectHandler;
 import org.dbfacade.testlink.eclipse.plugin.handlers.SearchClassHandler;
 import org.dbfacade.testlink.eclipse.plugin.handlers.SelectorHandler;
 import org.dbfacade.testlink.eclipse.plugin.handlers.SelectorWidget;
+import org.dbfacade.testlink.eclipse.plugin.preferences.PreferenceConstants;
+import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -52,10 +55,18 @@ import org.eclipse.ui.PlatformUI;
  */
 public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 {
-	private Text fProjText;
-	private Text fPrepClass;
-	   
-	@Override
+	// Widgets
+	SelectorWidget project;
+	SelectorHandler testLinkHandler;
+	SelectorWidget testLinkProject;
+	SelectorWidget testLinkKey;
+	SelectorWidget testLinkURL;
+	SelectorWidget testLinkExternalPath;
+	SelectorWidget testLinkPrepClass;
+
+	/**
+	 * Called during eclipse startup
+	 */
 	public void createControl(
 		Composite parent)
 	{ 
@@ -74,27 +85,80 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 			"I_have_no_context_if_at_this_time");
 	}
 
-	@Override
+	/**
+	 * Tab title on the form
+	 */
 	public String getName()
 	{
 		return "TestLink Plan Execution";
 	}
 
-	@Override
+	/**
+	 * Called at startup of "Run configurations"
+	 */
 	public void initializeFrom(
 		ILaunchConfiguration config)
 	{ 
-		updateProjectFromConfig(config);
-		String containerHandle = ""; // $NON-NLS-1$
-		try {} catch ( Exception ce ) {}
+		// Initialize from a saved copy
+		setFromWorkingConfig(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME,
+			project.getWidgetText(), config);
+		setFromWorkingConfig(PreferenceConstants.P_DEFAULT_PROJECT_NAME,
+			testLinkProject.getWidgetText(), config);
+		setFromWorkingConfig(PreferenceConstants.P_DEV_KEY, testLinkKey.getWidgetText(),
+			config);
+		setFromWorkingConfig(PreferenceConstants.P_TESTLINK_API_URL,
+			testLinkURL.getWidgetText(), config);
+		setFromWorkingConfig(PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS,
+			testLinkPrepClass.getWidgetText(), config);
+		setFromWorkingConfig(PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE,
+			testLinkExternalPath.getWidgetText(), config);
+		
+		// If nothing is set provide the defaults
+		TestLinkPreferences pref = new TestLinkPreferences();
+		setFromPreference(PreferenceConstants.P_DEFAULT_PROJECT_NAME,
+			testLinkProject.getWidgetText(), pref.getDefaultProject());
+		setFromPreference(PreferenceConstants.P_DEV_KEY, testLinkKey.getWidgetText(),
+			pref.getDevKey());
+		setFromPreference(PreferenceConstants.P_TESTLINK_API_URL,
+			testLinkURL.getWidgetText(), pref.getTestLinkURL());
+		setFromPreference(PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS,
+			testLinkPrepClass.getWidgetText(), pref.getTestPlanPrepareClass());
+		setFromPreference(PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE,
+			testLinkExternalPath.getWidgetText(), pref.getExternalPath());
 	}
 
-	@Override
+	/**
+	 * Listener for form changes
+	 */
 	public void performApply(
 		ILaunchConfigurationWorkingCopy config)
-	{}
+	{
+		config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME,
+			project.getWidgetText().getText());
+		config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "");
+		config.setAttribute(PreferenceConstants.P_DEFAULT_PROJECT_NAME,
+			testLinkProject.getWidgetText().getText());
+		config.setAttribute(PreferenceConstants.P_DEV_KEY,
+			testLinkKey.getWidgetText().getText());
+		config.setAttribute(PreferenceConstants.P_TESTLINK_API_URL,
+			testLinkURL.getWidgetText().getText());
+		config.setAttribute(PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS,
+			testLinkPrepClass.getWidgetText().getText());
+		config.setAttribute(PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE,
+			testLinkExternalPath.getWidgetText().getText());
 
-	@Override
+		/*
+		 try {
+		 mapResources(config);
+		 } catch (CoreException e) {
+		 JUnitPlugin.log(e.getStatus());
+		 }
+		 */
+	}
+
+	/**
+	 * Still do not know
+	 */
 	public void setDefaults(
 		ILaunchConfigurationWorkingCopy config)
 	{
@@ -169,28 +233,63 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 		Composite comp)
 	{        
 		SelectorHandler projectHandler = new ChooseProjectHandler(getShell());
-		SelectorWidget project = new SelectorWidget(comp, "Eclipse Project:",
-			"Select project", projectHandler, this.getLaunchConfigurationDialog());
-		fProjText = project.getWidgetText();
+		project = new SelectorWidget(comp, "Eclipse Project:", "Select Eclipse Project",
+			projectHandler, this.getLaunchConfigurationDialog());
+		
+		SelectorHandler testLinkHandler = new ChooseTestLinkProjectHandler(getShell());
+		testLinkProject = new SelectorWidget(comp, "TestLink Project:",
+			"Select TestLink Project", testLinkHandler, this.getLaunchConfigurationDialog());
+		
+		testLinkKey = new SelectorWidget(comp, "Dev Key:", null, null,
+			this.getLaunchConfigurationDialog());
+		
+		testLinkURL = new SelectorWidget(comp, "TestLink API URL:", null, null,
+			this.getLaunchConfigurationDialog());
+		
+		testLinkExternalPath = new SelectorWidget(comp, "External Path:", null, null,
+			this.getLaunchConfigurationDialog());
           
 		SelectorHandler prepClassHandler = new SearchClassHandler(getShell());
-		SelectorWidget prepClass = new SelectorWidget(comp, "TestPlanPrepareClass implementer:",
+		testLinkPrepClass = new SelectorWidget(comp, "TestPlanPrepareClass implementer:",
 			"Select class", prepClassHandler, this.getLaunchConfigurationDialog());
-		fPrepClass = prepClass.getWidgetText();
 	} 
 	
 	/*
-	 * Update project from configuration
+	 * Initialize the variables from this class using what comes back from
+	 * the configuration that is returned by the caller to the configuration
+	 * objects that exist.
 	 */
-	private void updateProjectFromConfig(
+	private void setFromWorkingConfig(
+		String key,
+		Text text,
 		ILaunchConfiguration config)
 	{
-		String projectName = ""; 
+		if ( text == null || key == null || config == null ) {
+			return;
+		}
+		String value = ""; 
 		try {
-			projectName = config.getAttribute(
-				IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""); 
+			value = config.getAttribute(key, ""); 
 		} catch ( CoreException ce ) {}
-		fProjText.setText(projectName);
+		text.setText(value);
+	}
+	
+	/*
+	 * Initialize the variables from this class using what comes back from
+	 * the configuration that is returned by the caller to the configuration
+	 * objects that exist.
+	 */
+	private void setFromPreference(
+		String key,
+		Text text,
+		String value)
+	{
+		if ( text == null || key == null || value == null ) {
+			return;
+		}
+		if ( text.getText() == null || text.getText() == "" ) {
+			text.setText(value);
+		}
 	}
  
 }

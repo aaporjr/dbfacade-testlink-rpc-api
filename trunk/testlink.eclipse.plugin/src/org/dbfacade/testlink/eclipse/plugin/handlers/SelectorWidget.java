@@ -49,7 +49,7 @@ public class SelectorWidget
 		String labelText,
 		final SelectorHandler handler)
 	{
-		this(comp, labelText, "Select", handler, null);
+		this(comp, labelText, null, handler, null);
 	}
 
 	public SelectorWidget(
@@ -78,20 +78,25 @@ public class SelectorWidget
 				}
 			}
 		});
-	            
-		button = new Button(comp, SWT.PUSH);
-		button.setText(buttonText);
-		button.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(
-				SelectionEvent evt)
+	     
+		if ( buttonText != null && handler != null ) {
+			button = new Button(comp, SWT.PUSH);
+			button.setText(buttonText);
+			button.addSelectionListener(new SelectionAdapter()
 			{
-				handler.handle(wLabel, text, button);
-			}
-		});
+				public void widgetSelected(
+					SelectionEvent evt)
+				{
+					handler.handle(wLabel, text, button);
+				}
+			});
+			setButtonGridData(button);
+		}
 	        
-		setButtonGridData(button);
-	        
+        Label label= new Label(comp, SWT.NONE);
+        gd= new GridData();
+        gd.horizontalSpan= 3;
+        label.setLayoutData(gd);
 	}
 	
 	public Label getWidgetLabel()
