@@ -114,7 +114,8 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 		createTestContainerSelectionGroup(comp);    
 		
 		Dialog.applyDialogFont(comp);
-		// PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), IJUnitHelpContextIds.LAUNCH_CONFIGURATION_DIALOG_JUNIT_MAIN_TAB);
+		
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), "I_have_no_context_if_at_this_time");
 	}
 
 	@Override
@@ -143,8 +144,10 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 	public void performApply(
 		ILaunchConfigurationWorkingCopy config)
 	{ // TODO Auto-generated method stub
+		if ( fContainerElement != null ) {
 		config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME,
-			fContainerElement.getJavaProject().getElementName());
+	       fContainerElement.getJavaProject().getElementName());
+		}
 	}
 
 	@Override
@@ -366,7 +369,7 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
         
         fTestMethodLabel= new Label(comp, SWT.NONE);
         fTestMethodLabel.setText(""); //$NON-NLS-1$
-gd= new GridData();
+        gd= new GridData();
         gd.horizontalSpan = 2;
         fTestMethodLabel.setLayoutData(gd);
         
@@ -550,7 +553,7 @@ radioSetting[0]= fTestRadioButton.getSelection();
     private void updateProjectFromConfig(ILaunchConfiguration config) {
         String projectName= ""; //$NON-NLS-1$
 try {
-            projectName = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""); //$NON-NLS-1$
+            projectName = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""); 
 } catch (CoreException ce) {
         }
         fProjText.setText(projectName);
