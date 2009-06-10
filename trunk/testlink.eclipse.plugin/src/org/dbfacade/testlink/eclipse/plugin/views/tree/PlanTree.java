@@ -13,6 +13,7 @@ import org.dbfacade.testlink.tc.autoexec.TestPlanPrepare;
 
 public class PlanTree extends TreeParent
 {
+	public static final String EMPTY_PROJECT="No test plans acquired";
 	private TestPlan plan;
 	private boolean hasTestRun = false;
 	private boolean hasTestFailed = false;
@@ -99,7 +100,15 @@ public class PlanTree extends TreeParent
 	 */
 	public boolean hasChildren()
 	{
-		return true;
+		if ( isEmptyProjectNode() ) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	public boolean isEmptyProjectNode() {
+		return this.getName().equals(EMPTY_PROJECT);
 	}
 	
 	public TestCase[] getChildrenAsTestCases() {

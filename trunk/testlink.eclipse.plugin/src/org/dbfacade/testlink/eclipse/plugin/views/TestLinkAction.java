@@ -79,7 +79,9 @@ public class TestLinkAction extends Action
 				 handleProjectAction(obj, false);
 			} else if ( actionName.equals(SWITCH_PROJECT) ) {
 				 handleProjectAction(obj, true);
-			} else {
+			} else if ( actionName.equals(CLOSE_PROJECT) ) {
+				removeProject(obj);
+			}else {
 				showMessage(TestLinkView.viewer,
 					"The " + actionName + " action for " + obj.toString()
 					+ " is not implemented at this time.");
@@ -211,7 +213,7 @@ public class TestLinkAction extends Action
 			return;
 		}
 		
-		if ( useSwitchAction ) {
+		if ( useSwitchAction || tree.isOpenProjectPlaceholderNode() ) {
 			openProject(tree, newProject, true);
 		} else {
 			openProject(tree, newProject, false);
@@ -228,6 +230,19 @@ public class TestLinkAction extends Action
 			TestLinkTree.addProject(visibleRoot, projectName);
 		}
 		TestLinkView.refresh();
+	}
+	
+	private void removeProject(Object obj) {
+		if ( obj instanceof ProjectTree) {
+			TreeParent invisibleRoot = TestLinkTree.getInvisibleRoot();
+			ProjectTree tree = (ProjectTree) obj;
+			invisibleRoot.removeChild(tree);
+			if ( !invisibleRoot.hasChildren() ) {
+				ProjectTree visibleRoot = new ProjectTree("Right click to open project");
+				invisibleRoot.addChild(visibleRoot);
+			}
+			TestLinkView.refresh();
+		}
 	}
 	
 	private void showMessage(

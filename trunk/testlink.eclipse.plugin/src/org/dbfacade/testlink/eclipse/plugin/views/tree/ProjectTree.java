@@ -14,6 +14,7 @@ import org.dbfacade.testlink.tc.autoexec.TestProject;;
 
 public class ProjectTree extends TreeParent
 {
+	public static final String OPEN_TREE_PLACE_HOLDER="Right click to open project";
 	private String projectName;
 	private TestProject project = null;
 	
@@ -93,9 +94,13 @@ public class ProjectTree extends TreeParent
 		}
 		
 		if ( children.size() == 0 ) {
-			PlanTree planRoot = new PlanTree("No test plans acquired");
+			PlanTree planRoot = new PlanTree(PlanTree.EMPTY_PROJECT);
 			this.addChild(planRoot);
 		}
+	}
+	
+	public boolean isOpenProjectPlaceholderNode() {
+		return (this.getName().equals(OPEN_TREE_PLACE_HOLDER));
 	}
 	
 }

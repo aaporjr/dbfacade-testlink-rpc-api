@@ -23,6 +23,7 @@ package org.dbfacade.testlink.eclipse.plugin.views;
 
 import org.dbfacade.testlink.eclipse.plugin.views.tree.PlanTree;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ProjectTree;
+import org.dbfacade.testlink.eclipse.plugin.views.tree.TreeObject;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ViewLabelProvider;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -55,7 +56,7 @@ public class TestLinkActions
 		ViewLabelProvider labels)
 	{
 		refresh = new TestLinkAction(labels, TestLinkAction.REFRESH,
-		"Refresh the tree node.");
+			"Refresh the tree node.");
 		
 		openProject = new TestLinkAction(labels, TestLinkAction.OPEN_PROJECT,
 			"Open an additional TestLink project.");
@@ -66,28 +67,23 @@ public class TestLinkActions
 		switchProject = new TestLinkAction(labels, TestLinkAction.SWITCH_PROJECT,
 			"Close this project and open a new project in its place.");
 
-		executeTestDefault = new TestLinkAction(labels,
-			TestLinkAction.PLAN_EXEC_DEFAULT,
+		executeTestDefault = new TestLinkAction(labels, TestLinkAction.PLAN_EXEC_DEFAULT,
 			"Execute the test and use the default results reporting flag.");
 		
 		executeTestNoReport = new TestLinkAction(labels,
 			TestLinkAction.PLAN_EXEC_NO_REPORT,
 			"Execute the test and do not report the results to the TestLink database.");
 	
-		executeTestReport = new TestLinkAction(labels,
-			TestLinkAction.PLAN_EXEC_REPORT,
+		executeTestReport = new TestLinkAction(labels, TestLinkAction.PLAN_EXEC_REPORT,
 			"Execute the test and report the results to the TestLink database regardless of default setting.");
 
-		executeTestDefault = new TestLinkAction(labels,
-				TestLinkAction.PLAN_EXEC_DEFAULT,
-				"Execute the test and use the default results reporting flag.");
+		executeTestDefault = new TestLinkAction(labels, TestLinkAction.PLAN_EXEC_DEFAULT,
+			"Execute the test and use the default results reporting flag.");
 		
-		resubmitPreparation = new TestLinkAction(labels,
-				TestLinkAction.RESUBMIT_PREPARE,
-				"Resubmits the plan to the preparation class defined in the preferences dialog.");
+		resubmitPreparation = new TestLinkAction(labels, TestLinkAction.RESUBMIT_PREPARE,
+			"Resubmits the plan to the preparation class defined in the preferences dialog.");
 		
-		doubleClickAction = new TestLinkAction(labels, TestLinkAction.DOUBLE_CLICK,
-			null);
+		doubleClickAction = new TestLinkAction(labels, TestLinkAction.DOUBLE_CLICK, null);
 	}
 	
 	/**
@@ -119,14 +115,19 @@ public class TestLinkActions
 	{
 		if ( node instanceof ProjectTree ) {
 			manager.add(openProject);
-			// TODO: Eventually it is needed but not a priority
-			// manager.add(closeProject);
+			manager.add(closeProject);
 			manager.add(switchProject);
 		} else if ( node instanceof PlanTree ) {
-			manager.add(resubmitPreparation);
-			manager.add(executeTestDefault);
-			manager.add(executeTestNoReport);
-			manager.add(executeTestReport);
+			PlanTree tree = (PlanTree) node;
+			if ( !tree.isEmptyProjectNode() ) {
+				TreeObject[] children = tree.getChildren();
+				if ( children.length > 0 ) {
+					manager.add(resubmitPreparation);
+					manager.add(executeTestDefault);
+					manager.add(executeTestNoReport);
+					manager.add(executeTestReport);
+				}
+			}
 		}
 		manager.add(new Separator());
 		manager.add(refresh);

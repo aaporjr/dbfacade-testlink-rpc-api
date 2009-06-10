@@ -40,6 +40,12 @@ public class TestLinkTree
 	{
 		if ( invisibleRoot == null ) {
 			invisibleRoot = new TreeParent("");
+		} else {
+			TreeObject[] children = invisibleRoot.getChildren(true);
+			for (int i=0; i < children.length; i++) {
+				TreeObject child = children[i];
+				invisibleRoot.removeChild(child);
+			}
 		}
 		addPreferedProject(visibleRoot, failMessage);
 	}
