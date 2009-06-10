@@ -1,18 +1,26 @@
 package org.dbfacade.testlink.eclipse.plugin.views;
 
 
+import org.dbfacade.testlink.api.client.TestLinkAPIClient;
+import org.dbfacade.testlink.api.client.TestLinkAPIConst;
+import org.dbfacade.testlink.api.client.TestLinkAPIResults;
 import org.dbfacade.testlink.eclipse.plugin.UserMsg;
 import org.dbfacade.testlink.eclipse.plugin.handlers.ExecuteTestListener;
 import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.PlanTree;
+import org.dbfacade.testlink.eclipse.plugin.views.tree.ProjectTree;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ViewLabelProvider;
 import org.dbfacade.testlink.tc.autoexec.ExecuteTestCases;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.window.Window;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
 
 public class TestLinkAction extends Action
@@ -65,6 +73,10 @@ public class TestLinkAction extends Action
 				resubmitPlanToPrepare(obj);
 			} else if ( actionName.equals(REFRESH) ) {
 				TestLinkView.refresh();
+			} else if ( actionName.equals(OPEN_PROJECT) ) {
+				 handleProjectAction(obj, false);
+			} else if ( actionName.equals(SWITCH_PROJECT) ) {
+				 handleProjectAction(obj, true);
 			} else {
 				showMessage(TestLinkView.viewer,
 					"The " + actionName + " action for " + obj.toString()
@@ -148,6 +160,47 @@ public class TestLinkAction extends Action
 			runAction.startAndWait();
 		} catch ( Exception e ) {
 			UserMsg.error(e, "Could not prepare test plan again due to exception.");
+		}
+	}
+	
+	private void handleProjectAction(Object obj, boolean isSwitchAction) {
+		ProjectTree tree=null;
+		
+		if ( obj instanceof ProjectTree ) {
+			tree= (ProjectTree) obj;
+		} else {
+			return;
+		}
+		String currentProject = tree.getName();
+		int p = 0;
+		TestLinkAPIResults results = null;
+		
+		try {
+			TestLinkPreferences pref = new TestLinkPreferences();
+			TestLinkAPIClient api = new TestLinkAPIClient(pref.getDevKey(), pref.getTestLinkURL());
+			results = api.getProjects();
+			p = results.size();
+		} catch ( Exception e ) {
+			e.printStackTrace();
+		}
+		String projects[] = new String[p];
+		
+		for (int i=0; i < p; i++) {
+			String project = (String) results.getValueByName(i, TestLinkAPIConst.API_RESULT_NAME);
+			if ( project != null ) {
+				projects[i] = project;
+			}
+		}
+	
+		ILabelProvider labelProvider = new LabelProvider();
+		ElementListSelectionDialog dialog = new ElementListSelectionDialog(TestLinkView.viewer.getControl().getShell(),
+			labelProvider);
+		dialog.setTitle("TestLink Project");
+		dialog.setMessage("TestLink Projects");
+		dialog.setElements(projects);
+        
+		if ( dialog.open() == Window.OK ) {
+			String newProject = (String) dialog.getFirstResult();
 		}
 	}
 	

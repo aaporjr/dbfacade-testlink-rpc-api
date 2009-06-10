@@ -17,7 +17,6 @@ package org.dbfacade.testlink.eclipse.plugin.launcher;
 
 import org.dbfacade.testlink.eclipse.plugin.handlers.ChooseProjectHandler;
 import org.dbfacade.testlink.eclipse.plugin.handlers.ChooseTestLinkProjectHandler;
-import org.dbfacade.testlink.eclipse.plugin.handlers.SearchClassHandler;
 import org.dbfacade.testlink.eclipse.plugin.handlers.SelectorHandler;
 import org.dbfacade.testlink.eclipse.plugin.handlers.SelectorWidget;
 import org.dbfacade.testlink.eclipse.plugin.preferences.PreferenceConstants;
@@ -57,12 +56,17 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 {
 	// Widgets
 	SelectorWidget project;
-	SelectorHandler testLinkHandler;
+	ChooseTestLinkProjectHandler testLinkHandler;
 	SelectorWidget testLinkProject;
 	SelectorWidget testLinkKey;
 	SelectorWidget testLinkURL;
 	SelectorWidget testLinkExternalPath;
 	SelectorWidget testLinkPrepClass;
+	
+	// TestLink API Access
+	private String tlProject;
+	private String tlDevKey;
+	private String tlUrl;
 
 	/**
 	 * Called during eclipse startup
@@ -125,6 +129,18 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 			testLinkPrepClass.getWidgetText(), pref.getTestPlanPrepareClass());
 		setFromPreference(PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE,
 			testLinkExternalPath.getWidgetText(), pref.getExternalPath());
+		
+		// Initialize local variables needed for later
+		try {
+			tlProject = config.getAttribute(PreferenceConstants.P_DEFAULT_PROJECT_NAME, "");
+			tlDevKey = config.getAttribute(PreferenceConstants.P_DEV_KEY, "");
+			tlUrl = config.getAttribute(PreferenceConstants.P_TESTLINK_API_URL, "");
+			if ( testLinkHandler != null ) {
+				testLinkHandler.setAPIAccess(tlProject, tlDevKey, tlUrl);
+			}
+		} catch ( Exception e ) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -236,7 +252,8 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 		project = new SelectorWidget(comp, "Eclipse Project:", "Select Eclipse Project",
 			projectHandler, this.getLaunchConfigurationDialog());
 		
-		SelectorHandler testLinkHandler = new ChooseTestLinkProjectHandler(getShell());
+		testLinkHandler = new ChooseTestLinkProjectHandler(getShell(), tlProject, tlDevKey,
+			tlUrl);
 		testLinkProject = new SelectorWidget(comp, "TestLink Project:",
 			"Select TestLink Project", testLinkHandler, this.getLaunchConfigurationDialog());
 		
@@ -249,9 +266,17 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 		testLinkExternalPath = new SelectorWidget(comp, "External Path:", null, null,
 			this.getLaunchConfigurationDialog());
           
-		SelectorHandler prepClassHandler = new SearchClassHandler(getShell());
+
+		/*
+		 * Eventually we want to search for classes but for now leave it as text
+		 *
+		 *		SelectorHandler prepClassHandler = new SearchClassHandler(getShell());
+		 * testLinkPrepClass = new SelectorWidget(comp, "TestPlanPrepareClass implementer:",
+		 * "Select class", prepClassHandler, this.getLaunchConfigurationDialog());
+		 */
 		testLinkPrepClass = new SelectorWidget(comp, "TestPlanPrepareClass implementer:",
-			"Select class", prepClassHandler, this.getLaunchConfigurationDialog());
+				null, null, this.getLaunchConfigurationDialog());
+
 	} 
 	
 	/*

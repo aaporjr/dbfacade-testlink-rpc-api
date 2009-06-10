@@ -9,6 +9,10 @@ import org.eclipse.core.runtime.Preferences;
 
 public class TestLinkPreferences
 {
+	// TODO : Make static variable thread local eventually
+	public static boolean usePrefStore = true;
+	
+	// Class variables
 	private Preferences prefStore = Activator.getDefault().getPluginPreferences();
 	private boolean useResultReporting;
 	private String defaultProject; 
@@ -21,18 +25,23 @@ public class TestLinkPreferences
 	
 	public TestLinkPreferences()
 	{
-		useResultReporting = prefStore.getBoolean(
-			PreferenceConstants.P_REPORT_RESULTS_AFTER_TEST);
-		defaultProject = prefStore.getString(PreferenceConstants.P_DEFAULT_PROJECT_NAME);
-		devKey = prefStore.getString(PreferenceConstants.P_DEV_KEY);
-		testLinkURL = prefStore.getString(PreferenceConstants.P_TESTLINK_API_URL);
-		testCaseCreator = prefStore.getString(
-			PreferenceConstants.P_TEST_CASE_CREATION_USER);
-		testPlanPrepareClass = prefStore.getString(
-			PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS);
-		externalPath = prefStore.getString(
-			PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE);
-		testLinkAPIClient = new TestLinkAPIClient(getDevKey(), getTestLinkURL());					
+		if ( usePrefStore ) {
+			useResultReporting = prefStore.getBoolean(
+				PreferenceConstants.P_REPORT_RESULTS_AFTER_TEST);
+			defaultProject = prefStore.getString(
+				PreferenceConstants.P_DEFAULT_PROJECT_NAME);
+			devKey = prefStore.getString(PreferenceConstants.P_DEV_KEY);
+			testLinkURL = prefStore.getString(PreferenceConstants.P_TESTLINK_API_URL);
+			testCaseCreator = prefStore.getString(
+				PreferenceConstants.P_TEST_CASE_CREATION_USER);
+			testPlanPrepareClass = prefStore.getString(
+				PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS);
+			externalPath = prefStore.getString(
+				PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE);
+			testLinkAPIClient = new TestLinkAPIClient(getDevKey(), getTestLinkURL());	
+		} else {
+			// TODO
+		}
 	}
 	
 	public boolean useResultReporting()
@@ -75,7 +84,8 @@ public class TestLinkPreferences
 		return testLinkAPIClient;
 	}
 	
-	public TestPlanPrepare getTestPlanPrepare() throws Exception {
+	public TestPlanPrepare getTestPlanPrepare() throws Exception
+	{
 		TestPlanPrepare tpp = (TestPlanPrepare) Class.forName(testPlanPrepareClass).newInstance();
 		return tpp;
 	}
