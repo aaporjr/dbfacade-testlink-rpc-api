@@ -83,4 +83,14 @@ public class TestCaseUtils
 		apiClient.reportTestCaseResult(testPlan.getProject().getProjectName(),
 			testPlan.getTestPlanName(), tc.getTestCaseName(), buildName, te.getExecutionNotes(), result);
 	}
+	
+	/**
+	 * Remove the html paragraph tags
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static String stripHtmlParagraph(String str) {
+		return str.replaceAll("<p>", "").replaceAll("</p>", "");
+	}
 }

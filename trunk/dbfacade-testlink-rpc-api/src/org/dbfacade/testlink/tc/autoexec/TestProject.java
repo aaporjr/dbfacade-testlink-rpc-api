@@ -46,6 +46,7 @@ public class TestProject
 	private Integer active = new Integer(1);
 	private Integer auto = new Integer(1);
 	private boolean isOfflineVersion = false;
+	private String description="";
 
 	/**
 	 * Used to create an offline dummy project
@@ -216,6 +217,22 @@ public class TestProject
 		} else {
 			auto = new Integer(value.toString());
 		}
+		
+		// Project Notes
+		value = projectInfo.get(TestLinkAPIConst.API_RESULT_NOTES);
+		if ( value != null ) {
+			this.description = value.toString();
+		}
+		
+	}
+	
+	/**
+	 * The project description/notes
+	 * 
+	 * @return
+	 */
+	public String getProjectDescription() {
+		return description;
 	}
 	
 	/**

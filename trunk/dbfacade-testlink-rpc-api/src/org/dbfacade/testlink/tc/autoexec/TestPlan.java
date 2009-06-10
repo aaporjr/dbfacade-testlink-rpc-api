@@ -57,6 +57,8 @@ public class TestPlan
 	private TestCaseRegistry testCaseRegistry = new TestCaseRegistry();
 	private String testCaseClass = "org.dbfacade.testlink.tc.autoexec.ExecutableTestCase";
 	private boolean testCasesInitialized = false;
+	private boolean isActive=true;
+	private String description="";
 	
 	/**
 	 * Creates an offline version of the project manager for
@@ -304,6 +306,22 @@ public class TestPlan
 		}
 		return testCaseRegistry.toArray();
 	}
+	
+	/**
+	 * True if the test plan is active
+	 */
+	public boolean isActive() {
+		return isActive;
+	}
+	
+	/**
+	 * The test plan description/notes
+	 * 
+	 * @return
+	 */
+	public String getPlanDescription() {
+		return description;
+	}
 
 	/*
 	 * Private methods section
@@ -363,6 +381,27 @@ public class TestPlan
 				isAPIReachable = false;
 				createDummyOfflineInfo(projectName, planName);
 			}
+		}
+		
+		if ( isAPIReachable ) {
+			try {
+				Map planInfo = TestLinkAPIHelper.getPlanInfo(apiClient, projectID, planName);
+				if ( planInfo != null ) {
+					Object value = planInfo.get(TestLinkAPIConst.API_RESULT_ACTIVE);
+					if ( value != null ) {
+						Integer active = new Integer(value.toString());
+						if ( active.intValue() > 0 ) {
+							isActive = true;
+						} else {
+							isActive = false;
+						}
+					}
+					value = planInfo.get(TestLinkAPIConst.API_RESULT_NOTES);
+					if ( value != null ) {
+						description = value.toString();
+					}
+				} 
+			} catch ( Exception e ) {} // Info not all that critical
 		}
 		
 		if ( isAPIReachable ) {

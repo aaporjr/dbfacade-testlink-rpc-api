@@ -401,7 +401,7 @@ public class TestLinkAPIHelper implements TestLinkAPIConst
 	}
 	
 	/**
-	 * Get the a test case identifier by test project id, suite id and test case name.
+	 * Get the a test plan identifier by test project identifier and test plan name.
 	 * 
 	 * @param apiClient
 	 * @param projectID
@@ -415,29 +415,47 @@ public class TestLinkAPIHelper implements TestLinkAPIConst
 		Integer projectID, 
 		String planName) throws TestLinkAPIException
 	{
-		TestLinkAPIResults results = apiClient.getProjectTestPlans(projectID);
 		Object id = null;
 		Integer planID = null;
+		Map planInfo = getPlanInfo(apiClient, projectID, planName);
+		if ( planInfo != null ) {
+			id = planInfo.get(API_RESULT_IDENTIFIER);
+			if ( id != null ) {
+				planID = new Integer(id.toString());
+			}
+		}
+		return planID;
+	}
+	
+	/**
+	 * Get the project information by project identifier and test plan name.
+	 * 
+	 * @param apiClient
+	 * @param projectID
+	 * @param planName
+	 * @return
+	 * @throws TestLinkAPIException
+	 */
+	public static Map getPlanInfo(
+		TestLinkAPIClient apiClient,
+		Integer projectID,
+		String planName) throws TestLinkAPIException
+	{
+		TestLinkAPIResults results = apiClient.getProjectTestPlans(projectID);
 		
 		for ( int i = 0; i < results.size(); i++ ) {
 			Object data = results.getValueByName(i, API_RESULT_NAME);
 			if ( data != null ) {
 				if ( planName.equals(data.toString()) ) {
-					id = results.getValueByName(i, API_RESULT_IDENTIFIER);
-					break;
+					return results.getData(i);
 				}
 			}
-		}
-		
-		if ( id != null ) {
-			planID = new Integer(id.toString());
-		}
-		
-		return planID;
+		}		
+		return null;
 	}
 	
 	/**
-	 * Get the project identifier by test project name.
+	 * Get the build identifier by test plan id.
 	 * 
 	 * @param apiClient
 	 * @param projectName
@@ -478,6 +496,9 @@ public class TestLinkAPIHelper implements TestLinkAPIConst
 		return null;
 	}
 	
+	/*
+	 * Private methods
+	 */
 	private static Integer getIdentifier(
 		Map data)
 	{
