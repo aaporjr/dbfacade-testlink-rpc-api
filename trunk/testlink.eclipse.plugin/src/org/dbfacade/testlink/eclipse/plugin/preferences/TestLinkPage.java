@@ -32,7 +32,7 @@ public class TestLinkPage extends FieldEditorPreferencePage
 		String msg = "\n" +
 		             "Project Name - The default project that is open by TestLink.\n" +
 		             "Dev Key - TestLink API Acces key. See TestLink API documentation.\n" +
-		             "TestLink API URL - See TestLink API documentation.\n" +
+		             "TestLink URL - See TestLink API documentation.\n" +
 		             "User Login Name - Used to assign new test case.\n" +
 		             "Plan Prepare Class - See TestPlanPrepare interface javadoc.\n" +
 		             "Report Results - Default results reporting to TestLink flag.\n" +
@@ -58,8 +58,8 @@ public class TestLinkPage extends FieldEditorPreferencePage
 			"Dev Key:", getFieldEditorParent()));
 		
 		addField(
-			new StringFieldEditor(PreferenceConstants.P_TESTLINK_API_URL,
-			"TestLink API URL:", getFieldEditorParent()));
+			new StringFieldEditor(PreferenceConstants.P_TESTLINK_URL,
+			"TestLink URL:", getFieldEditorParent()));
 		addField(
 				new StringFieldEditor(PreferenceConstants.P_TEST_CASE_CREATION_USER,
 				"User Login Name:", getFieldEditorParent()));

@@ -31,14 +31,14 @@ public class TestLinkPreferences
 			defaultProject = prefStore.getString(
 				PreferenceConstants.P_DEFAULT_PROJECT_NAME);
 			devKey = prefStore.getString(PreferenceConstants.P_DEV_KEY);
-			testLinkURL = prefStore.getString(PreferenceConstants.P_TESTLINK_API_URL);
+			testLinkURL = prefStore.getString(PreferenceConstants.P_TESTLINK_URL);
 			testCaseCreator = prefStore.getString(
 				PreferenceConstants.P_TEST_CASE_CREATION_USER);
 			testPlanPrepareClass = prefStore.getString(
 				PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS);
 			externalPath = prefStore.getString(
 				PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE);
-			testLinkAPIClient = new TestLinkAPIClient(getDevKey(), getTestLinkURL());	
+			testLinkAPIClient = new TestLinkAPIClient(getDevKey(), getTestLinkAPIURL());	
 		} else {
 			// TODO
 		}
@@ -59,9 +59,9 @@ public class TestLinkPreferences
 		return devKey;
 	}
 	
-	public String getTestLinkURL()
+	public String getTestLinkAPIURL()
 	{
-		return testLinkURL;
+		return testLinkURL + "lib/api/xmlrpc.php";
 	}
 	
 	public String getTestCaseCreator()

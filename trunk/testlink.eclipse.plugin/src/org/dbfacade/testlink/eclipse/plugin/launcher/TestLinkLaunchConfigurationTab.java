@@ -110,7 +110,7 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 			testLinkProject.getWidgetText(), config);
 		setFromWorkingConfig(PreferenceConstants.P_DEV_KEY, testLinkKey.getWidgetText(),
 			config);
-		setFromWorkingConfig(PreferenceConstants.P_TESTLINK_API_URL,
+		setFromWorkingConfig(PreferenceConstants.P_TESTLINK_URL,
 			testLinkURL.getWidgetText(), config);
 		setFromWorkingConfig(PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS,
 			testLinkPrepClass.getWidgetText(), config);
@@ -123,8 +123,8 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 			testLinkProject.getWidgetText(), pref.getDefaultProject());
 		setFromPreference(PreferenceConstants.P_DEV_KEY, testLinkKey.getWidgetText(),
 			pref.getDevKey());
-		setFromPreference(PreferenceConstants.P_TESTLINK_API_URL,
-			testLinkURL.getWidgetText(), pref.getTestLinkURL());
+		setFromPreference(PreferenceConstants.P_TESTLINK_URL,
+			testLinkURL.getWidgetText(), pref.getTestLinkAPIURL());
 		setFromPreference(PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS,
 			testLinkPrepClass.getWidgetText(), pref.getTestPlanPrepareClass());
 		setFromPreference(PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE,
@@ -134,7 +134,7 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 		try {
 			tlProject = config.getAttribute(PreferenceConstants.P_DEFAULT_PROJECT_NAME, "");
 			tlDevKey = config.getAttribute(PreferenceConstants.P_DEV_KEY, "");
-			tlUrl = config.getAttribute(PreferenceConstants.P_TESTLINK_API_URL, "");
+			tlUrl = config.getAttribute(PreferenceConstants.P_TESTLINK_URL, "");
 			if ( testLinkHandler != null ) {
 				testLinkHandler.setAPIAccess(tlProject, tlDevKey, tlUrl);
 			}
@@ -156,7 +156,7 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 			testLinkProject.getWidgetText().getText());
 		config.setAttribute(PreferenceConstants.P_DEV_KEY,
 			testLinkKey.getWidgetText().getText());
-		config.setAttribute(PreferenceConstants.P_TESTLINK_API_URL,
+		config.setAttribute(PreferenceConstants.P_TESTLINK_URL,
 			testLinkURL.getWidgetText().getText());
 		config.setAttribute(PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS,
 			testLinkPrepClass.getWidgetText().getText());
@@ -260,7 +260,7 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 		testLinkKey = new SelectorWidget(comp, "Dev Key:", null, null,
 			this.getLaunchConfigurationDialog());
 		
-		testLinkURL = new SelectorWidget(comp, "TestLink API URL:", null, null,
+		testLinkURL = new SelectorWidget(comp, "TestLink URL:", null, null,
 			this.getLaunchConfigurationDialog());
 		
 		testLinkExternalPath = new SelectorWidget(comp, "External Path:", null, null,

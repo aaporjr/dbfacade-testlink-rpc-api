@@ -179,7 +179,7 @@ public class TestLinkAction extends Action
 		
 		try {
 			TestLinkPreferences pref = new TestLinkPreferences();
-			TestLinkAPIClient api = new TestLinkAPIClient(pref.getDevKey(), pref.getTestLinkURL());
+			TestLinkAPIClient api = new TestLinkAPIClient(pref.getDevKey(), pref.getTestLinkAPIURL());
 			results = api.getProjects();
 			p = results.size();
 		} catch ( Exception e ) {
