@@ -4,6 +4,7 @@ package org.dbfacade.testlink.eclipse.plugin.views.tree;
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.eclipse.plugin.UserMsg;
 import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
+import org.dbfacade.testlink.eclipse.plugin.views.HtmlMessageText;
 import org.dbfacade.testlink.eclipse.plugin.views.TestLinkView;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
 import org.dbfacade.testlink.tc.autoexec.TestCaseExecutor;
@@ -11,9 +12,9 @@ import org.dbfacade.testlink.tc.autoexec.TestPlan;
 import org.dbfacade.testlink.tc.autoexec.TestPlanPrepare;
 
 
-public class PlanTree extends TreeParent
+public class PlanTree extends TreeParentNode
 {
-	public static final String EMPTY_PROJECT="No test plans acquired";
+	public static final String EMPTY_PROJECT = "No test plans acquired";
 	private TestPlan plan;
 	private boolean hasTestRun = false;
 	private boolean hasTestFailed = false;
@@ -40,9 +41,10 @@ public class PlanTree extends TreeParent
 	/**
 	 * True if the test has run to completion
 	 */
-	public boolean setHasTestRun(boolean run)
+	public boolean setHasTestRun(
+		boolean run)
 	{
-		return hasTestRun=run;
+		return hasTestRun = run;
 	}
 	
 	/**
@@ -64,9 +66,10 @@ public class PlanTree extends TreeParent
 	/**
 	 * True if the a single test did not pass
 	 */
-	public boolean setHasTestFailed(boolean failed)
+	public boolean setHasTestFailed(
+		boolean failed)
 	{
-		return hasTestFailed=failed;
+		return hasTestFailed = failed;
 	}
 	
 	public boolean isOpen()
@@ -107,18 +110,29 @@ public class PlanTree extends TreeParent
 		}
 	}
 	
-	public boolean isEmptyProjectNode() {
+	public boolean isEmptyProjectNode()
+	{
 		return this.getName().equals(EMPTY_PROJECT);
 	}
 	
-	public TestCase[] getChildrenAsTestCases() {
+	public TestCase[] getChildrenAsTestCases()
+	{
 		int count = children.size();
 		TestCase cases[] = new TestCase[count];
-		for (int i=0; i < children.size(); i++) {
+		for ( int i = 0; i < children.size(); i++ ) {
 			TestCase tc = (TestCase) children.get(i);
 			cases[i] = tc;
 		}
 		return cases;
+	}
+	
+	public boolean isActive()
+	{
+		if ( plan != null ) {
+			return plan.isActive();
+		} else {
+			return true;
+		}
 	}
 	
 	/**
@@ -175,7 +189,6 @@ public class PlanTree extends TreeParent
 		prep.setExternalPath(pref.getExternalPath());
 		prep.adjust(apiClient, this.plan);
 		
-	
 		hasTestRun = false;
 		hasTestFailed = false;
 		
@@ -199,5 +212,16 @@ public class PlanTree extends TreeParent
 		if ( last != null ) {
 			TestLinkView.refresh(last);
 		}
+	}
+
+	public String displayHtml()
+	{
+		String  detail = "No detail information available";
+		if ( plan != null ) {
+			detail = HtmlMessageText.OPEN_HTML_DOC + "<p><b>Name:</b></p><p>"
+				+ plan.getTestPlanName() + "</p><p><b>Description:</b></p><p>"
+				+ plan.getPlanDescription() + HtmlMessageText.CLOSE_HTML_DOC;
+		}
+		return detail;
 	}
 }

@@ -30,10 +30,10 @@ import org.eclipse.ui.IViewSite;
 public class ViewContentProvider implements IStructuredContentProvider, 
 	ITreeContentProvider
 {
-	private TreeParent invisibleRoot;
+	private TreeParentNode invisibleRoot;
 	private IViewSite viewSite;
 	
-	public ViewContentProvider(IViewSite viewSite, TreeParent invisibleRoot) {
+	public ViewContentProvider(IViewSite viewSite, TreeParentNode invisibleRoot) {
 		this.viewSite = viewSite;
 		this.invisibleRoot = invisibleRoot;
 	}
@@ -59,8 +59,8 @@ public class ViewContentProvider implements IStructuredContentProvider,
 	public Object getParent(
 		Object child)
 	{
-		if ( child instanceof TreeObject ) {
-			return ((TreeObject) child).getParent();
+		if ( child instanceof TreeNode ) {
+			return ((TreeNode) child).getParent();
 		}
 		return null;
 	}
@@ -68,8 +68,8 @@ public class ViewContentProvider implements IStructuredContentProvider,
 	public Object[] getChildren(
 		Object parent)
 	{
-		if ( parent instanceof TreeParent ) {
-			return ((TreeParent) parent).getChildren();
+		if ( parent instanceof TreeParentNode ) {
+			return ((TreeParentNode) parent).getChildren();
 		}
 		return new Object[0];
 	}
@@ -77,8 +77,8 @@ public class ViewContentProvider implements IStructuredContentProvider,
 	public boolean hasChildren(
 		Object parent)
 	{
-		if ( parent instanceof TreeParent ) {
-			return ((TreeParent) parent).hasChildren();
+		if ( parent instanceof TreeParentNode ) {
+			return ((TreeParentNode) parent).hasChildren();
 		}
 		return false;
 	}

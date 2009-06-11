@@ -24,12 +24,12 @@ package org.dbfacade.testlink.eclipse.plugin.views.tree;
 import org.eclipse.core.runtime.IAdaptable;
 
 
-public class TreeObject implements IAdaptable
+public class TreeNode implements IAdaptable
 {
 	private String name;
-	private TreeParent parent;
+	private TreeParentNode parent;
 	
-	public TreeObject(
+	public TreeNode(
 		String name)
 	{
 		this.name = name;
@@ -41,12 +41,12 @@ public class TreeObject implements IAdaptable
 	}
 
 	public void setParent(
-		TreeParent parent)
+		TreeParentNode parent)
 	{
 		this.parent = parent;
 	}
 
-	public TreeParent getParent()
+	public TreeParentNode getParent()
 	{
 		return parent;
 	}
@@ -64,5 +64,14 @@ public class TreeObject implements IAdaptable
 		Class key)
 	{
 		return null;
+	}
+	
+	/**
+	 * Place holder for extending classes.
+	 * 
+	 * @return
+	 */
+	public String displayHtml() {
+		return "<html><body><p>" + getName() + "</p></body></html>";
 	}
 }

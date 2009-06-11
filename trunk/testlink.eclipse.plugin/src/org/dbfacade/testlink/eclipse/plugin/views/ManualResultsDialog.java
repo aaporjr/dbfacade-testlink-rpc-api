@@ -1,11 +1,11 @@
 package org.dbfacade.testlink.eclipse.plugin.views;
 
 
-import org.dbfacade.testlink.tc.autoexec.TestCase;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
@@ -23,11 +23,6 @@ public class ManualResultsDialog extends Dialog
 	public static final int PASSED = 0;
 	public static final int FAILED = 1;
 	public static final int BLOCKED = 2;
-	
-	/**
-	 * The test case that requires the result
-	 */
-	TestCase testCase;
 	
 	/**
 	 * The title of the dialog.
@@ -63,7 +58,12 @@ public class ManualResultsDialog extends Dialog
 	 * Error message label widget.
 	 */
 	private Text errorMessageText;
- 
+	
+	/**
+	 * The test case descriptions from test link are in html
+	 */
+	private String html;
+	
 	/**
 	 * Creates an input dialog with OK and Cancel buttons. Note that the dialog
 	 * will have no visual representation (no widgets) until it is told to open.
@@ -85,15 +85,14 @@ public class ManualResultsDialog extends Dialog
 	 *            an input validator, or <code>null</code> if none
 	 */
 	public ManualResultsDialog(
-			TestCase tc,
 		Shell parentShell,
 		String dialogTitle,
 		String dialogMessage,
 		String initialValue,
+		String htmlDescription,
 		IInputValidator validator)
 	{
 		super(parentShell);
-		this.testCase = tc;
 		this.title = dialogTitle;
 		message = dialogMessage;
 		if ( initialValue == null ) {
@@ -103,6 +102,7 @@ public class ManualResultsDialog extends Dialog
 			value = initialValue;
 		}
 		this.validator = validator;
+		this.html = htmlDescription;
 	}
 
 	/**
@@ -114,11 +114,12 @@ public class ManualResultsDialog extends Dialog
 	 */
 	// TODO: The standard InputDialog is just not good enough 
 	public ManualResultsDialog(
-		TestCase tc,
+		String testCaseName,
+		String html,
 		IInputValidator validator)
 	{
-		this(tc, TestLinkView.viewer.getControl().getShell(), tc.getTestCaseName(),
-			"Enter test case results note:", "", validator);
+		this(TestLinkView.viewer.getControl().getShell(), testCaseName,
+			"Enter test case results note:", "", html, validator);
 		this.create();
 		this.setBlockOnOpen(true);
 		Button ok = this.getButton(IDialogConstants.OK_ID);
@@ -189,60 +190,24 @@ public class ManualResultsDialog extends Dialog
 		// create composite
 		Composite composite = (Composite) super.createDialogArea(parent);
 		
-		// Create test case steps
-		if ( testCase.getTestCaseSteps() != null ) {
-			
-			// Steps label
-			Label categoryLabel = new Label(composite, SWT.WRAP);
-			categoryLabel.setText("Execution Steps:");
-			GridData cData = new GridData(
-				GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL
-				| GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_CENTER);
-			cData.widthHint = convertHorizontalDLUsToPixels(
-				IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH);
-			categoryLabel.setLayoutData(cData);
-			categoryLabel.setFont(parent.getFont());
-			
-			// The actual steps
-			Label label = new Label(composite, SWT.WRAP);
-			label.setText(testCase.getTestCaseSteps().replaceAll("<p>", "").replaceAll("</p>", ""));
-			GridData data = new GridData(
-				GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL
-				| GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_CENTER);
-			data.widthHint = convertHorizontalDLUsToPixels(
-				IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH);
-			label.setLayoutData(data);
-			label.setFont(parent.getFont());
-			label.setEnabled(true);
-		}
 		
-		// Create test case expected results
-		if ( testCase.getTestCaseExpectedResults() != null ) {
-			
-			// Expected label
-			Label categoryLabel = new Label(composite, SWT.WRAP);
-			categoryLabel.setText("Execution results:");
-			GridData cData = new GridData(
-				GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL
-				| GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_CENTER);
-			cData.widthHint = convertHorizontalDLUsToPixels(
-				IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH);
-			categoryLabel.setLayoutData(cData);
-			categoryLabel.setFont(parent.getFont());
-			
-			Label label = new Label(composite, SWT.WRAP);
-			label.setText(testCase.getTestCaseExpectedResults().replaceAll("<p>", "").replaceAll("</p>", ""));
-			GridData data = new GridData(
-				GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL
-				| GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_CENTER);
-			data.widthHint = convertHorizontalDLUsToPixels(
-				IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH);
-			label.setLayoutData(data);
-			label.setFont(parent.getFont());
-			label.setEnabled(true);
-		}
+		// create label
+		Label categoryLabel = new Label(composite, SWT.WRAP);
+		categoryLabel.setText("");
+		GridData cData = new GridData(
+			GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL
+			| GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_CENTER);
+		cData.widthHint = convertHorizontalDLUsToPixels(
+			IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH);
+		categoryLabel.setLayoutData(cData);
+		categoryLabel.setFont(parent.getFont());
 		
-		
+		// create browser
+		Browser browser = new Browser(composite, SWT.NONE);
+		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, true, 300, 40);
+		browser.setLayoutData(grid);
+		browser.setText(html);
+		browser.setVisible(true);
 		
 		
 		// create entry request message
@@ -261,7 +226,7 @@ public class ManualResultsDialog extends Dialog
 
 		// Data entry text area
 		text = new Text(composite, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, true, 80, 8);
+		grid = new GridData(SWT.FILL, SWT.FILL, true, true, 80, 8);
 		text.setLayoutData(grid);
 		text.addModifyListener(new ModifyListener()
 		{

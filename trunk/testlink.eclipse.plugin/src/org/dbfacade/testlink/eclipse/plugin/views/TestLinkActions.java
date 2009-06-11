@@ -23,7 +23,7 @@ package org.dbfacade.testlink.eclipse.plugin.views;
 
 import org.dbfacade.testlink.eclipse.plugin.views.tree.PlanTree;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ProjectTree;
-import org.dbfacade.testlink.eclipse.plugin.views.tree.TreeObject;
+import org.dbfacade.testlink.eclipse.plugin.views.tree.TreeNode;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ViewLabelProvider;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -43,6 +43,7 @@ public class TestLinkActions
 	private Action executeTestReport;
 	private Action resubmitPreparation;
 	private Action refresh;
+	private Action info;
 
 	/**
 	 * Create all the actions for the view.
@@ -52,7 +53,6 @@ public class TestLinkActions
 	 * @param labels
 	 */
 	public void makeActions(
-		Action doubleClickAction,
 		ViewLabelProvider labels)
 	{
 		refresh = new TestLinkAction(labels, TestLinkAction.REFRESH,
@@ -83,7 +83,8 @@ public class TestLinkActions
 		resubmitPreparation = new TestLinkAction(labels, TestLinkAction.RESUBMIT_PREPARE,
 			"Resubmits the plan to the preparation class defined in the preferences dialog.");
 		
-		doubleClickAction = new TestLinkAction(labels, TestLinkAction.DOUBLE_CLICK, null);
+		info = new TestLinkAction(labels, TestLinkAction.TREE_NODE_INFO, "Get information about the node.");
+		
 	}
 	
 	/**
@@ -119,8 +120,8 @@ public class TestLinkActions
 			manager.add(switchProject);
 		} else if ( node instanceof PlanTree ) {
 			PlanTree tree = (PlanTree) node;
-			if ( !tree.isEmptyProjectNode() ) {
-				TreeObject[] children = tree.getChildren();
+			if ( !tree.isEmptyProjectNode() && tree.isActive() ) {
+				TreeNode[] children = tree.getChildren();
 				if ( children.length > 0 ) {
 					manager.add(resubmitPreparation);
 					manager.add(executeTestDefault);
@@ -130,6 +131,7 @@ public class TestLinkActions
 			}
 		}
 		manager.add(new Separator());
+		manager.add(info);
 		manager.add(refresh);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);

@@ -1,33 +1,41 @@
 package org.dbfacade.testlink.eclipse.plugin.views.tree;
 
+
 import java.util.Map;
 
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
+import org.dbfacade.testlink.eclipse.plugin.views.HtmlMessageText;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
 import org.dbfacade.testlink.tc.autoexec.TestCaseExecutor;
 import org.dbfacade.testlink.tc.autoexec.TestProject;
 import org.dbfacade.testlink.tc.autoexec.TestSuite;
 
-public class TestCaseLeaf extends TreeObject implements TestCase{
-	public static final String AUTOMATED_AND_INCOMPLETE="(I) ";
-	public static final String AUTOMATED_WITH_EXECUTOR="(A) ";
-	public static final String MANUAL="(M) ";
+
+public class TestCaseLeaf extends TreeNode implements TestCase, HtmlMessageText
+{
+	public static final String AUTOMATED_AND_INCOMPLETE = "(I) ";
+	public static final String AUTOMATED_WITH_EXECUTOR = "(A) ";
+	public static final String MANUAL = "(M) ";
 	private TestCase testCase;
 	private String leafType;
 	
-	public TestCaseLeaf(String testCaseName) {
+	public TestCaseLeaf(
+		String testCaseName)
+	{
 		super(testCaseName);
 	}
 	
-	public TestCaseLeaf(TestCase tc) {
+	public TestCaseLeaf(
+		TestCase tc)
+	{
 		super(tc.getTestCaseName());
-		if ( tc.isAutoExec()) {
+		if ( tc.isAutoExec() ) {
 			TestCaseExecutor te = tc.getExecutor();
 			if ( te == null ) {
-				leafType=AUTOMATED_AND_INCOMPLETE;
+				leafType = AUTOMATED_AND_INCOMPLETE;
 			} else {
-				leafType=AUTOMATED_WITH_EXECUTOR;
+				leafType = AUTOMATED_WITH_EXECUTOR;
 			}
 		} else {
 			leafType = MANUAL;
@@ -36,11 +44,13 @@ public class TestCaseLeaf extends TreeObject implements TestCase{
 		this.testCase = tc;
 	}
 	
-	public String getTestType() {
+	public String getTestType()
+	{
 		return leafType;
 	}
 	
-	public TestCase getTestCase() {
+	public TestCase getTestCase()
+	{
 		return testCase;
 	}
 	
@@ -52,51 +62,62 @@ public class TestCaseLeaf extends TreeObject implements TestCase{
 	public void initNewCase(
 		TestProject testProject,
 		TestSuite testSuite,
-		String caseName) throws TestLinkAPIException {
+		String caseName) throws TestLinkAPIException
+	{
 		testCase.initNewCase(testProject, testSuite, caseName);
 	}
 	
 	public void initExistingCase(
 		TestProject testProject,
 		TestSuite testSuite,
-		Map testCaseInfo) throws TestLinkAPIException {
+		Map testCaseInfo) throws TestLinkAPIException
+	{
 		testCase.initExistingCase(testProject, testSuite, testCaseInfo);
 	}
 	
-	public String getProjectName() {
+	public String getProjectName()
+	{
 		return testCase.getProjectName();
 	}
 
-	public Integer getProjectID() {
+	public Integer getProjectID()
+	{
 		return testCase.getProjectID();
 	}
 	
-	public String getSuiteName() {
+	public String getSuiteName()
+	{
 		return testCase.getSuiteName();
 	}
 	
-	public Integer getSuiteID() {
+	public Integer getSuiteID()
+	{
 		return testCase.getSuiteID();
 	}
 	
-	public String getTestCaseName() {
+	public String getTestCaseName()
+	{
 		return testCase.getTestCaseName();
 	}
 	
 	public void setTestCaseName(
-		String caseName) {
+		String caseName)
+	{
 		testCase.setTestCaseName(caseName);
 	}
 	
-	public String getTestCaseVisibleID() {
+	public String getTestCaseVisibleID()
+	{
 		return testCase.getTestCaseVisibleID();
 	}
 	
-	public Integer getTestCaseInternalID() {
+	public Integer getTestCaseInternalID()
+	{
 		return testCase.getTestCaseInternalID();
 	}
 	
-	public String getTestCaseSummary() {
+	public String getTestCaseSummary()
+	{
 		return testCase.getTestCaseSummary();
 	}
 	
@@ -106,106 +127,153 @@ public class TestCaseLeaf extends TreeObject implements TestCase{
 	 * @param summary
 	 */
 	public void setTestCaseSummary(
-		String summary) {
+		String summary)
+	{
 		testCase.setTestCaseSummary(summary);
 	}
 	
-	public String getTestCaseSteps() {
+	public String getTestCaseSteps()
+	{
 		return testCase.getTestCaseSteps();
 	}
 	
 	public void setTestCaseSteps(
-		String steps) {
+		String steps)
+	{
 		testCase.setTestCaseSteps(steps);
 	}
 	
-
-	public String getTestCaseExpectedResults() {
+	public String getTestCaseExpectedResults()
+	{
 		return testCase.getTestCaseExpectedResults();
 	}
 	
 	public void setTestCaseExpectedResults(
-		String expectedResults) {
+		String expectedResults)
+	{
 		testCase.setTestCaseExpectedResults(expectedResults);
 	}
 	
 	public String getTestCaseCustomFieldContents(
-		String fieldName) {
+		String fieldName)
+	{
 		return testCase.getTestCaseCustomFieldContents(fieldName);
 	}
 	
 	public void setTestCaseCustomFieldContents(
 		String fieldName,
-		String contents) {
+		String contents)
+	{
 		testCase.setTestCaseCustomFieldContents(fieldName, contents);
 	}
 	
-	public int getExecOrder() {
+	public int getExecOrder()
+	{
 		return testCase.getExecOrder();
 	}
 	
-	public void setExecOrder(int order) {
+	public void setExecOrder(
+		int order)
+	{
 		testCase.setExecOrder(order);
 	}
 	
-	public boolean isManualExec() {
+	public boolean isManualExec()
+	{
 		return testCase.isManualExec();
 	}
 	
-	public boolean isAutoExec() {
+	public boolean isAutoExec()
+	{
 		return testCase.isAutoExec();
 	}
 	
-	public void setExecTypeManual() {
+	public void setExecTypeManual()
+	{
 		testCase.setExecTypeManual();
 	}
 	
-	public void setExecTypeAuto() {
+	public void setExecTypeAuto()
+	{
 		testCase.setExecTypeAuto();
 	}
 	
-	public String getVersion() {
+	public String getVersion()
+	{
 		return testCase.getVersion();
 	}
 	
-	public boolean isLowImportance() {
+	public boolean isLowImportance()
+	{
 		return testCase.isLowImportance();
 	}
 	
-	public boolean isMediumImportance() {
+	public boolean isMediumImportance()
+	{
 		return testCase.isMediumImportance();
 	}
 	
-	public boolean isHighImportance() {
+	public boolean isHighImportance()
+	{
 		return testCase.isHighImportance();
 	}
 	
-	public void setToLowImportance() {
+	public void setToLowImportance()
+	{
 		testCase.setToLowImportance();
 	}
 	
-	public void setToMediumImportance() {
+	public void setToMediumImportance()
+	{
 		testCase.setToMediumImportance();
 	}
 	
-	public void setToHighImportance() {
+	public void setToHighImportance()
+	{
 		testCase.setToHighImportance();
 	}
 	
-	public boolean isActive() {
+	public boolean isActive()
+	{
 		return testCase.isActive();
 	}
 	
-	public void addToTestLink(TestLinkAPIClient apiClient, String loginUserName) throws TestLinkAPIException {
+	public void addToTestLink(
+		TestLinkAPIClient apiClient,
+		String loginUserName) throws TestLinkAPIException
+	{
 		testCase.addToTestLink(apiClient, loginUserName);
 	}
 	
-	public TestCaseExecutor getExecutor() {
+	public TestCaseExecutor getExecutor()
+	{
 		return testCase.getExecutor();
 	}
 	
 	public void setExecutor(
-		TestCaseExecutor executor) {
+		TestCaseExecutor executor)
+	{
 		testCase.setExecutor(executor);
+	}
+	
+	public void setHtmlText(String html) {
+		
+	}
+	
+	public String getHtmlText() {
+		return displayHtml();
+	}
+	
+	public String displayHtml()
+	{
+		String  detail = "No detail information available";
+		if ( testCase != null ) {
+			detail = HtmlMessageText.OPEN_HTML_DOC + "<b>Name:</b></p><p>" + testCase.getTestCaseName()
+			+ "</p>" + "<p><b>Summary:</b></p>"
+				+ "<p>" + testCase.getTestCaseSummary() + "</p>" + "<p><b>Steps:</b></p>"
+				+ "<p>" + testCase.getTestCaseSteps() + "</p>" + "<p><b>Expected Results:</b></p><p>"
+				+ testCase.getTestCaseExpectedResults() + HtmlMessageText.CLOSE_HTML_DOC;
+		}
+		return detail;
 	}
 }

@@ -16,21 +16,24 @@ public class ManualResultsInput
 	 */
 	public static void setManualTestResults(
 		TestCase tc,
+		String htmlDescription, 
 		TestCaseExecutor te)
 	{
 		// Open the dialog and get the information
-		ManualResultsDialog dlg = new ManualResultsDialog(tc, new LengthValidator());
+		ManualResultsDialog dlg = new ManualResultsDialog(tc.getTestCaseName(),
+			htmlDescription, new LengthValidator());
 		dlg.open();
 		
 		// Assign the text
 		String note = dlg.getValue();
+		note = htmlFormat(note);
 		te.setExecutionNotes(note);
 		
 		// Assign the status results
 		int ret = dlg.getReturnCode();
-		if ( ret == ManualResultsDialog.PASSED) {
+		if ( ret == ManualResultsDialog.PASSED ) {
 			te.setExecutionResult(TestCaseExecutor.RESULT_PASSED);
-		} else if ( ret == ManualResultsDialog.BLOCKED) {
+		} else if ( ret == ManualResultsDialog.BLOCKED ) {
 			te.setExecutionResult(TestCaseExecutor.RESULT_BLOCKED);
 		} else {
 			te.setExecutionResult(TestCaseExecutor.RESULT_FAILED);
@@ -41,6 +44,26 @@ public class ManualResultsInput
 		} else {
 			te.setExecutionResult(TestCaseExecutor.RESULT_FAILED);
 		}
+	}
+	
+	private static String htmlFormat(
+		String note)
+	{
+		char cret = new String("\r").charAt(0);
+		char nl = new String("\n").charAt(0);
+		StringBuffer buffer = new StringBuffer("");
+		for ( int i = 0; i < note.length(); i++ ) {
+			char c = note.charAt(i);
+			if ( c == cret ) {
+				buffer.append("</pre></p>");
+			} else if ( c == nl ) {
+				buffer.append("<p><pre>");
+			} else {
+				buffer.append(c);
+			}
+		}
+		note = buffer.toString();
+		return "<p><pre>" + note + "</pre></p>";
 	}
 }
 
@@ -67,7 +90,6 @@ class LengthValidator implements IInputValidator
 		if ( len < 11 ) {
 			return "Too short";
 		}
-
 
 		// Input must be OK
 		return null;

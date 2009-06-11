@@ -33,10 +33,10 @@ import java.util.ArrayList;
  * 
  *
  */
-public class TreeParent extends TreeObject
+public class TreeParentNode extends TreeNode
 {
 	protected ArrayList children;
-	public TreeParent(
+	public TreeParentNode(
 		String name)
 	{
 		super(name);
@@ -49,7 +49,7 @@ public class TreeParent extends TreeObject
 	 * @param child
 	 */
 	public void addChild(
-		TreeObject child)
+		TreeNode child)
 	{
 		children.add(child);
 		child.setParent(this);
@@ -61,13 +61,13 @@ public class TreeParent extends TreeObject
 	 * @param child
 	 */
 	public void removeChild(
-		TreeObject child)
+		TreeNode child)
 	{
-		if ( child instanceof TreeParent ) {
-			TreeParent childInParentRole = (TreeParent) child;
-			TreeObject[] grandchildren = childInParentRole.getChildren(true);
+		if ( child instanceof TreeParentNode ) {
+			TreeParentNode childInParentRole = (TreeParentNode) child;
+			TreeNode[] grandchildren = childInParentRole.getChildren(true);
 			for ( int i = 0; i < grandchildren.length; i++ ) {
-				TreeObject grandchild = grandchildren[i];
+				TreeNode grandchild = grandchildren[i];
 				removeChild(grandchild);
 			}
 		}
@@ -80,7 +80,7 @@ public class TreeParent extends TreeObject
 	 * 
 	 * @return
 	 */
-	public TreeObject[] getChildren()
+	public TreeNode[] getChildren()
 	{
 		return getChildren(false);
 	}
@@ -93,7 +93,7 @@ public class TreeParent extends TreeObject
 	 * @param skipFind
 	 * @return
 	 */
-	public TreeObject[] getChildren(
+	public TreeNode[] getChildren(
 		boolean skipFind)
 	{
 		if ( !skipFind ) {
@@ -101,7 +101,7 @@ public class TreeParent extends TreeObject
 				findChildren();
 			}
 		}
-		return (TreeObject[]) children.toArray(new TreeObject[children.size()]);
+		return (TreeNode[]) children.toArray(new TreeNode[children.size()]);
 	}
 
 	/**

@@ -49,7 +49,11 @@ import org.eclipse.ui.part.ViewPart;
 
 public class TestLinkView extends ViewPart
 {
+	// Singletons
 	public static TreeViewer viewer;
+	public static TestLinkTree testLinkTree;
+	
+	// locals
 	private DrillDownAdapter drillDownAdapter;
 	private Action doubleClickAction;
 	private TestLinkActions testPlanActions = new TestLinkActions();
@@ -82,7 +86,7 @@ public class TestLinkView extends ViewPart
 		
 			// Setup adapter
 			drillDownAdapter = new DrillDownAdapter(viewer);
-			final TestLinkTree testLinkTree = new TestLinkTree(prefs.getDefaultProject());
+			testLinkTree = new TestLinkTree(prefs.getDefaultProject());
 		
 			// Setup content provider
 			ViewContentProvider contentProvider = new ViewContentProvider(getViewSite(),
@@ -99,7 +103,10 @@ public class TestLinkView extends ViewPart
 			viewer.setInput(getViewSite());
 		
 			// Create actions
-			testPlanActions.makeActions(doubleClickAction, labelProvider);
+			testPlanActions.makeActions(labelProvider);
+			
+			// Create double click action
+			doubleClickAction = new TestLinkAction(labelProvider, TestLinkAction.DOUBLE_CLICK, "Get information about the node.");
 		
 			// Assign actions
 			hookContextMenu(viewer);

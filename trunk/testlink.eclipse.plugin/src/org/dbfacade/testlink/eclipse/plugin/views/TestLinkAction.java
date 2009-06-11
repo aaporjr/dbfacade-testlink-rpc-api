@@ -9,8 +9,8 @@ import org.dbfacade.testlink.eclipse.plugin.handlers.ExecuteTestListener;
 import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.PlanTree;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ProjectTree;
-import org.dbfacade.testlink.eclipse.plugin.views.tree.TestLinkTree;
-import org.dbfacade.testlink.eclipse.plugin.views.tree.TreeParent;
+import org.dbfacade.testlink.eclipse.plugin.views.tree.TreeNode;
+import org.dbfacade.testlink.eclipse.plugin.views.tree.TreeParentNode;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ViewLabelProvider;
 import org.dbfacade.testlink.tc.autoexec.ExecuteTestCases;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
@@ -38,6 +38,8 @@ public class TestLinkAction extends Action
 	public static final String RESUBMIT_PREPARE = "Resubmit to preparation step";
 	public static final String DOUBLE_CLICK = "doble click";
 	public static final String REFRESH = "Refresh";
+	public static final String TREE_NODE_INFO = "TestLink Item Details";
+
 
 	// private
 	private String actionName;
@@ -81,7 +83,12 @@ public class TestLinkAction extends Action
 				 handleProjectAction(obj, true);
 			} else if ( actionName.equals(CLOSE_PROJECT) ) {
 				removeProject(obj);
-			}else {
+			} else if ( actionName.equals(DOUBLE_CLICK) || actionName.equals(TREE_NODE_INFO)) {
+				if ( obj instanceof TreeNode ) {
+					TreeNode node = (TreeNode) obj;
+					showNodeInfo(node);
+				}
+			} else {
 				showMessage(TestLinkView.viewer,
 					"The " + actionName + " action for " + obj.toString()
 					+ " is not implemented at this time.");
@@ -221,20 +228,20 @@ public class TestLinkAction extends Action
 	}
 	
 	private void openProject(ProjectTree tree, String projectName, boolean replaceRoot) {
-		TreeParent invisibleRoot = TestLinkTree.getInvisibleRoot();
+		TreeParentNode invisibleRoot = TestLinkView.testLinkTree.getInvisibleRoot();
 		ProjectTree visibleRoot=null;
 		if ( replaceRoot ) {
 			invisibleRoot.removeChild(tree);
-			TestLinkTree.addProject(visibleRoot, projectName);
+			TestLinkView.testLinkTree.addProject(visibleRoot, projectName);
 		} else {
-			TestLinkTree.addProject(visibleRoot, projectName);
+			TestLinkView.testLinkTree.addProject(visibleRoot, projectName);
 		}
 		TestLinkView.refresh();
 	}
 	
 	private void removeProject(Object obj) {
 		if ( obj instanceof ProjectTree) {
-			TreeParent invisibleRoot = TestLinkTree.getInvisibleRoot();
+			TreeParentNode invisibleRoot = TestLinkView.testLinkTree.getInvisibleRoot();
 			ProjectTree tree = (ProjectTree) obj;
 			invisibleRoot.removeChild(tree);
 			if ( !invisibleRoot.hasChildren() ) {
@@ -244,6 +251,17 @@ public class TestLinkAction extends Action
 			TestLinkView.refresh();
 		}
 	}
+
+	/*
+	 * TestLink has implemented their information storage in HTML
+	 */
+	private void showNodeInfo(TreeNode node) {
+		BrowserMessageDialog dialog = new BrowserMessageDialog(TestLinkView.viewer.getControl().getShell(), "Item Details");
+		dialog.setHtml(node.displayHtml());
+		dialog.open();
+		dialog.close();
+	}
+	
 	
 	private void showMessage(
 		TreeViewer viewer,

@@ -24,11 +24,16 @@ import org.dbfacade.testlink.tc.autoexec.EmptyExecutor;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
 
 public class ManualExecutor extends EmptyExecutor {
+	String htmlDescription = "<html><body><p>No info available</p></body></html>";
 
 	public void execute(TestCase tc) {
 		this.setExecutionState(STATE_RUNNING);
 		try {
-			ManualResultsInput.setManualTestResults(tc, this);
+			if ( tc instanceof HtmlMessageText ) {
+				HtmlMessageText info = (HtmlMessageText) tc;
+				htmlDescription = info.getHtmlText();
+			}
+			ManualResultsInput.setManualTestResults(tc, htmlDescription, this);
 		} catch (Exception e) {
 			this.setExecutionResult(RESULT_FAILED);
 			this.setExecutionState(STATE_BOMBED);
@@ -36,4 +41,6 @@ public class ManualExecutor extends EmptyExecutor {
 		}
 		this.setExecutionState(STATE_COMPLETED);
 	}
+	
+
 }

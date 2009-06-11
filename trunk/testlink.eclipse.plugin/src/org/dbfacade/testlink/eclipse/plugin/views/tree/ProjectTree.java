@@ -7,14 +7,19 @@ import java.util.Map;
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.eclipse.plugin.UserMsg;
 import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
+import org.dbfacade.testlink.eclipse.plugin.views.HtmlMessageText;
 import org.dbfacade.testlink.tc.autoexec.TestPlan;
 import org.dbfacade.testlink.tc.autoexec.TestPlanLoader;
-import org.dbfacade.testlink.tc.autoexec.TestProject;;
+import org.dbfacade.testlink.tc.autoexec.TestProject;
 
 
-public class ProjectTree extends TreeParent
+;
+
+
+public class ProjectTree extends TreeParentNode
 {
-	public static final String OPEN_TREE_PLACE_HOLDER="Right click to open project";
+	public static final String OPEN_TREE_PLACE_HOLDER = "Right click to open project";
+	public static final String UNABLE_TO_OPEN_PREFIX = "Unable to open project: ";
 	private String projectName;
 	private TestProject project = null;
 	
@@ -40,10 +45,11 @@ public class ProjectTree extends TreeParent
 	{
 		super(project.getProjectName());
 		this.project = project;
-		this.projectName = project.getProjectName();
+		setProjectName(project.getProjectName());
 	}
 	
-	public boolean isOpen() {
+	public boolean isOpen()
+	{
 		return (project != null);
 	}
 	
@@ -61,15 +67,34 @@ public class ProjectTree extends TreeParent
 		TestProject project)
 	{
 		this.project = project;
-		this.setName(project.getProjectName());
+		setProjectName(projectName);
+	}
+	
+	public void setProjectName(
+		String projectName)
+	{
+		if ( project != null ) {
+			if ( project.isActive() ) {
+				projectName = projectName + " {Active}";
+			} else {
+				projectName = projectName + " {Inactive}";
+			}
+		}
+		this.setName(projectName);
 	}
 	
 	/**
-	 * Always return true since if there are not children we will open a no test plans message.
+	 * When a project is not a place holder project always return true.
+	 * <p>
+	 * Note: If there are no children we will open a no test plans message.
 	 */
 	public boolean hasChildren()
 	{
-		return true;
+		if ( isOpenProjectPlaceholderNode() ) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 	
 	public void findChildren()
@@ -78,7 +103,11 @@ public class ProjectTree extends TreeParent
 			TestLinkPreferences pref = new TestLinkPreferences();
 			TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
 
-			TestPlanLoader loader = new TestPlanLoader(projectName, apiClient);
+			String pn = projectName;
+			if ( project != null ) {
+				pn = project.getProjectName();
+			}
+			TestPlanLoader loader = new TestPlanLoader(pn, apiClient);
 			Map<Integer,
 				TestPlan> plans = loader.getPlans();
 		
@@ -99,8 +128,21 @@ public class ProjectTree extends TreeParent
 		}
 	}
 	
-	public boolean isOpenProjectPlaceholderNode() {
-		return (this.getName().equals(OPEN_TREE_PLACE_HOLDER));
+	public boolean isOpenProjectPlaceholderNode()
+	{
+		return (this.getName().equals(OPEN_TREE_PLACE_HOLDER)
+			|| this.getName().startsWith(UNABLE_TO_OPEN_PREFIX) || !(project.isActive()));
+	}
+	
+	public String displayHtml()
+	{
+		String detail = "No detail information is available.";
+		if ( project != null ) {
+			detail = HtmlMessageText.OPEN_HTML_DOC + "<b>Name:</b></p><p>" + project.getProjectName() 
+			+ "</p><p>" + "<b>Description:</b></p><p>"
+				+ project.getProjectDescription() + HtmlMessageText.CLOSE_HTML_DOC;
+		}
+		return detail;
 	}
 	
 }

@@ -40,6 +40,7 @@ public class ViewLabelProvider extends LabelProvider
 	private Image plan_ready;
 	private Image plan_passed;
 	private Image plan_failed;
+	private Image plan_inactive;
 	private Image bombed;
 	private Image running_auto;
 	private Image wait_manual_feedback;
@@ -56,8 +57,8 @@ public class ViewLabelProvider extends LabelProvider
 	private String fileProjectOpen = "icons/drawer_open.png";
 	private String fileProjectClose = "icons/drawer.png";
 	private String fileProjectSwitch = "icons/drawer_switch.png";
-	private String fileExec="icons/exec.gif";
-	private String filePrep="icons/new_con.gif";
+	private String fileExec = "icons/exec.gif";
+	private String filePrep = "icons/new_con.gif";
 
 	public ViewLabelProvider(
 		IConfigurationElement cfg)
@@ -68,6 +69,7 @@ public class ViewLabelProvider extends LabelProvider
 		plan_ready = getImage("icons/folder_yellow.png");
 		plan_passed = getImage("icons/folder.png");
 		plan_failed = getImage("icons/folder_red.png");
+		plan_inactive = getImage("icons/inactive.png");
 		bombed = getImage("icons/bomb.png");
 		running_auto = getImage("icons/wait.png");
 		wait_manual_feedback = getImage("icons/hand.png");
@@ -103,7 +105,9 @@ public class ViewLabelProvider extends LabelProvider
 		// Take care of plan requests
 		if ( obj instanceof PlanTree ) {
 			PlanTree tree = (PlanTree) obj;
-			if ( tree.hasTestFailed() && tree.hasTestRun() ) {
+			if ( !tree.isActive() ) {
+				return plan_inactive;
+			} else if ( tree.hasTestFailed() && tree.hasTestRun() ) {
 				return plan_failed;
 			} else if ( tree.hasTestPassed() && tree.hasTestRun() ) {
 				return plan_passed;
@@ -117,46 +121,52 @@ public class ViewLabelProvider extends LabelProvider
 			
 			TestCaseLeaf tcLeaf = (TestCaseLeaf) obj;
 			TestCase tc = tcLeaf.getTestCase();
-			TestCaseExecutor te = tc.getExecutor();
+			if ( tc != null ) {
+				TestCaseExecutor te = tc.getExecutor();
 			
-			boolean isImageSet = true;
-			if ( te != null ) {
-				if ( te.getExecutionState() == TestCaseExecutor.STATE_BOMBED ) {
-					return bombed;
-				} else if ( te.getExecutionState() == TestCaseExecutor.STATE_RUNNING ) {
-					if ( tc.isAutoExec() ) {
-						return running_auto;
+				boolean isImageSet = true;
+				if ( te != null ) {
+					if ( te.getExecutionState() == TestCaseExecutor.STATE_BOMBED ) {
+						return bombed;
+					} else if ( te.getExecutionState() == TestCaseExecutor.STATE_RUNNING ) {
+						if ( tc.isAutoExec() ) {
+							return running_auto;
+						} else {
+							return wait_manual_feedback;
+						}
+					} else if ( te.getExecutionState() == TestCaseExecutor.STATE_COMPLETED ) {
+						if ( te.getExecutionResult() == TestCaseExecutor.RESULT_BLOCKED ) {
+							return blocked;
+						} else if ( te.getExecutionResult()
+							== TestCaseExecutor.RESULT_PASSED ) {
+							return passed;
+						} else {
+							return failed;
+						}
 					} else {
-						return wait_manual_feedback;
-					}
-				} else if ( te.getExecutionState() == TestCaseExecutor.STATE_COMPLETED ) {
-					if ( te.getExecutionResult() == TestCaseExecutor.RESULT_BLOCKED ) {
-						return blocked;
-					} else if ( te.getExecutionResult() == TestCaseExecutor.RESULT_PASSED ) {
-						return passed;
-					} else {
-						return failed;
+						isImageSet = false;
 					}
 				} else {
-					isImageSet = false;
+					isImageSet = false;			
+				}
+			
+				if ( !isImageSet ) {
+					if ( tcLeaf.getTestType() == TestCaseLeaf.AUTOMATED_WITH_EXECUTOR ) {
+						return auto_exec_good;
+					} else if ( tcLeaf.getTestType()
+						== TestCaseLeaf.AUTOMATED_AND_INCOMPLETE ) {
+						return auto_exec_bad;
+					} else {
+						return manual_exec;
+					}
 				}
 			} else {
-				isImageSet = false;			
-			}
-			
-			if ( !isImageSet ) {
-				if ( tcLeaf.getTestType() == TestCaseLeaf.AUTOMATED_WITH_EXECUTOR ) {
-					return auto_exec_good;
-				} else if ( tcLeaf.getTestType() == TestCaseLeaf.AUTOMATED_AND_INCOMPLETE ) {
-					return auto_exec_bad;
-				} else {
-					return manual_exec;
-				}
+				return auto_exec_bad;
 			}
 		}
 		
 		// Default at the end
-		if ( obj instanceof TreeParent ) {
+		if ( obj instanceof TreeParentNode ) {
 			imageKey = ISharedImages.IMG_OBJ_FOLDER;
 		}
 		
@@ -179,7 +189,8 @@ public class ViewLabelProvider extends LabelProvider
 			if ( a.getActionName().equals(TestLinkAction.SWITCH_PROJECT) ) {
 				return getImageDescriptor(fileProjectSwitch);
 			}
-			if ( a.getActionName().startsWith(TestLinkAction.PLAN_EXEC_DEFAULT.substring(0,5)) ) {
+			if ( a.getActionName().startsWith(
+				TestLinkAction.PLAN_EXEC_DEFAULT.substring(0, 5)) ) {
 				return getImageDescriptor(fileExec);
 			}
 			if ( a.getActionName().equals(TestLinkAction.RESUBMIT_PREPARE) ) {
@@ -187,8 +198,9 @@ public class ViewLabelProvider extends LabelProvider
 			}
 		}
 		return null;
+
 		/* PlatformUI.getWorkbench().getSharedImages().
-			getImageDescriptor(ISharedImages.IMG_TOOL_REDO); //IMG_OBJS_INFO_TSK); */
+		 getImageDescriptor(ISharedImages.IMG_TOOL_REDO); //IMG_OBJS_INFO_TSK); */
 	}
 	
 	/*

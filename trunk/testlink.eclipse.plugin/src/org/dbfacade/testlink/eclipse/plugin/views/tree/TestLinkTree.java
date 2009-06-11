@@ -30,7 +30,7 @@ import org.dbfacade.testlink.tc.autoexec.TestProject;
 public class TestLinkTree
 {
 	// Singleton for a single viewer
-	private static TreeParent invisibleRoot;
+	private TreeParentNode invisibleRoot;
 	
 	// First visible root
 	private ProjectTree visibleRoot;
@@ -39,18 +39,18 @@ public class TestLinkTree
 		String failMessage)
 	{
 		if ( invisibleRoot == null ) {
-			invisibleRoot = new TreeParent("");
+			invisibleRoot = new TreeParentNode("");
 		} else {
-			TreeObject[] children = invisibleRoot.getChildren(true);
+			TreeNode[] children = invisibleRoot.getChildren(true);
 			for (int i=0; i < children.length; i++) {
-				TreeObject child = children[i];
+				TreeNode child = children[i];
 				invisibleRoot.removeChild(child);
 			}
 		}
 		addPreferedProject(visibleRoot, failMessage);
 	}
 	
-	public static void addPreferedProject(
+	public void addPreferedProject(
 		ProjectTree visibleRoot,
 		String failMessage)
 	{
@@ -58,13 +58,13 @@ public class TestLinkTree
 			TestLinkPreferences pref = new TestLinkPreferences();
 			addProject(visibleRoot, pref.getDefaultProject());
 		} catch ( Exception e ) {
-			visibleRoot = new ProjectTree("Unable to build : " + failMessage);
+			visibleRoot = new ProjectTree(ProjectTree.UNABLE_TO_OPEN_PREFIX + failMessage);
 			invisibleRoot.addChild(visibleRoot);
 			UserMsg.error(e, "Failed to build the project root node.");
 		}	
 	}
 	
-	public static void addProject(
+	public void addProject(
 		ProjectTree visibleRoot,
 		String projectName)
 	{
@@ -75,13 +75,13 @@ public class TestLinkTree
 			visibleRoot = new ProjectTree(project);
 			invisibleRoot.addChild(visibleRoot);
 		} catch ( Exception e ) {
-			visibleRoot = new ProjectTree("Unable to build : " + projectName);
+			visibleRoot = new ProjectTree(ProjectTree.UNABLE_TO_OPEN_PREFIX + projectName);
 			invisibleRoot.addChild(visibleRoot);
 			UserMsg.error(e, "Failed to build the project root node.");
 		}			
 	}
 	
-	public static TreeParent getInvisibleRoot()
+	public TreeParentNode getInvisibleRoot()
 	{
 		return invisibleRoot;
 	}
