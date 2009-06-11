@@ -31,9 +31,6 @@ public class TestLinkRunner extends ApplicationWindow
 	public static final String CATEGORY_ID = "testlink.eclipse.plugin.commands.category";
 	public static final String CATEGORY_NAME = "TestLink";
 	
-	// flag for testing display
-	boolean useTestLink = true;
-	
 	public TestLinkRunner()
 	{
 		super(null);
@@ -42,27 +39,19 @@ public class TestLinkRunner extends ApplicationWindow
 	protected Control createContents(
 		Composite parent)
 	{
-		if ( useTestLink ) {
-			// Create window contents
-			TestLinkView testLinkView = new TestLinkView();
-			testLinkView.createTreeView(parent);
-			Tree tree = TestLinkView.viewer.getTree();
-			return tree;
-		} else {
-			TreeViewer tv = new TreeViewer(parent);
-			tv.setContentProvider(new FileTreeContentProvider());
-			tv.setInput(new File("C:\\"));
-			Tree tree = tv.getTree();
-			return tree;
-		}
-
+		parent.setSize(400, 600);
+		getShell().setText("TestLink Test Plan Execution Runner");
+		// Create window contents
+		TestLinkView testLinkView = new TestLinkView();
+		testLinkView.createTreeView(parent);
+		Tree tree = TestLinkView.viewer.getTree();
+		return tree;
 	}
 
 	public static void main(
 		String[] args)
 	{
 		try {
-			System.out.println("We have a TestLink launch with command.");
 			
 			// Create window
 			TestLinkRunner runner = new TestLinkRunner();
