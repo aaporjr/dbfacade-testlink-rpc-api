@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     David Saff (saff@mit.edu) - bug 102632: [JUnit] Support for JUnit 4.    
- *     Daniel R Padilla - Modified for use with TestLink plugin
+ *     Daniel R Padilla - Heavily modified for use with TestLink plugin
  *******************************************************************************/
 package org.dbfacade.testlink.eclipse.plugin.launcher;
 

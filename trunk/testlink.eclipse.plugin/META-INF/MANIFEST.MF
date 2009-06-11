@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Plugin Plug-in
 Bundle-SymbolicName: testlink.eclipse.plugin; singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 0.17.1
 Bundle-Activator: org.dbfacade.testlink.eclipse.plugin.Activator
 Bundle-Vendor: Daniel Padilla
 Require-Bundle: org.eclipse.ui,
