@@ -24,6 +24,7 @@ package org.dbfacade.testlink.eclipse.plugin.handlers;
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIConst;
 import org.dbfacade.testlink.api.client.TestLinkAPIResults;
+import org.dbfacade.testlink.eclipse.plugin.UserMsg;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
@@ -62,9 +63,11 @@ public class ChooseTestLinkProjectHandler extends SelectorHandler
 		text.setText(projectName);
 	}
 	
-	public void setAPIAccess(String currentProject,
-			String devKey,
-			String url) {
+	public void setAPIAccess(
+		String currentProject,
+		String devKey,
+		String url)
+	{
 		this.currentProject = currentProject;
 		this.devKey = devKey;
 		this.url = url;
@@ -76,37 +79,42 @@ public class ChooseTestLinkProjectHandler extends SelectorHandler
 	 */
 	private String chooseTestLinkProject()
 	{
-	
-		int p = 0;
-		TestLinkAPIResults results = null;
-		
 		try {
-			TestLinkAPIClient api = new TestLinkAPIClient(devKey, url);
-			results = api.getProjects();
-			p = results.size();
-		} catch ( Exception e ) {
-			e.printStackTrace();
-		}
-		String projects[] = new String[p];
+			int p = 0;
+			TestLinkAPIResults results = null;
 		
-		for (int i=0; i < p; i++) {
-			String project = (String) results.getValueByName(i, TestLinkAPIConst.API_RESULT_NAME);
-			if ( project != null ) {
-				projects[i] = project;
+			try {
+				TestLinkAPIClient api = new TestLinkAPIClient(devKey, url);
+				results = api.getProjects();
+				p = results.size();
+			} catch ( Exception e ) {
+				e.printStackTrace();
 			}
-		}
+			String projects[] = new String[p];
+		
+			for ( int i = 0; i < p; i++ ) {
+				String project = (String) results.getValueByName(i,
+					TestLinkAPIConst.API_RESULT_NAME);
+				if ( project != null ) {
+					projects[i] = project;
+				}
+			}
 	
-		ILabelProvider labelProvider = new LabelProvider();
-		ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(),
-			labelProvider);
-		dialog.setTitle("TestLink Project");
-		dialog.setMessage("TestLink Projects");
-		dialog.setElements(projects);
+			ILabelProvider labelProvider = new LabelProvider();
+			ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(),
+				labelProvider);
+			dialog.setTitle("TestLink Project");
+			dialog.setMessage("TestLink Projects");
+			dialog.setElements(projects);
         
-		if ( dialog.open() == Window.OK ) {
-			currentProject = (String) dialog.getFirstResult();
+			if ( dialog.open() == Window.OK ) {
+				currentProject = (String) dialog.getFirstResult();
+			}
+			return currentProject;
+		} catch ( Exception e ) {
+			UserMsg.error(e, "Unable to select TestLink projects.");
+			return currentProject;
 		}
-		return currentProject;
 	}
     
 }

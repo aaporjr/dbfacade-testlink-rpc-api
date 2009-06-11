@@ -5,6 +5,7 @@ import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIConst;
 import org.dbfacade.testlink.api.client.TestLinkAPIResults;
 import org.dbfacade.testlink.eclipse.plugin.UserMsg;
+import org.dbfacade.testlink.eclipse.plugin.handlers.ChooseSingleElementDialog;
 import org.dbfacade.testlink.eclipse.plugin.handlers.ExecuteTestListener;
 import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.PlanTree;
@@ -22,6 +23,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
 
@@ -39,7 +41,6 @@ public class TestLinkAction extends Action
 	public static final String DOUBLE_CLICK = "doble click";
 	public static final String REFRESH = "Refresh";
 	public static final String TREE_NODE_INFO = "TestLink Item Details";
-
 
 	// private
 	private String actionName;
@@ -78,12 +79,13 @@ public class TestLinkAction extends Action
 			} else if ( actionName.equals(REFRESH) ) {
 				TestLinkView.refresh();
 			} else if ( actionName.equals(OPEN_PROJECT) ) {
-				 handleProjectAction(obj, false);
+				handleProjectAction(obj, false);
 			} else if ( actionName.equals(SWITCH_PROJECT) ) {
-				 handleProjectAction(obj, true);
+				handleProjectAction(obj, true);
 			} else if ( actionName.equals(CLOSE_PROJECT) ) {
 				removeProject(obj);
-			} else if ( actionName.equals(DOUBLE_CLICK) || actionName.equals(TREE_NODE_INFO)) {
+			} else if ( actionName.equals(DOUBLE_CLICK)
+				|| actionName.equals(TREE_NODE_INFO) ) {
 				if ( obj instanceof TreeNode ) {
 					TreeNode node = (TreeNode) obj;
 					showNodeInfo(node);
@@ -166,19 +168,22 @@ public class TestLinkAction extends Action
 					tree.prepareTestPlanCases();
 				}
 			};
-			MonitorActionProgress runAction = 
-				new MonitorActionProgress("Re-running the prepare operation on test plan " + tree.getName(),  action);
+			MonitorActionProgress runAction = new MonitorActionProgress(
+				"Re-running the prepare operation on test plan " + tree.getName(), action);
 			runAction.startAndWait();
 		} catch ( Exception e ) {
 			UserMsg.error(e, "Could not prepare test plan again due to exception.");
 		}
 	}
 	
-	private void handleProjectAction(Object obj, boolean useSwitchAction) {
-		ProjectTree tree=null;
+	private void handleProjectAction(
+		Object obj,
+		boolean useSwitchAction)
+	{
+		ProjectTree tree = null;
 		
 		if ( obj instanceof ProjectTree ) {
-			tree= (ProjectTree) obj;
+			tree = (ProjectTree) obj;
 		} else {
 			return;
 		}
@@ -188,7 +193,8 @@ public class TestLinkAction extends Action
 		
 		try {
 			TestLinkPreferences pref = new TestLinkPreferences();
-			TestLinkAPIClient api = new TestLinkAPIClient(pref.getDevKey(), pref.getTestLinkAPIURL());
+			TestLinkAPIClient api = new TestLinkAPIClient(pref.getDevKey(),
+				pref.getTestLinkAPIURL());
 			results = api.getProjects();
 			p = results.size();
 		} catch ( Exception e ) {
@@ -196,27 +202,59 @@ public class TestLinkAction extends Action
 		}
 		String projects[] = new String[p];
 		
-		for (int i=0; i < p; i++) {
-			String project = (String) results.getValueByName(i, TestLinkAPIConst.API_RESULT_NAME);
+		for ( int i = 0; i < p; i++ ) {
+			String project = (String) results.getValueByName(i,
+				TestLinkAPIConst.API_RESULT_NAME);
 			if ( project != null ) {
 				projects[i] = project;
 			}
 		}
 	
-		ILabelProvider labelProvider = new LabelProvider();
-		ElementListSelectionDialog dialog = new ElementListSelectionDialog(TestLinkView.viewer.getControl().getShell(),
-			labelProvider);
-		dialog.setTitle("TestLink Project");
-		dialog.setMessage("TestLink Projects");
-		dialog.setElements(projects);
-        
-		String newProject;
-		if ( dialog.open() == Window.OK ) {
-			newProject = (String) dialog.getFirstResult();
-			if ( newProject == null || newProject.equals(currentProject) ) {
-				return;
+		String newProject=null;
+		try {
+			ILabelProvider labelProvider = new LabelProvider();
+			Shell shell = TestLinkView.viewer.getControl().getShell();
+	
+			// TODO: ElementListSelectionDialog as a bug and only
+			// works with the workbench and does not work in stand 
+			// alone application we need working solution implementation.
+			if ( TestLinkMode.isWorkbench() ) {
+				ElementListSelectionDialog eDialog = new ElementListSelectionDialog(shell,
+				labelProvider);
+				
+				eDialog.setTitle("TestLink Project");
+				eDialog.setMessage("TestLink Projects");
+				eDialog.setElements(projects);
+				eDialog.create();
+		        
+				if ( eDialog.open() == Window.OK ) {
+					newProject = (String) eDialog.getFirstResult();
+					if ( newProject == null || newProject.equals(currentProject) ) {
+						return;
+					}
+				} else {
+					return;
+				}
+			} else {
+				ChooseSingleElementDialog lDialog = new ChooseSingleElementDialog(shell,
+			            "TestLink Project",
+			            "Select a TestLink Project",
+			            projects
+			            );
+				
+				if ( lDialog.open() == Window.OK ) {
+					newProject = lDialog.getChoice();
+					if ( newProject == null || newProject.equals(currentProject) ) {
+						return;
+					}
+				} else {
+					return;
+				}
 			}
-		} else {
+			
+			
+		} catch ( Exception e ) {
+			UserMsg.error(e, "Could not diplay TestLink project listing.");
 			return;
 		}
 		
@@ -227,9 +265,13 @@ public class TestLinkAction extends Action
 		}
 	}
 	
-	private void openProject(ProjectTree tree, String projectName, boolean replaceRoot) {
+	private void openProject(
+		ProjectTree tree,
+		String projectName,
+		boolean replaceRoot)
+	{
 		TreeParentNode invisibleRoot = TestLinkView.testLinkTree.getInvisibleRoot();
-		ProjectTree visibleRoot=null;
+		ProjectTree visibleRoot = null;
 		if ( replaceRoot ) {
 			invisibleRoot.removeChild(tree);
 			TestLinkView.testLinkTree.addProject(visibleRoot, projectName);
@@ -239,8 +281,10 @@ public class TestLinkAction extends Action
 		TestLinkView.refresh();
 	}
 	
-	private void removeProject(Object obj) {
-		if ( obj instanceof ProjectTree) {
+	private void removeProject(
+		Object obj)
+	{
+		if ( obj instanceof ProjectTree ) {
 			TreeParentNode invisibleRoot = TestLinkView.testLinkTree.getInvisibleRoot();
 			ProjectTree tree = (ProjectTree) obj;
 			invisibleRoot.removeChild(tree);
@@ -255,13 +299,15 @@ public class TestLinkAction extends Action
 	/*
 	 * TestLink has implemented their information storage in HTML
 	 */
-	private void showNodeInfo(TreeNode node) {
-		BrowserMessageDialog dialog = new BrowserMessageDialog(TestLinkView.viewer.getControl().getShell(), "Item Details");
+	private void showNodeInfo(
+		TreeNode node)
+	{
+		BrowserMessageDialog dialog = new BrowserMessageDialog(
+			TestLinkView.viewer.getControl().getShell(), "Item Details");
 		dialog.setHtml(node.displayHtml());
 		dialog.open();
 		dialog.close();
 	}
-	
 	
 	private void showMessage(
 		TreeViewer viewer,

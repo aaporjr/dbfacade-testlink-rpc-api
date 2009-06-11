@@ -1,8 +1,9 @@
 package org.dbfacade.testlink.eclipse.plugin.launcher;
 
-import java.io.*;
-import java.util.*;
-import org.eclipse.jface.viewers.*;
+import java.io.File;
+
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.Viewer;
 
 public class FileTreeContentProvider implements ITreeContentProvider
 {

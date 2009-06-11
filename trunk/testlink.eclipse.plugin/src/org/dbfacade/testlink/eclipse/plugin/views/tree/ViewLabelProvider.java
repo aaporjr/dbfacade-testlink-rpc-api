@@ -21,7 +21,6 @@
 package org.dbfacade.testlink.eclipse.plugin.views.tree;
 
 
-import java.io.InputStream;
 import java.net.URL;
 
 import org.dbfacade.testlink.eclipse.plugin.views.TestLinkAction;
@@ -35,7 +34,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 
 public class ViewLabelProvider extends LabelProvider
