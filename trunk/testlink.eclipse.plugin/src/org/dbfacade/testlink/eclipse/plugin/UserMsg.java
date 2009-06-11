@@ -6,13 +6,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 
 
 public class UserMsg
 {
 	public static final String title = "TestLink View";
-	public static Shell shell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+	public static Shell shell; 
 	public static String packageName = "org.dbfacade.testlink.eclipse.plugin";
 	
 	public static void error(

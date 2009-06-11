@@ -134,9 +134,11 @@ public class TestLinkActions
 		manager.add(info);
 		manager.add(refresh);
 		manager.add(new Separator());
-		drillDownAdapter.addNavigationActions(manager);
-		// Other plug-ins can contribute there actions here
-		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+		
+		if ( TestLinkMode.isWorkbench() ) {
+			drillDownAdapter.addNavigationActions(manager);
+			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+		}
 	}
 	
 	/**

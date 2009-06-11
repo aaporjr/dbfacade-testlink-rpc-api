@@ -33,8 +33,18 @@ public class ViewContentProvider implements IStructuredContentProvider,
 	private TreeParentNode invisibleRoot;
 	private IViewSite viewSite;
 	
-	public ViewContentProvider(IViewSite viewSite, TreeParentNode invisibleRoot) {
+	public ViewContentProvider(
+		IViewSite viewSite,
+		TreeParentNode invisibleRoot)
+	{
 		this.viewSite = viewSite;
+		this.invisibleRoot = invisibleRoot;
+	}
+	
+	public ViewContentProvider(
+		TreeParentNode invisibleRoot)
+	{
+		this.viewSite = null;
 		this.invisibleRoot = invisibleRoot;
 	}
 
@@ -50,8 +60,14 @@ public class ViewContentProvider implements IStructuredContentProvider,
 	public Object[] getElements(
 		Object parent)
 	{
-		if ( parent.equals(viewSite) ) {
-			return getChildren(invisibleRoot);
+		if ( viewSite != null ) {
+			if ( parent.equals(viewSite) ) {
+				return getChildren(invisibleRoot);
+			}
+		} else {
+			if ( parent.equals(invisibleRoot) ) {
+				return getChildren(invisibleRoot);
+			}
 		}
 		return getChildren(parent);
 	}

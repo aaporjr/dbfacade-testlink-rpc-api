@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.dbfacade.testlink.eclipse.plugin.UserMsg;
 import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.handlers.ShowViewHandler;
@@ -55,11 +56,15 @@ public class TestLinkHandler extends AbstractHandler
 			Map params = new HashMap();
 			params.put("org.eclipse.ui.views.showView.viewId",
 				"org.dbfacade.testlink.eclipse.plugin.views.TestLinkView");
+			Command command = event.getCommand();
+			Object trigger = event.getTrigger();
+			Object context = event.getApplicationContext();
 			ShowViewHandler view = new ShowViewHandler();
-			ExecutionEvent goToView = new ExecutionEvent(event.getCommand(), params,
-				event.getTrigger(), event.getApplicationContext());
+			ExecutionEvent goToView = new ExecutionEvent(command, params,
+				trigger, context);
 			view.execute(goToView);
 		} catch ( Exception e ) {
+			e.printStackTrace();
 			UserMsg.error(e, "Unable to open the TestLink View.");
 		}
 		return null;

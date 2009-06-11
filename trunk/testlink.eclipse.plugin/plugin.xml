@@ -65,22 +65,22 @@
       </category>
    
       <command
-            name="Open Test Plans Viewer"
+            name="Open Test Plan Runner"
             categoryId="testlink.eclipse.plugin.commands.category"
-            id="testlink.eclipse.plugin.commands.sampleCommand">
+            id="testlink.eclipse.plugin.commands.testlinkview">
       </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            commandId="testlink.eclipse.plugin.commands.sampleCommand" 
+            commandId="testlink.eclipse.plugin.commands.testlinkview" 
             class="org.dbfacade.testlink.eclipse.plugin.handlers.TestLinkHandler">
       </handler>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
       <key
-            commandId="testlink.eclipse.plugin.commands.sampleCommand"
+            commandId="testlink.eclipse.plugin.commands.testlinkview"
             contextId="org.eclipse.ui.contexts.window"
             sequence="M1+6"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -95,7 +95,7 @@
                mnemonic="M"
                id="testlink.eclipse.plugin.menus.sampleMenu">
             <command
-                  commandId="testlink.eclipse.plugin.commands.sampleCommand"
+                  commandId="testlink.eclipse.plugin.commands.testlinkview"
                   mnemonic="S"
                   id="testlink.eclipse.plugin.menus.sampleCommand">
             </command>
@@ -106,7 +106,7 @@
          <toolbar
                id="testlink.eclipse.plugin.toolbars.sampleToolbar">
             <command
-                  commandId="testlink.eclipse.plugin.commands.sampleCommand"
+                  commandId="testlink.eclipse.plugin.commands.testlinkview"
                   icon="icons/testlink_logo.png"
                   tooltip="Open TestLink Test Plan Viewer"
                   id="testlink.eclipse.plugin.toolbars.sampleCommand">

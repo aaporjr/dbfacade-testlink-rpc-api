@@ -39,6 +39,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 
@@ -50,9 +53,9 @@ import org.eclipse.ui.part.ViewPart;
 public class TestLinkView extends ViewPart
 {
 	// Singletons
-	public static TreeViewer viewer;
 	public static TestLinkTree testLinkTree;
-	
+	public static TreeViewer viewer;
+
 	// locals
 	private DrillDownAdapter drillDownAdapter;
 	private Action doubleClickAction;
@@ -74,6 +77,13 @@ public class TestLinkView extends ViewPart
 	public void createPartControl(
 		Composite parent)
 	{
+		UserMsg.shell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+		createTreeView(parent);
+	}
+	
+	public void createTreeView(
+		Composite parent)
+	{
 		try {
 			// Initialize view
 			viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
@@ -89,8 +99,14 @@ public class TestLinkView extends ViewPart
 			testLinkTree = new TestLinkTree(prefs.getDefaultProject());
 		
 			// Setup content provider
-			ViewContentProvider contentProvider = new ViewContentProvider(getViewSite(),
-				testLinkTree.getInvisibleRoot());
+			ViewContentProvider contentProvider = null;
+			if ( TestLinkMode.isWorkbench() ) {
+				contentProvider = new ViewContentProvider(getViewSite(),
+					testLinkTree.getInvisibleRoot());
+			} else {
+				contentProvider = new ViewContentProvider(testLinkTree.getInvisibleRoot());
+			}
+			
 			viewer.setContentProvider(contentProvider);
 		
 			// Setup label provider
@@ -99,15 +115,20 @@ public class TestLinkView extends ViewPart
 			viewer.setLabelProvider(labelProvider);
 		
 			// Complete tree setup
-			// viewer.setSorter(new NameSorter()); -- No sorting we want it in our order of setup
-			viewer.setInput(getViewSite());
+			// viewer.setSorter(new NameSorter());
+			if ( TestLinkMode.isWorkbench() ) {
+				viewer.setInput(getViewSite());
+			} else {
+				viewer.setInput(testLinkTree.getInvisibleRoot());
+			}
 		
 			// Create actions
 			testPlanActions.makeActions(labelProvider);
 			
 			// Create double click action
-			doubleClickAction = new TestLinkAction(labelProvider, TestLinkAction.DOUBLE_CLICK, "Get information about the node.");
-		
+			doubleClickAction = new TestLinkAction(labelProvider,
+				TestLinkAction.DOUBLE_CLICK, "Get information about the node.");
+
 			// Assign actions
 			hookContextMenu(viewer);
 			hookDoubleClickAction();
@@ -117,31 +138,46 @@ public class TestLinkView extends ViewPart
 		}
 	}
 	
-	public static void refresh() {
+	public static void refresh()
+	{
 		Object[] expanded = viewer.getExpandedElements();
 		viewer.refresh();
 		viewer.setExpandedElements(expanded);
 	}
 	
-	public static void update(Object element) {
-        viewer.update(element, null);
-    }
+	public static void update(
+		Object element)
+	{
+		try {
+			if ( element != null ) {
+				viewer.update(element, null);
+			}
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			System.out.println("The element could not be update. " + element);
+		}
+	}
 	
-	public static void refresh(Object element) {
-		/*
-		Object[] expanded = viewer.getExpandedElements();
-		viewer.refresh();
-		viewer.setExpandedElements(expanded);
-		*/
-        viewer.refresh(element, true);
-        viewer.setExpandedState(element, true);
+	public static void refresh(
+		Object element)
+	{
+
+		try {
+			if ( element != null ) {
+				viewer.refresh(element, true);
+				viewer.setExpandedState(element, true);
         
-        // Stumbled across this way of making the tree finally refresh during a test
-        // TODO: Need to figure how to get the test to refresh in an expanded way
-        //       much like the junit plugin
-        viewer.collapseToLevel(element, TreeViewer.ALL_LEVELS);
-        viewer.expandToLevel(element, TreeViewer.ALL_LEVELS);
-    }
+				// Stumbled across this way of making the tree finally refresh during a test
+				// TODO: Need to figure how to get the test to refresh in an expanded way
+				// much like the junit plugin
+				viewer.collapseToLevel(element, TreeViewer.ALL_LEVELS);
+				viewer.expandToLevel(element, TreeViewer.ALL_LEVELS);
+			}
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			System.out.println("The element could not be refreshed. " + element);
+		}
+	}
 	
 	/*
 	 * Private methods
@@ -177,14 +213,21 @@ public class TestLinkView extends ViewPart
 		});
 		Menu menu = menuMgr.createContextMenu(viewer.getControl());
 		viewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, viewer);
+		
+		if ( TestLinkMode.isWorkbench() ) {
+			IWorkbenchPartSite site = getSite();
+			site.registerContextMenu(menuMgr, viewer);
+		}
 	}
 
 	private void contributeToActionBars()
 	{
-		IActionBars bars = getViewSite().getActionBars();
-		testPlanActions.fillLocalPullDown(bars.getMenuManager());
-		testPlanActions.fillLocalToolBar(drillDownAdapter, bars.getToolBarManager());
+		if ( TestLinkMode.isWorkbench() ) {
+			IViewSite site = getViewSite();
+			IActionBars bars = site.getActionBars();
+			testPlanActions.fillLocalPullDown(bars.getMenuManager());
+			testPlanActions.fillLocalToolBar(drillDownAdapter, bars.getToolBarManager());
+		}
 	}
 
 	private void hookDoubleClickAction()

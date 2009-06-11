@@ -21,7 +21,11 @@
 package org.dbfacade.testlink.eclipse.plugin.views.tree;
 
 
+import java.io.InputStream;
+import java.net.URL;
+
 import org.dbfacade.testlink.eclipse.plugin.views.TestLinkAction;
+import org.dbfacade.testlink.eclipse.plugin.views.TestLinkMode;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
 import org.dbfacade.testlink.tc.autoexec.TestCaseExecutor;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -79,6 +83,13 @@ public class ViewLabelProvider extends LabelProvider
 		auto_exec_bad = getImage("icons/page_white_delete.png");
 		auto_exec_good = getImage("icons/page_white_cup.png");
 		manual_exec = getImage("icons/page_manual.png");
+	}
+	
+	public URL getImageURL(
+		String strIcon)
+	{
+		URL u = this.getClass().getResource(strIcon);
+		return u;
 	}
 	
 	public String getText(
@@ -209,9 +220,16 @@ public class ViewLabelProvider extends LabelProvider
 	private ImageDescriptor getImageDescriptor(
 		String strIcon)
 	{
-		ImageDescriptor imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(
-			configElement.getNamespaceIdentifier(), strIcon);
-		return imageDescriptor;
+		try {
+			ImageDescriptor imageDescriptor = TestLinkMode.getImageDescriptor(
+				configElement, strIcon);
+			if ( imageDescriptor == null ) {
+				imageDescriptor = ImageDescriptor.createFromFile(this.getClass(), strIcon);
+			}
+			return imageDescriptor;
+		} catch ( Exception e ) {
+			return null;
+		}
 	}
 	
 	private Image getImage(
