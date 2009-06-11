@@ -59,9 +59,14 @@ public class TestLinkPreferences
 		return devKey;
 	}
 	
+	public String getTestLinkURL()
+	{
+		return testLinkURL;
+	}
+	
 	public String getTestLinkAPIURL()
 	{
-		return testLinkURL + "lib/api/xmlrpc.php";
+		return getTestLinkURL() + "/lib/api/xmlrpc.php";
 	}
 	
 	public String getTestCaseCreator()
