@@ -215,19 +215,10 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 	private void loadEclipseMissingJars(
 		ArrayList classpath)
 	{
-		// First traverse the required list and remove any that already match
+		// Get the required list		
 		ArrayList required = getRequiredList();
-		try {			
-			for ( int i = 0; i < classpath.size(); i++ ) {
-				String path = (String) classpath.get(i);
-				for ( int r = 0; r < required.size(); r++ ) {
-					String rpath = (String) required.get(r);
-					if ( path.contains(rpath) ) {
-						required.remove(r);
-					}
-				}
-			}
-		} catch ( Exception e ) {} // Not required if user loads all jars using GUI
+
+		
 		
 		// Now add what is needed by traversing eclipse home
 		try {
@@ -243,7 +234,18 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 					loadEclipseMissingJars(directory, classpath, required);
 				}
 			}
-		} catch ( Exception e ) {} // Not required if user loads all jars using GUI			
+		} catch ( Exception e ) {} // Not required if user loads all jars using GUI		
+		
+		// return the unique list
+		try {	
+			ArrayList unique = new ArrayList();
+			for ( int i = 0; i < classpath.size(); i++ ) {
+				String path = (String) classpath.get(i);
+				if ( unique.contains(path) ) {
+					classpath.remove(i);
+				}
+			}
+		} catch ( Exception e ) {} // Not required if user loads all jars using GUI
 	}
 		
 	private void loadEclipseMissingJars(
@@ -267,7 +269,6 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 								if ( cpath != null ) {
 									classpath.add(cpath);
 								}
-								required.remove(r);
 							}
 						}
 					}
