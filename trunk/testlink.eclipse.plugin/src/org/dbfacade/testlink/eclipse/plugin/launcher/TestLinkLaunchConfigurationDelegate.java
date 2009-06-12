@@ -312,7 +312,9 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 		required.add("jdimodel.jar");
 		required.add("org.eclipse.jdt.launching_");
 		required.add("org.eclipse.ui.ide_");
-		required.add("testlink.eclipse.plugin_");
+		required.add("testlink");
+		required.add("xmlrpc-");
+		required.add("commons");
 		return required;
 	}
 
