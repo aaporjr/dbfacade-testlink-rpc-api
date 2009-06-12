@@ -43,9 +43,7 @@ public class TestLinkTabGroup extends AbstractLaunchConfigurationTabGroup
 			SourceLookupTab srcTab = new SourceLookupTab();
 			EnvironmentTab envTab = new EnvironmentTab();
 			CommonTab commonTab = new CommonTab();
-			
-			loadClassPaths(classPathTab);
-			
+						
 			ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
 				testLinkTab, argsTab, classPathTab, jreTab, srcTab, envTab, commonTab
 			};
@@ -65,12 +63,4 @@ public class TestLinkTabGroup extends AbstractLaunchConfigurationTabGroup
 		super.setDefaults(config);
 	}
 	
-	/*
-	 * Private methods
-	 */
-	
-	
-	private void loadClassPaths(JavaClasspathTab classPathTab) {
-
-	}
 }
