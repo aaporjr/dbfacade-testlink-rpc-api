@@ -1,0 +1,51 @@
+<project name="TesTLinkAPIJavaClient" default="plugin" basedir=".">
+
+	<description>Build the testlink-api-client.jar</description>
+
+	<tstamp>
+		<format property="plugin.date" pattern="yyyyMMdd" locale="en,US"/>
+	</tstamp>
+
+	<!-- source and libraries -->
+	<property name="src.home" value="../src"/>
+	<property name="compile.lib" value="../runtimelibs"/>
+
+	<!-- plugin information -->
+	<property name="plugin.version" value="0.17.1"/>
+	<property name="plugin.home" value="testlink.eclipse.plugin_${plugin.version}"/>
+	<property name="plugin.jar.home" value="testlink.eclipse.plugin_${plugin.version}/plugins"/>
+	<property name="plugin.lib.home" value="testlink.eclipse.plugin_${plugin.version}/lib/"/>
+	<property name="plugin.file_prefix" value="testlink.eclipse.plugin_${plugin.version}"/>
+	<property name="plugin.zip" value="${plugin.file_prefix}.zip"/>
+	<property name="plugin.tar" value="${plugin.file_prefix}.tar"/>
+
+    
+	<path id="local.classpath">
+		<fileset dir="${compile.lib}">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
+	<target name="init">
+		<delete dir="${plugin.home}"/>
+	</target>
+
+	
+	<!-- Depends on manual build from eclipse. Make sure versions match -->
+	<target name="plugin" description="Generate the TestLink plugin">
+		<copy todir="${plugin.jar.home}" preservelastmodified="true">
+			<fileset dir="plugins" includes="**/*.jar"/>
+		</copy>
+		<copy todir="${plugin.lib.home}" preservelastmodified="true">
+			<fileset dir="${compile.lib}" includes="**/*"/>
+		</copy>
+		<copy todir="${plugin.lib.home}" preservelastmodified="true">
+			<fileset dir="plugins" includes="**/*.jar"/>
+		</copy>
+		<tar destfile="${plugin.tar}" basedir="." includes="${plugin.home}/**"/>		
+		<tar destfile="${plugin.tar}" basedir="." includes="${plugin.home}/**"/>		
+		<zip destfile="${plugin.zip}" basedir="." includes="${plugin.home}/**"/>		
+		<gzip destfile="${plugin.tar}.gz" src="${plugin.tar}"/>
+	</target>
+
+</project>
