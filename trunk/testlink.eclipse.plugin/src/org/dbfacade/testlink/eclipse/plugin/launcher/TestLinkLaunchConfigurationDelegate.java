@@ -17,6 +17,7 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.jdt.debug.ui.launchConfigurations.JavaClasspathTab;
 import org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate;
 import org.eclipse.jdt.launching.ExecutionArguments;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
@@ -99,7 +99,6 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 				classpath[a] = value;
 			}
 			
-
 			// Create VM config
 			VMRunnerConfiguration runConfig = new VMRunnerConfiguration(mainTypeName,
 				classpath);
@@ -218,8 +217,6 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 		// Get the required list		
 		ArrayList required = getRequiredList();
 
-		
-		
 		// Now add what is needed by traversing eclipse home
 		try {
 			String property = System.getProperty("eclipse.home.location"); 
@@ -238,12 +235,13 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 		
 		// return the unique list
 		try {	
-			ArrayList unique = new ArrayList();
+			Map unique = new HashMap();
 			for ( int i = 0; i < classpath.size(); i++ ) {
 				String path = (String) classpath.get(i);
-				if ( unique.contains(path) ) {
+				if ( unique.containsKey(path) || unique.containsValue(path) ) {
 					classpath.remove(i);
 				}
+				unique.put(path, path);
 			}
 		} catch ( Exception e ) {} // Not required if user loads all jars using GUI
 	}
@@ -266,7 +264,8 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 							String rpath = (String) required.get(r);
 							if ( child.contains(rpath) ) {
 								String cpath = f.getAbsolutePath();
-								if ( cpath != null ) {
+								if ( cpath != null && !cpath.contains("source")
+									&& !classpath.contains(cpath) ) {
 									classpath.add(cpath);
 								}
 							}
@@ -283,36 +282,36 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 	private ArrayList getRequiredList()
 	{
 		ArrayList required = new ArrayList();
-		required.add("org.eclipse.ui");
-		required.add("org.eclipse.swt");
-		required.add("org.eclipse.swt.win32");
-		required.add("org.eclipse.jface");
-		required.add("org.eclipse.core.commands");
-		required.add("org.eclipse.ui.workbench");
-		required.add("org.eclipse.core.runtime");
-		required.add("org.eclipse.osgi");
-		required.add("org.eclipse.equinox.common");
-		required.add("org.eclipse.core.jobs");
-		required.add("org.eclipse.core.runtime.compatibility.registry");
-		required.add("org.eclipse.equinox.registry");
-		required.add("org.eclipse.equinox.preferences");
-		required.add("org.eclipse.core.contenttype");
-		required.add("org.eclipse.equinox.app");
-		required.add("org.eclipse.jdt.ui");
-		required.add("com.ibm.icu");
-		required.add("org.eclipse.core.resources");
-		required.add("org.eclipse.core.variables");
-		required.add("org.eclipse.debug.core");
-		required.add("org.eclipse.debug.ui");
-		required.add("org.eclipse.jdt.core");
-		required.add("org.eclipse.jdt.compiler.apt");
-		required.add("org.eclipse.jdt.compiler.tool");
-		required.add("org.eclipse.jdt.debug.ui");
-		required.add("org.eclipse.jdt.debug");
-		required.add("org.eclipse.jdt.debug");
-		required.add("org.eclipse.jdt.launching");
-		required.add("org.eclipse.ui.ide");
-		required.add("testlink.eclipse");
+		required.add("org.eclipse.ui_");
+		required.add("org.eclipse.swt_");
+		required.add("org.eclipse.swt.win32.");
+		required.add("org.eclipse.jface_");
+		required.add("org.eclipse.core.commands_");
+		required.add("org.eclipse.ui.workbench_");
+		required.add("org.eclipse.core.runtime_");
+		required.add("org.eclipse.osgi_");
+		required.add("org.eclipse.equinox.common_");
+		required.add("org.eclipse.core.jobs_");
+		required.add("runtime_registry_compatibility");
+		required.add("org.eclipse.equinox.registry_");
+		required.add("org.eclipse.equinox.preferences_");
+		required.add("org.eclipse.core.contenttype_");
+		required.add("org.eclipse.equinox.app_");
+		required.add("org.eclipse.jdt.ui_");
+		required.add("com.ibm.icu_");
+		required.add("org.eclipse.core.resources_");
+		required.add("org.eclipse.core.variables_");
+		required.add("org.eclipse.debug.core_");
+		required.add("org.eclipse.debug.ui_");
+		required.add("org.eclipse.jdt.core_");
+		required.add("org.eclipse.jdt.compiler.apt_");
+		required.add("org.eclipse.jdt.compiler.tool_");
+		required.add("org.eclipse.jdt.debug.ui_");
+		required.add("jdi.jar");
+		required.add("jdimodel.jar");
+		required.add("org.eclipse.jdt.launching_");
+		required.add("org.eclipse.ui.ide_");
+		required.add("testlink.eclipse.plugin_");
 		return required;
 	}
 
