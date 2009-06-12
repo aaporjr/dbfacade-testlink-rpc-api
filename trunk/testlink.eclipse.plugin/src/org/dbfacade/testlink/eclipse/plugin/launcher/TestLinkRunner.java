@@ -1,20 +1,15 @@
 package org.dbfacade.testlink.eclipse.plugin.launcher;
 
 
-import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.dbfacade.testlink.eclipse.plugin.preferences.PreferenceConstants;
 import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
 import org.dbfacade.testlink.eclipse.plugin.views.TestLinkMode;
-import org.dbfacade.testlink.eclipse.plugin.views.TestLinkView;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.window.ApplicationWindow;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Tree;
 
 
 /**
@@ -24,44 +19,29 @@ import org.eclipse.swt.widgets.Tree;
  * @author Daniel Padilla
  *
  */
-public class TestLinkRunner extends ApplicationWindow
+public class TestLinkRunner
 {
-	public static final String COMMAND_ID = "testlink.eclipse.plugin.commands.testlinkview";
-	public static final String COMMAND_NAME = "TestLink Test Plan Execution";
-	public static final String CATEGORY_ID = "testlink.eclipse.plugin.commands.category";
-	public static final String CATEGORY_NAME = "TestLink";
 	
-	public TestLinkRunner()
-	{
-		super(null);
-	}
-	
-	protected Control createContents(
-		Composite parent)
-	{
-		parent.setSize(400, 600);
-		getShell().setText("TestLink Test Plan Execution Runner");
-		// Create window contents
-		TestLinkView testLinkView = new TestLinkView();
-		testLinkView.createTreeView(parent);
-		Tree tree = TestLinkView.viewer.getTree();
-		return tree;
-	}
-
 	public static void main(
 		String[] args)
 	{
 		try {
 			
+			// Get args
+			Map argMap = getArgs(args);
+			printArgs(args, argMap);
+			printClasspath();
+			
 			// Create window
-			TestLinkRunner runner = new TestLinkRunner();
+			TestLinkRunnerWindow runner = new TestLinkRunnerWindow();
 			TestLinkMode.mode = TestLinkMode.APPLICATION_MODE;
-			TestLinkPreferences.setAlternateStore(getArgs(args));
+			TestLinkPreferences.setAlternateStore(argMap);
 			
 			// Display window
 			runner.setBlockOnOpen(true);
 			runner.open();
 			Display.getCurrent().dispose();
+			
 		} catch ( Exception e ) {
 			e.printStackTrace();
 			System.out.println("The launch failed due to an exception.");
@@ -71,11 +51,24 @@ public class TestLinkRunner extends ApplicationWindow
 	/*
 	 * Private methods
 	 */
+	
+	private static void printArgs(
+		String[] args,
+		Map argMap)
+	{
+		System.out.print("[");
+		for ( int i = 0; i < args.length; i++ ) {
+			System.out.print(args[i] + ", ");
+		}
+		System.out.print("]\n");
+		System.out.println("\n" + argMap);
+	}
 
 	private static Map getArgs(
 		String[] args)
 	{
 		Map argMap = new HashMap();
+		argMap.put(PreferenceConstants.P_REPORT_RESULTS_AFTER_TEST, false);
 		try {
 			for ( int i = 0; i < args.length; i++ ) {
 				if ( args[i].equals(PreferenceConstants.P_DEFAULT_PROJECT_NAME) ) {
@@ -121,5 +114,19 @@ public class TestLinkRunner extends ApplicationWindow
 		}
 		return false;
 	}
+	
+	public static void printClasspath() {
+	 
+		// Get the System Classloader
+		ClassLoader sysClassLoader = ClassLoader.getSystemClassLoader();
+
+		// Get the URLs
+		URL[] urls = ((URLClassLoader) sysClassLoader).getURLs();
+
+		for ( int i = 0; i < urls.length; i++ ) {
+			System.out.println(urls[i].getFile());
+		}       
+
+	}
+} 
              
-}

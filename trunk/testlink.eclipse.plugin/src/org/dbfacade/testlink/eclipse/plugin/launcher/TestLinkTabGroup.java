@@ -19,7 +19,6 @@ import org.eclipse.debug.ui.EnvironmentTab;
 import org.eclipse.debug.ui.ILaunchConfigurationDialog;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.debug.ui.sourcelookup.SourceLookupTab;
-
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaArgumentsTab;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaClasspathTab;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaJRETab;
@@ -35,7 +34,8 @@ public class TestLinkTabGroup extends AbstractLaunchConfigurationTabGroup
 		ILaunchConfigurationDialog dialog,
 		String mode)
 	{
-		try {
+		try {	
+			
 			TestLinkLaunchConfigurationTab testLinkTab = new TestLinkLaunchConfigurationTab();
 			JavaArgumentsTab argsTab = new JavaArgumentsTab();
 			JavaClasspathTab classPathTab = new JavaClasspathTab();
@@ -43,6 +43,9 @@ public class TestLinkTabGroup extends AbstractLaunchConfigurationTabGroup
 			SourceLookupTab srcTab = new SourceLookupTab();
 			EnvironmentTab envTab = new EnvironmentTab();
 			CommonTab commonTab = new CommonTab();
+			
+			loadClassPaths(classPathTab);
+			
 			ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
 				testLinkTab, argsTab, classPathTab, jreTab, srcTab, envTab, commonTab
 			};
@@ -60,6 +63,14 @@ public class TestLinkTabGroup extends AbstractLaunchConfigurationTabGroup
 		ILaunchConfigurationWorkingCopy config)
 	{
 		super.setDefaults(config);
-		// AssertionVMArg.setArgDefault(config);
+	}
+	
+	/*
+	 * Private methods
+	 */
+	
+	
+	private void loadClassPaths(JavaClasspathTab classPathTab) {
+
 	}
 }
