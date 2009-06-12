@@ -252,14 +252,15 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 		ArrayList required)
 	{
 		try {
+			String baseDir = directory.getAbsolutePath();
 			String[] children = directory.list();
 			for ( int i = 0; i < children.length; i++ ) {
 				String child = children[i];
 				if ( child.startsWith("org") || child.endsWith("jar") ) {
-					File f = new File(child);
+					File f = new File(baseDir + "/" + child);
 					if ( f.isDirectory() ) {
 						loadEclipseMissingJars(f, classpath, required);
-					} else if ( child.endsWith("jar") ) {
+					} else if ( f.canRead() && child.endsWith("jar") ) {
 						for ( int r = 0; r < required.size(); r++ ) {
 							String rpath = (String) required.get(r);
 							if ( child.contains(rpath) ) {
