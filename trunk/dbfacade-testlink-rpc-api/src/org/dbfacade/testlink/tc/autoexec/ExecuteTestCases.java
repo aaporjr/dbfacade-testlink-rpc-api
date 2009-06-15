@@ -29,18 +29,19 @@ import org.dbfacade.testlink.api.client.TestLinkAPIException;
 
 public class ExecuteTestCases extends Thread
 {
-	private TestLinkAPIClient apiClient=null;
+	private TestLinkAPIClient apiClient = null;
 	private TestPlan testPlan;
 	private boolean hasTestRun = false;
 	private boolean hasTestFailed = false;
-	private boolean reportResultsToTestLink=true;
+	private boolean reportResultsToTestLink = true;
 	private TestCase[] cases;
 	private String manualExecutorClass;
 	private ArrayList<ExecuteTestCaseListener> listeners = new ArrayList();
-	private String buildName=null;
-	private int total=0;
-	private int remain=0;
+	private String buildName = null;
+	private int total = 0;
+	private int remain = 0;
 	private TestCase tc;
+	private int port = -1;
 	
 	/**
 	 * Executes the tests for test cases in a test plan.
@@ -84,7 +85,7 @@ public class ExecuteTestCases extends Thread
 	 * @param manualExecutorClass	Required
 	 */
 	public ExecuteTestCases(
-			TestLinkAPIClient apiClient,
+		TestLinkAPIClient apiClient,
 		TestPlan plan,
 		TestCase[] cases,
 		String buildName,
@@ -97,6 +98,17 @@ public class ExecuteTestCases extends Thread
 		this.manualExecutorClass = manualExecutorClass;
 		this.total = cases.length;
 		this.remain = this.total;
+	}
+	
+	/**
+	 * Request that the test be run remotely.
+	 * 
+	 * @param port
+	 */
+	public void setRemoteExecutionMode(
+		int port)
+	{
+		this.port = port;
 	}
 	
 	/**
@@ -128,11 +140,12 @@ public class ExecuteTestCases extends Thread
 	 * 
 	 * @param listener
 	 */
-	public void addListener(ExecuteTestCaseListener listener) {
+	public void addListener(
+		ExecuteTestCaseListener listener)
+	{
 		listeners.add(listener);
 	}
 	
-
 	/**
 	 * Execute the test results and report results or
 	 * execute the results in the background.
@@ -164,9 +177,9 @@ public class ExecuteTestCases extends Thread
 		hasTestRun = false;
 		try {
 			executionStart();
-			if ( this.testPlan == null ||
-			     this.cases == null) {
-				throw new TestLinkAPIException("All the variables have not been set so tests cannot be executed.");
+			if ( this.testPlan == null || this.cases == null ) {
+				throw new TestLinkAPIException(
+					"All the variables have not been set so tests cannot be executed.");
 			}
 			hasTestFailed = false;
 			
@@ -191,10 +204,10 @@ public class ExecuteTestCases extends Thread
 				
 				// If no executor is registered then create empty and run empty
 				if ( te == null && tc.isAutoExec() ) {
-					testCaseWithoutExecutor(tc);
 					te = new EmptyExecutor();
+					testCaseWithoutExecutor(tc);
 				}
-			
+				
 				// Execute the test case exception does not mean failure
 				try {
 					if ( tc.isManualExec() ) {
@@ -205,20 +218,34 @@ public class ExecuteTestCases extends Thread
 						}
 						tc.setExecutor(te);
 					} 
-					te.execute(tc);
+				} catch ( Exception e ) {
+					te = new EmptyExecutor();
+					testCaseWithoutExecutor(tc);
+					tc.setExecutor(te);
+				}
+		
+				try {
+					// Manual test cannot be run remotely since they
+					// require local input for the results.
+					if ( tc.isManualExec() ) {
+						ExecuteTestCase.execute(tc, te);
+					} else {
+						ExecuteTestCase.execute(tc, te, port);	
+					}
 					if ( te.getExecutionResult() != TestCaseExecutor.RESULT_PASSED ) {
 						hasTestFailed = true;
-					}
+					}			
 				} catch ( Exception e ) {
-					te.setExecutionResult(TestCaseExecutor.RESULT_FAILED);
-					te.setExecutionState(TestCaseExecutor.STATE_BOMBED);
-					hasTestFailed = true;
-					testCaseBombed(tc, te, e);
+					if ( te.getExecutionState() == TestCaseExecutor.STATE_BOMBED ) {
+						hasTestFailed = true;
+						testCaseBombed(tc, te, e);
+					} else {}
 				}
-			
-				if ( reportResultsToTestLink && apiClient != null) {
+
+				if ( reportResultsToTestLink && apiClient != null ) {
 					try {
-						TestCaseUtils.reportTestResult(apiClient, testPlan, tc, te, buildName) ;
+						TestCaseUtils.reportTestResult(apiClient, testPlan, tc, te,
+							buildName);
 					} catch ( Exception e ) {
 						hasTestFailed = true;
 						testCaseReportResultsFailed(tc, te, e);
@@ -247,26 +274,28 @@ public class ExecuteTestCases extends Thread
 	 * 
 	 * @param event
 	 */
-	private void testCasesReset() {
+	private void testCasesReset()
+	{
 		ExecuteTestCaseEvent event = new ExecuteTestCaseEvent();
 		event.eventType = ExecuteTestCaseEvent.TEST_CASES_RESET;
 		event.testPlan = testPlan;
 		event.totalTest = total;
 		event.remainingTest = remain;
 		event.hasTestFailed = hasTestFailed;
-		for (int i=0; i < listeners.size(); i++) {
+		for ( int i = 0; i < listeners.size(); i++ ) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.testCasesReset(event);
 		}
 	}
-	
 	
 	/*
 	 * Called before the test case runs
 	 * 
 	 * @param event
 	 */
-	private void testCaseStart(TestCase tc) {
+	private void testCaseStart(
+		TestCase tc)
+	{
 		ExecuteTestCaseEvent event = new ExecuteTestCaseEvent();
 		event.eventType = ExecuteTestCaseEvent.TEST_CASE_START;
 		event.testPlan = testPlan;
@@ -274,7 +303,7 @@ public class ExecuteTestCases extends Thread
 		event.totalTest = total;
 		event.remainingTest = remain;
 		event.hasTestFailed = hasTestFailed;
-		for (int i=0; i < listeners.size(); i++) {
+		for ( int i = 0; i < listeners.size(); i++ ) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.testCaseStart(event);
 		}
@@ -285,15 +314,17 @@ public class ExecuteTestCases extends Thread
 	 * 
 	 * @param event
 	 */
-	private void testCaseWithoutExecutor(TestCase tc) {
-		ExecuteTestCaseEvent event  = new ExecuteTestCaseEvent();
+	private void testCaseWithoutExecutor(
+		TestCase tc)
+	{
+		ExecuteTestCaseEvent event = new ExecuteTestCaseEvent();
 		event.eventType = ExecuteTestCaseEvent.TEST_CASE_EXECUTOR_MISSING;
 		event.testPlan = testPlan;
 		event.testCase = tc;
 		event.totalTest = total;
 		event.remainingTest = remain;
 		event.hasTestFailed = hasTestFailed;
-		for (int i=0; i < listeners.size(); i++) {
+		for ( int i = 0; i < listeners.size(); i++ ) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.testCaseWithoutExecutor(event);
 		}
@@ -304,17 +335,21 @@ public class ExecuteTestCases extends Thread
 	 * 
 	 * @param event
 	 */
-	private void testCaseReportResultsFailed(TestCase tc, TestCaseExecutor te, Exception e) {
+	private void testCaseReportResultsFailed(
+		TestCase tc,
+		TestCaseExecutor te,
+		Exception e)
+	{
 		ExecuteTestCaseEvent event = new ExecuteTestCaseEvent();
 		event.eventType = ExecuteTestCaseEvent.TEST_CASE_REPORTING_FAILED;
 		event.testPlan = testPlan;
 		event.testCase = tc;
-		event.testExecutor=te;
+		event.testExecutor = te;
 		event.e = e;
 		event.totalTest = total;
 		event.remainingTest = remain;
 		event.hasTestFailed = hasTestFailed;
-		for (int i=0; i < listeners.size(); i++) {
+		for ( int i = 0; i < listeners.size(); i++ ) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.testCaseReportResultsFailed(event);
 		}
@@ -326,17 +361,21 @@ public class ExecuteTestCases extends Thread
 	 * 
 	 * @param event
 	 */
-	private void testCaseBombed(TestCase tc, TestCaseExecutor te, Exception e) {
+	private void testCaseBombed(
+		TestCase tc,
+		TestCaseExecutor te,
+		Exception e)
+	{
 		ExecuteTestCaseEvent event = new ExecuteTestCaseEvent();
 		event.eventType = ExecuteTestCaseEvent.TEST_CASE_BOMBED;
 		event.testPlan = testPlan;
 		event.testCase = tc;
-		event.testExecutor=te;
+		event.testExecutor = te;
 		event.e = e;
 		event.totalTest = total;
 		event.remainingTest = remain;
 		event.hasTestFailed = hasTestFailed;
-		for (int i=0; i < listeners.size(); i++) {
+		for ( int i = 0; i < listeners.size(); i++ ) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.testCaseBombed(event);
 		}
@@ -348,16 +387,19 @@ public class ExecuteTestCases extends Thread
 	 * 
 	 * @param event
 	 */
-	private void testCaseCompleted(TestCase tc, TestCaseExecutor te) {
+	private void testCaseCompleted(
+		TestCase tc,
+		TestCaseExecutor te)
+	{
 		ExecuteTestCaseEvent event = new ExecuteTestCaseEvent();
 		event.eventType = ExecuteTestCaseEvent.TEST_CASE_COMPLETED;
 		event.testPlan = testPlan;
 		event.testCase = tc;
-		event.testExecutor=te;
+		event.testExecutor = te;
 		event.totalTest = total;
 		event.remainingTest = remain;
 		event.hasTestFailed = hasTestFailed;
-		for (int i=0; i < listeners.size(); i++) {
+		for ( int i = 0; i < listeners.size(); i++ ) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.testCaseCompleted(event);
 		}
@@ -368,14 +410,15 @@ public class ExecuteTestCases extends Thread
 	 * 
 	 * @param event
 	 */
-	private void executionStart() {
+	private void executionStart()
+	{
 		ExecuteTestCaseEvent event = new ExecuteTestCaseEvent();
 		event.eventType = ExecuteTestCaseEvent.EXECUTION_START;
 		event.testPlan = testPlan;
 		event.totalTest = total;
 		event.remainingTest = remain;
 		event.hasTestFailed = hasTestFailed;
-		for (int i=0; i < listeners.size(); i++) {
+		for ( int i = 0; i < listeners.size(); i++ ) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.executionStart(event);
 		}
@@ -386,7 +429,8 @@ public class ExecuteTestCases extends Thread
 	 * 
 	 * @param event
 	 */
-	private void executionSuccess() {
+	private void executionSuccess()
+	{
 		ExecuteTestCaseEvent event = new ExecuteTestCaseEvent();
 		event.eventType = ExecuteTestCaseEvent.EXECUTION_SUCCESS;
 		event.testPlan = testPlan;
@@ -394,7 +438,7 @@ public class ExecuteTestCases extends Thread
 		event.remainingTest = remain;
 		event.testCase = tc;
 		event.hasTestFailed = hasTestFailed;
-		for (int i=0; i < listeners.size(); i++) {
+		for ( int i = 0; i < listeners.size(); i++ ) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.executionSuccess(event);
 		}
@@ -406,7 +450,9 @@ public class ExecuteTestCases extends Thread
 	 * 
 	 * @param event
 	 */
-	private void executionFailed(Exception e) {
+	private void executionFailed(
+		Exception e)
+	{
 		ExecuteTestCaseEvent event = new ExecuteTestCaseEvent();
 		event.eventType = ExecuteTestCaseEvent.EXECUTION_FAILED;
 		event.testPlan = testPlan;
@@ -415,7 +461,7 @@ public class ExecuteTestCases extends Thread
 		event.totalTest = total;
 		event.remainingTest = remain;
 		event.hasTestFailed = hasTestFailed;
-		for (int i=0; i < listeners.size(); i++) {
+		for ( int i = 0; i < listeners.size(); i++ ) {
 			ExecuteTestCaseListener listener = listeners.get(i);
 			listener.executionFailed(event);
 		}
