@@ -1,12 +1,17 @@
 package org.dbfacade.testlink.tc.autoexec.server;
 
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 import org.dbfacade.testlink.tc.autoexec.EmptyExecutor;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
 import org.dbfacade.testlink.tc.autoexec.TestCaseExecutor;
+import org.dbfacade.testlink.tc.autoexec.TestPlan;
 
 
 public class RemoteClientExecutor extends EmptyExecutor
@@ -19,6 +24,7 @@ public class RemoteClientExecutor extends EmptyExecutor
 	private BufferedReader in = null;
 	private boolean isOpen = false;
 	private int port=0;
+	private TestPlan testPlan;
 
 	/**
 	 * Requires that the remote port be provided.
@@ -26,9 +32,12 @@ public class RemoteClientExecutor extends EmptyExecutor
 	 * @param port
 	 */
 	public RemoteClientExecutor(
-		int port)
+		int port,
+		TestPlan testPlan
+		)
 	{	
 		this.port = port;
+		this.testPlan = testPlan;
 	}
     
 	/**
@@ -90,7 +99,13 @@ public class RemoteClientExecutor extends EmptyExecutor
 	 * @param tc
 	 */
 	public void sendTestCaseRequest(TestCase tc) {
-		String request = ExecutionProtocol.STR_REQUEST +  ExecutionProtocol.STR_REQUEST_TYPE_TC_EXEC + tc.getTestCaseInternalID().toString();
+		String request = ExecutionProtocol.STR_REQUEST 
+		+  ExecutionProtocol.STR_REQUEST_PROJECT_NAME
+		+ tc.getProjectName()
+		+  ExecutionProtocol.STR_REQUEST_PLAN_NAME
+		+ testPlan.getTestPlanName()
+		+  ExecutionProtocol.STR_REQUEST_TC_EXEC 
+		+ tc.getTestCaseInternalID().toString();
 		out.print(request);
 	}
 	

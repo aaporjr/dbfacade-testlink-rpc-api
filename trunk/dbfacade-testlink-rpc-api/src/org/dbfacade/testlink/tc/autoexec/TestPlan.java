@@ -262,43 +262,6 @@ public class TestPlan
 		testCase.setExecutor(executor);
 	}
 	
-	/**
-	 * Execute the test cases for the instantiated plan and record the test case
-	 * results. The execution records a failure for any test case that returns an 
-	 * undefined result or throws an exception during execution.
-	 * 
-	 * @throws TestLinkAPIException
-	 */
-	public void executeTestCases() throws TestLinkAPIException
-	{
-		if ( isAPIReachable ) {
-			initTestCases(testProject.getProjectName(), testPlanName);
-		}
-		for ( int i = 0; i < testCaseRegistry.size(); i++ ) {
-			TestCase tc = testCaseRegistry.get(i);
-			executeTestCase(tc);
-		}
-	}
-	
-	public void executeTestCase(
-		TestCase testCase)
-	{
-		if ( isAPIReachable ) {
-			initTestCases(testProject.getProjectName(), testPlanName);
-		}
-		TestCaseExecutor executor = testCase.getExecutor();
-		if ( executor == null ) {
-			executor = new EmptyExecutor();
-			testCase.setExecutor(executor);
-		} else {
-			try {
-				executor.execute(testCase);
-			} catch ( Exception e ) {
-				executor.setExecutionResult(TestCaseExecutor.RESULT_FAILED);
-			}
-		}
-	}
-	
 	public TestCase[] getTestCases()
 	{
 		if ( isAPIReachable ) {

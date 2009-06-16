@@ -228,9 +228,9 @@ public class ExecuteTestCases extends Thread
 					// Manual test cannot be run remotely since they
 					// require local input for the results.
 					if ( tc.isManualExec() ) {
-						ExecuteTestCase.execute(tc, te);
+						ExecuteTestCase.execute(testPlan, tc, te);
 					} else {
-						ExecuteTestCase.execute(tc, te, port);	
+						ExecuteTestCase.execute(testPlan, tc, te, port);	
 					}
 					if ( te.getExecutionResult() != TestCaseExecutor.RESULT_PASSED ) {
 						hasTestFailed = true;

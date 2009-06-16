@@ -16,10 +16,11 @@ public class ExecuteTestCase
 	 * @throws Exception
 	 */
 	public static void execute(
+		TestPlan tp,
 		TestCase tc,
 		TestCaseExecutor te) throws Exception
 	{
-		execute(tc, te, -1);
+		execute(tp, tc, te, -1);
 	}
 
 	/**
@@ -33,6 +34,7 @@ public class ExecuteTestCase
 	 * @return
 	 */
 	public static void execute(
+		TestPlan tp,
 		TestCase tc,
 		TestCaseExecutor te,
 		int port) throws Exception
@@ -42,7 +44,7 @@ public class ExecuteTestCase
 				te.execute(tc);
 			} else {
 				try {
-					RemoteClientExecutor rte = new RemoteClientExecutor(port);
+					RemoteClientExecutor rte = new RemoteClientExecutor(port, tp);
 					rte.execute(tc);
 					te.setExecutionNotes(rte.getExecutionNotes());
 					te.setExecutionResult(rte.getExecutionResult());

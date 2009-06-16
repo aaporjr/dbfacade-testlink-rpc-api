@@ -15,14 +15,18 @@ import org.dbfacade.testlink.tc.autoexec.ExecuteTestCase;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
 import org.dbfacade.testlink.tc.autoexec.TestCaseExecutor;
 import org.dbfacade.testlink.tc.autoexec.TestPlan;
+import org.dbfacade.testlink.tc.autoexec.TestPlanPrepare;
 
 
 public class ExecutionServer extends Thread
 {
 	private int port;
 	private TestLinkAPIClient apiClient;
-	private TestPlan testPlan;
-	
+	private TestPlan testPlan = null;
+	TestPlanPrepare prep;
+	String defaultTestCaseUser;
+	String externalDir;
+
 	/**
 	 * The execution server expects a test plan that has
 	 * already been prepared.
@@ -34,11 +38,15 @@ public class ExecutionServer extends Thread
 	public ExecutionServer(
 		int port,
 		TestLinkAPIClient apiClient,
-		TestPlan testPlan)
+		TestPlanPrepare prep,
+		String defaultTestCaseUser,
+		String externalDir)
 	{
 		this.port = port;
 		this.apiClient = apiClient;
-		this.testPlan = testPlan;
+		this.prep = prep;
+		this.defaultTestCaseUser = defaultTestCaseUser;
+		this.externalDir = externalDir;
 	}
 	
 	public void run()
@@ -85,7 +93,10 @@ public class ExecutionServer extends Thread
 						"The TestLink test execution server on port " + port
 						+ " is shutting down.");
 					break;
-				} else if ( ep.isRequest() && inputLine.contains(ExecutionProtocol.STR_REQUEST_TYPE_TC_EXEC)) {
+				} else if ( ep.isRequest() 
+					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_PROJECT_NAME)
+					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_PLAN_NAME)
+					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_TC_EXEC) ) {
 					outputLine = processTestCaseExecRequest(inputLine);
 					ExecutionProtocol.debug(outputLine);
 					out.println(outputLine);
@@ -113,16 +124,25 @@ public class ExecutionServer extends Thread
 	public String processTestCaseExecRequest(
 		String request)
 	{
-		
-		// Extract test case id
-		Integer internalID = null;
-		int idx = request.indexOf(ExecutionProtocol.STR_REQUEST_TYPE_TC_EXEC) + ExecutionProtocol.STR_REQUEST_TYPE_TC_EXEC.length();
-		
 		// Default result
 		String result = ExecutionProtocol.STR_RESULT + ExecutionProtocol.STR_EXEC_BOMBED
 			+ ExecutionProtocol.STR_EXEC_FAILED + ExecutionProtocol.STR_EXEC_NOTES
-			+ "Did not find requested test case and was unable to execute it. [TC:"
-			+ internalID + "]";
+			+ "Did not find requested test case and was unable to execute it.";
+		
+		try {
+			createTestPlan(request);
+		} catch ( Exception e ) {
+			// Do not use Request: it will confuse the protocol
+			return result + "{Req: "
+				+ request.replaceAll(ExecutionProtocol.STR_REQUEST, "") + ", Exception: "
+				+ e.toString() + "}";
+		}
+		
+		// Extract test case id
+		int idx = request.indexOf(ExecutionProtocol.STR_REQUEST_TC_EXEC)
+			+ ExecutionProtocol.STR_REQUEST_TC_EXEC.length();
+		String strID = request.substring(idx);
+		Integer internalID = new Integer(strID);
 
 		TestCase tc = null;
 		TestCase[] cases = testPlan.getTestCases();
@@ -137,7 +157,7 @@ public class ExecutionServer extends Thread
 		if ( tc != null ) {
 			TestCaseExecutor te = tc.getExecutor();
 			try {
-				ExecuteTestCase.execute(tc, te);
+				ExecuteTestCase.execute(testPlan, tc, te);
 				result = ExecutionProtocol.STR_RESULT;
 				if ( te.getExecutionState() == TestCaseExecutor.STATE_BOMBED ) {
 					result += ExecutionProtocol.STR_EXEC_BOMBED
@@ -160,8 +180,38 @@ public class ExecutionServer extends Thread
 					+ "The test cases execution failed with an exeception. [Exception: "
 					+ e.toString() + "], [TC:" + internalID + "]";
 			}
+		} else {
+			result = result + "[Test Case ID: " + internalID + "].";
 		}
 		return result;
+	}
+	
+	public void createTestPlan(
+		String request) throws Exception
+	{
+		int projectIdx = request.indexOf(ExecutionProtocol.STR_REQUEST_PROJECT_NAME);
+		int planIdx = request.indexOf(ExecutionProtocol.STR_REQUEST_PLAN_NAME);
+		int tcIdx = request.indexOf(ExecutionProtocol.STR_REQUEST_TC_EXEC);
+		
+		int start = projectIdx + ExecutionProtocol.STR_REQUEST_PROJECT_NAME.length();
+		String projectName = request.substring(start, planIdx);
+		
+		start = planIdx + ExecutionProtocol.STR_REQUEST_PLAN_NAME.length();
+		String planName = request.substring(start, tcIdx);
+		
+		start = tcIdx + ExecutionProtocol.STR_REQUEST_TC_EXEC.length();
+		String caseInternalID = request.substring(start);
+		
+		ExecutionProtocol.debug(projectName + ", " + planName + ", " + caseInternalID);
+		
+		if ( testPlan == null || !(testPlan.getTestPlanName().equals(planName)) ) {
+			testPlan = new TestPlan(apiClient, projectName, planName);	
+			if ( prep != null ) {
+				prep.setExternalPath(externalDir);
+				prep.setTCUser(defaultTestCaseUser);
+				prep.adjust(apiClient, testPlan);
+			}
+		}
 	}
 	
 	/**

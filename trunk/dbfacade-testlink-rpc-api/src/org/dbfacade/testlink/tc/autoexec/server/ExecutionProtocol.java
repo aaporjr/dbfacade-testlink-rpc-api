@@ -24,7 +24,9 @@ public class ExecutionProtocol
 	public static final String STR_PING = "Ping";
 	public static final String STR_REQUEST = "Request:";
 	public static final String STR_RESULT = "Result:";
-	public static final String STR_REQUEST_TYPE_TC_EXEC = "[tc_execute]";
+	public static final String STR_REQUEST_PROJECT_NAME = "[project]";
+	public static final String STR_REQUEST_PLAN_NAME = "[plan]";
+	public static final String STR_REQUEST_TC_EXEC = "[tc_execute]";
 	
 	public static final String STR_EXEC_PASSED = "[tc_exec_passed]";
 	public static final String STR_EXEC_FAILED = "[tc_exec_failed]";

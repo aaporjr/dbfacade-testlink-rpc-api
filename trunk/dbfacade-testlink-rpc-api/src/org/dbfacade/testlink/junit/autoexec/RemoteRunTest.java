@@ -48,7 +48,7 @@ public class RemoteRunTest {
 		try {
 			ExecutionProtocol.inDebugMode=true;
 			int port = ExecutionServer.demandPort();
-			ExecutionServer server = new ExecutionServer(port, null, null);
+			ExecutionServer server = new ExecutionServer(port, api, null, null, null);
 			server.start();
 			ExecutionServer.sendServerShutdownRequest(port);
 		} catch ( Exception e ) {
