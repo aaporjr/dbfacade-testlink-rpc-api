@@ -18,7 +18,7 @@ import org.dbfacade.testlink.tc.autoexec.TestPlan;
 import org.dbfacade.testlink.tc.autoexec.TestPlanPrepare;
 
 
-public class ExecutionServer extends Thread
+public class ExecutionServer
 {
 	private int port;
 	private TestLinkAPIClient apiClient;
@@ -49,7 +49,7 @@ public class ExecutionServer extends Thread
 		this.externalDir = externalDir;
 	}
 	
-	public void run()
+	public void start()
 	{
 		try {
 			ServerSocket serverSocket = null;
@@ -81,7 +81,8 @@ public class ExecutionServer extends Thread
 			ExecutionProtocol.debug(
 				"The server is alive on locolhost port: " + port + ", output: " + outputLine);
 
-			while ( (inputLine = in.readLine()) != null ) {
+			while ( (inputLine = in.readLine()) != null  ) {
+	
 				
 				// Process input and send answer
 				outputLine = ep.processInput(inputLine);

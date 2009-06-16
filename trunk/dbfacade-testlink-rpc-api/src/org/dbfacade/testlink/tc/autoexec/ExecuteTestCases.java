@@ -187,10 +187,12 @@ public class ExecuteTestCases extends Thread
 			for ( int i = 0; i < cases.length; i++ ) {
 				TestCase tc = cases[i];
 				TestCaseExecutor te = tc.getExecutor();
-				if ( te.getExecutionState() != TestCaseExecutor.STATE_READY ) {
-					te.setExecutionState(TestCaseExecutor.STATE_RESET);
+				if ( te != null ) {
+					if ( te.getExecutionState() != TestCaseExecutor.STATE_READY ) {
+						te.setExecutionState(TestCaseExecutor.STATE_RESET);
+					} 
+					te.setExecutionResult(TestCaseExecutor.RESULT_UNKNOWN);
 				}
-				te.setExecutionResult(TestCaseExecutor.RESULT_UNKNOWN);
 			}
 			testCasesReset();
 			
@@ -200,30 +202,30 @@ public class ExecuteTestCases extends Thread
 				tc = cases[i];
 				TestCaseExecutor te = tc.getExecutor();
 				
-				testCaseStart(tc);
-				
-				// If no executor is registered then create empty and run empty
-				if ( te == null && tc.isAutoExec() ) {
-					te = new EmptyExecutor();
-					testCaseWithoutExecutor(tc);
-				}
-				
-				// Execute the test case exception does not mean failure
-				try {
-					if ( tc.isManualExec() ) {
-						te = (TestCaseExecutor) Class.forName(manualExecutorClass).newInstance();
+				// If no executor is registered or manual test then create executor
+				if ( te == null || tc.isManualExec() ) {
+					if ( tc.isAutoExec() ) {
+						te = new EmptyExecutor();
+						testCaseWithoutExecutor(tc);
+					} else {
+						if ( manualExecutorClass != null ) {
+							try {
+								te = (TestCaseExecutor) Class.forName(manualExecutorClass).newInstance();
+							} catch ( Exception e ) {
+								testCaseWithoutExecutor(tc);
+							}
+						}
+						
+						// If manual exec is still null make it empty
 						if ( te == null ) {
 							te = new EmptyExecutor();
 							testCaseWithoutExecutor(tc);
 						}
-						tc.setExecutor(te);
-					} 
-				} catch ( Exception e ) {
-					te = new EmptyExecutor();
-					testCaseWithoutExecutor(tc);
-					tc.setExecutor(te);
+					}				
 				}
-		
+				
+				testCaseStart(tc);
+				
 				try {
 					// Manual test cannot be run remotely since they
 					// require local input for the results.
