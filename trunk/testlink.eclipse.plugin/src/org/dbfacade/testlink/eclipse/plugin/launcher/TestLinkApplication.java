@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Display;
  * @author Daniel Padilla
  *
  */
-public class TestLinkRunner
+public class TestLinkApplication
 {
 	
 	public static void main(
@@ -33,7 +33,7 @@ public class TestLinkRunner
 			printClasspath();
 			
 			// Create window
-			TestLinkRunnerWindow runner = new TestLinkRunnerWindow();
+			TestLinkApplicationWindow runner = new TestLinkApplicationWindow();
 			TestLinkMode.mode = TestLinkMode.APPLICATION_MODE;
 			TestLinkPreferences.setAlternateStore(argMap);
 			

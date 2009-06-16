@@ -15,9 +15,9 @@ import org.eclipse.swt.widgets.Tree;
  * @author Daniel Padilla
  *
  */
-public class TestLinkRunnerWindow extends ApplicationWindow
+public class TestLinkApplicationWindow extends ApplicationWindow
 {	
-	public TestLinkRunnerWindow()
+	public TestLinkApplicationWindow()
 	{
 		super(null);
 	}
