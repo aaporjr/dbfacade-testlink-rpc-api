@@ -9,10 +9,10 @@ import org.eclipse.swt.widgets.Tree;
 
 
 /**
- * Has the same plugin.xml parameters for command hardcoded
- * into the runner.
+ * The main shell for the TestLink executable jar application.
  * 
  * @author Daniel Padilla
+ * @deprecated
  *
  */
 public class TestLinkApplicationWindow extends ApplicationWindow

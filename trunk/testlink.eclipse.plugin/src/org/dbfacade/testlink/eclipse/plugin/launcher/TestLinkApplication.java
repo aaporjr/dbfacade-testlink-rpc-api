@@ -13,10 +13,13 @@ import org.eclipse.swt.widgets.Display;
 
 
 /**
- * Has the same plugin.xml parameters for command hardcoded
- * into the runner.
+ * This application requires testing to make
+ * sure none of the visible components for the application
+ * require the workbench since the application only
+ * has the JFace and SWT components available.
  * 
  * @author Daniel Padilla
+ * @deprecated
  *
  */
 public class TestLinkApplication
