@@ -137,6 +137,9 @@ public class TestLinkAction extends Action
 			return;
 		}
 		
+		// lets test the protocol
+		exec.setRemoteExecutionMode(59168);
+		
 		try {	
 			if ( runInBackground ) {
 				tree.setName(tree.getName() + " (Testing inprogress in background)");
