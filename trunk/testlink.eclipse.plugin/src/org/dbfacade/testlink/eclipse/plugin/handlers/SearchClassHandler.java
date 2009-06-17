@@ -45,10 +45,8 @@ public class SearchClassHandler extends SelectorHandler {
 			Button button)
 		{
 			super.handle(wLabel, text, button);
-    	@SuppressWarnings("unused")
 		Shell shell = getShell();
-     
-        @SuppressWarnings("unused")
+
 		IJavaProject javaProject = getJavaProject();
         
         /*

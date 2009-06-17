@@ -137,9 +137,6 @@ public class TestLinkAction extends Action
 			return;
 		}
 		
-		// lets test the protocol
-		exec.setRemoteExecutionMode(59168);
-		
 		try {	
 			if ( runInBackground ) {
 				tree.setName(tree.getName() + " (Testing inprogress in background)");
@@ -149,7 +146,7 @@ public class TestLinkAction extends Action
 			TestLinkView.refresh(tree);
 			
 			if ( reportFlag != null ) {
-				exec.executeTestCases(reportFlag, runInBackground);
+				exec.executeTestCases(reportFlag.booleanValue(), runInBackground);
 			} else {
 				exec.executeTestCases(pref.useResultReporting(), runInBackground);
 			}

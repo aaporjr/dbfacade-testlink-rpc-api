@@ -36,7 +36,6 @@ import org.eclipse.jdt.launching.VMRunnerConfiguration;
 
 public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfigurationDelegate
 {
-	@Override
 	public void launch(
 		ILaunchConfiguration configuration,
 		String mode,
@@ -85,7 +84,7 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 
 			// Classpath
 			String[] classpath = getClasspath(configuration);
-			ArrayList<String> aClasspath = new ArrayList();
+			ArrayList aClasspath = new ArrayList();
 			for ( int i = 0; i < classpath.length; i++ ) {
 				String path = classpath[i];
 				if ( path != null ) {
@@ -162,8 +161,8 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 	 */
 	protected void collectExecutionArguments(
 		ILaunchConfiguration config,
-		List<String> vmArguments,
-		List<String> programArguments) throws CoreException
+		List vmArguments,
+		List programArguments) throws CoreException
 	{
 
 		// Standard code to initialize paramters
@@ -195,7 +194,7 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 	private void setParamFromConfig(
 		String key,
 		ILaunchConfiguration config,
-		List<String> programArguments)
+		List programArguments)
 	{
 		if ( key == null || config == null ) {
 			return;

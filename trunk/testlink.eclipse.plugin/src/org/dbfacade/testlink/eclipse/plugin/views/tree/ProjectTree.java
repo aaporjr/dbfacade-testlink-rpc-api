@@ -108,13 +108,12 @@ public class ProjectTree extends TreeParentNode
 				pn = project.getProjectName();
 			}
 			TestPlanLoader loader = new TestPlanLoader(pn, apiClient);
-			Map<Integer,
-				TestPlan> plans = loader.getPlans();
+			Map plans = loader.getPlans();
 		
 			Iterator planIDs = plans.keySet().iterator();
 			while ( planIDs.hasNext() ) {
 				Object planID = planIDs.next();
-				TestPlan plan = plans.get(planID);
+				TestPlan plan = (TestPlan) plans.get(planID);
 				PlanTree planRoot = new PlanTree(plan);
 				this.addChild(planRoot);
 			}

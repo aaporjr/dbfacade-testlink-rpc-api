@@ -71,7 +71,7 @@ public class TestLinkApplication
 		String[] args)
 	{
 		Map argMap = new HashMap();
-		argMap.put(PreferenceConstants.P_REPORT_RESULTS_AFTER_TEST, false);
+		argMap.put(PreferenceConstants.P_REPORT_RESULTS_AFTER_TEST, new Boolean(false));
 		try {
 			for ( int i = 0; i < args.length; i++ ) {
 				if ( args[i].equals(PreferenceConstants.P_DEFAULT_PROJECT_NAME) ) {
@@ -106,16 +106,16 @@ public class TestLinkApplication
 		return argMap;
 	}
 	
-	private static boolean flag(
+	private static Boolean flag(
 		String arg)
 	{
 		if ( arg != null ) {
 			if ( arg.equalsIgnoreCase("true") || arg.equalsIgnoreCase("Yes")
 				|| arg.equalsIgnoreCase("Y") ) {
-				return true;
+				return new Boolean(true);
 			}
 		}
-		return false;
+		return new Boolean(false);
 	}
 	
 	public static void printClasspath() {

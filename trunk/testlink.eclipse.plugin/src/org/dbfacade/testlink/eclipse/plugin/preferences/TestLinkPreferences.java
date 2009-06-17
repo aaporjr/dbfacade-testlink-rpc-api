@@ -51,8 +51,11 @@ public class TestLinkPreferences
 				PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE);
 			testLinkAPIClient = new TestLinkAPIClient(getDevKey(), getTestLinkAPIURL());	
 		} else {
-			useResultReporting = (Boolean) alternateStore.get(
+			Boolean value = (Boolean) alternateStore.get(
 				PreferenceConstants.P_REPORT_RESULTS_AFTER_TEST);
+			if ( value != null ) {
+				useResultReporting = value.booleanValue();
+			}
 			defaultProject = (String) alternateStore.get(
 				PreferenceConstants.P_DEFAULT_PROJECT_NAME);
 			devKey = (String) alternateStore.get(PreferenceConstants.P_DEV_KEY);
