@@ -430,7 +430,7 @@ public class ExecutableTestCase implements TestCase
 	public void setExecOrder(
 		int order)
 	{
-		this.execOrder = order;
+		this.execOrder = new Integer(order);
 	}
 	
 	/**
@@ -654,7 +654,7 @@ public class ExecutableTestCase implements TestCase
 			return false;
 		}
 		
-		if ( tc.getTestCaseInternalID() < 1 ) {
+		if ( tc.getTestCaseInternalID().intValue() < 1 ) {
 			return false;
 		}
 		
@@ -692,7 +692,7 @@ public class ExecutableTestCase implements TestCase
 			}
 			apiClient.createTestCase(loginUserName, testProject.getProjectID(),
 				tc.getSuiteID(), tc.getTestCaseName(), tc.getTestCaseSummary(),
-				tc.getTestCaseSteps(), tc.getTestCaseExpectedResults(), tc.getExecOrder(),
+				tc.getTestCaseSteps(), tc.getTestCaseExpectedResults(), new Integer(tc.getExecOrder()),
 				null, null, null, execType, importance);
 		} catch ( Exception e ) {// TODO: Report back some kind of error
 		}

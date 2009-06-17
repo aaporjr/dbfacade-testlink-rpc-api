@@ -37,7 +37,7 @@ public class ExecuteTestCases extends Thread
 	private boolean reportResultsToTestLink = true;
 	private TestCase[] cases;
 	private String manualExecutorClass;
-	private ArrayList<ExecuteTestCaseListener> listeners = new ArrayList();
+	private ArrayList listeners = new ArrayList();
 	private String buildName = null;
 	private int total = 0;
 	private int remain = 0;
@@ -303,7 +303,7 @@ public class ExecuteTestCases extends Thread
 		event.remainingTest = remain;
 		event.hasTestFailed = hasTestFailed;
 		for ( int i = 0; i < listeners.size(); i++ ) {
-			ExecuteTestCaseListener listener = listeners.get(i);
+			ExecuteTestCaseListener listener = (ExecuteTestCaseListener) listeners.get(i);
 			listener.testCasesReset(event);
 		}
 	}
@@ -324,7 +324,7 @@ public class ExecuteTestCases extends Thread
 		event.remainingTest = remain;
 		event.hasTestFailed = hasTestFailed;
 		for ( int i = 0; i < listeners.size(); i++ ) {
-			ExecuteTestCaseListener listener = listeners.get(i);
+			ExecuteTestCaseListener listener = (ExecuteTestCaseListener) listeners.get(i);
 			listener.testCaseStart(event);
 		}
 	}
@@ -345,7 +345,7 @@ public class ExecuteTestCases extends Thread
 		event.remainingTest = remain;
 		event.hasTestFailed = hasTestFailed;
 		for ( int i = 0; i < listeners.size(); i++ ) {
-			ExecuteTestCaseListener listener = listeners.get(i);
+			ExecuteTestCaseListener listener = (ExecuteTestCaseListener) listeners.get(i);
 			listener.testCaseWithoutExecutor(event);
 		}
 	}
@@ -370,7 +370,7 @@ public class ExecuteTestCases extends Thread
 		event.remainingTest = remain;
 		event.hasTestFailed = hasTestFailed;
 		for ( int i = 0; i < listeners.size(); i++ ) {
-			ExecuteTestCaseListener listener = listeners.get(i);
+			ExecuteTestCaseListener listener = (ExecuteTestCaseListener) listeners.get(i);
 			listener.testCaseReportResultsFailed(event);
 		}
 	}
@@ -396,7 +396,7 @@ public class ExecuteTestCases extends Thread
 		event.remainingTest = remain;
 		event.hasTestFailed = hasTestFailed;
 		for ( int i = 0; i < listeners.size(); i++ ) {
-			ExecuteTestCaseListener listener = listeners.get(i);
+			ExecuteTestCaseListener listener = (ExecuteTestCaseListener) listeners.get(i);
 			listener.testCaseBombed(event);
 		}
 	}
@@ -420,7 +420,7 @@ public class ExecuteTestCases extends Thread
 		event.remainingTest = remain;
 		event.hasTestFailed = hasTestFailed;
 		for ( int i = 0; i < listeners.size(); i++ ) {
-			ExecuteTestCaseListener listener = listeners.get(i);
+			ExecuteTestCaseListener listener = (ExecuteTestCaseListener) listeners.get(i);
 			listener.testCaseCompleted(event);
 		}
 	}
@@ -439,7 +439,7 @@ public class ExecuteTestCases extends Thread
 		event.remainingTest = remain;
 		event.hasTestFailed = hasTestFailed;
 		for ( int i = 0; i < listeners.size(); i++ ) {
-			ExecuteTestCaseListener listener = listeners.get(i);
+			ExecuteTestCaseListener listener = (ExecuteTestCaseListener) listeners.get(i);
 			listener.executionStart(event);
 		}
 	}
@@ -459,7 +459,7 @@ public class ExecuteTestCases extends Thread
 		event.testCase = tc;
 		event.hasTestFailed = hasTestFailed;
 		for ( int i = 0; i < listeners.size(); i++ ) {
-			ExecuteTestCaseListener listener = listeners.get(i);
+			ExecuteTestCaseListener listener = (ExecuteTestCaseListener) listeners.get(i);
 			listener.executionSuccess(event);
 		}
 	}
@@ -482,7 +482,7 @@ public class ExecuteTestCases extends Thread
 		event.remainingTest = remain;
 		event.hasTestFailed = hasTestFailed;
 		for ( int i = 0; i < listeners.size(); i++ ) {
-			ExecuteTestCaseListener listener = listeners.get(i);
+			ExecuteTestCaseListener listener = (ExecuteTestCaseListener) listeners.get(i);
 			listener.executionFailed(event);
 		}
 	}

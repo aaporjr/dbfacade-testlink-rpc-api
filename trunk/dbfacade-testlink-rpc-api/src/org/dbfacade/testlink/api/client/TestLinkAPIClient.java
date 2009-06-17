@@ -922,7 +922,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
 		setParam(params, REQUIRED, API_PARAM_TEST_PROJECT_ID, testProjectID);
 		setParam(params, REQUIRED, API_PARAM_TEST_SUITE_ID, testSuiteID);
-		setParam(params, REQUIRED, API_PARAM_DEPTH_FLAG, true);
+		setParam(params, REQUIRED, API_PARAM_DEPTH_FLAG, new Boolean(true));
 		setParam(params, REQUIRED, API_PARAM_DETAILS, "full");
 		return execXmlRpcMethodWithCache(API_METHOD_GET_TEST_CASES_FOR_SUITE, params, key);
 	}
@@ -1223,7 +1223,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		Hashtable executionData) throws TestLinkAPIException
 	{
 		TestLinkAPIResults results = new TestLinkAPIResults();
-		ArrayList<Object> params = new ArrayList<Object>();
+		ArrayList params = new ArrayList();
 		XmlRpcClient rpcClient = getRpcClient();
 		int unknownResultTypeCnt = 0;
 		
@@ -1319,7 +1319,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		// Set the parameter for the XML-RPC call
 		try {
 			Integer intTypeValue = new Integer(value.toString());
-			params.put(paramName, intTypeValue.intValue());
+			params.put(paramName, intTypeValue);
 		} catch ( Exception e ) {
 			params.put(paramName, value.toString());
 		}

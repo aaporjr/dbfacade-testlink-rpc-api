@@ -14,8 +14,7 @@ import org.dbfacade.testlink.api.client.TestLinkAPIResults;
 
 public class TestPlanLoader
 {
-	private Map<Integer,
-		TestPlan> plans;
+	private Map plans;
 	
 	/**
 	 * Loads all the test plans for a project by name.
@@ -95,8 +94,7 @@ public class TestPlanLoader
 	 * 
 	 * @return
 	 */
-	public Map<Integer,
-		TestPlan> getPlans()
+	public Map getPlans()
 	{
 		return plans;
 	}
@@ -114,7 +112,7 @@ public class TestPlanLoader
 	 * Get test plan
 	 */
 	public TestPlan getPlan(Object id) {
-		return plans.get(id);
+		return (TestPlan) plans.get(id);
 	}
 	
 	/**
@@ -128,7 +126,7 @@ public class TestPlanLoader
 		Iterator keys = plans.keySet().iterator();
 		while ( keys.hasNext() ) {
 			Object key = keys.next();
-			TestPlan plan = plans.get(key);
+			TestPlan plan = (TestPlan) plans.get(key);
 			if ( plan != null ) {
 				ret += plan.getTestPlanName() + "\n";
 			}
@@ -175,7 +173,7 @@ public class TestPlanLoader
 		Iterator keys = plans.keySet().iterator();
 		while ( keys.hasNext() ) {
 			Object key = keys.next();
-			TestPlan plan = plans.get(key);
+			TestPlan plan = (TestPlan) plans.get(key);
 			if ( plan != null ) {
 				prep.setExternalPath(externalDir);
 				prep.setTCUser(defaultTestCaseUser);
