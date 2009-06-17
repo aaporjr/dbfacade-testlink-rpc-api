@@ -8,7 +8,7 @@
 	<classpathentry exported="true" kind="lib" path="runtimelibs/xmlrpc-client-3.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="runtimelibs/xmlrpc-common-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="runtimelibs/xmlrpc-common-3.1-sources.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.5.0_19"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
