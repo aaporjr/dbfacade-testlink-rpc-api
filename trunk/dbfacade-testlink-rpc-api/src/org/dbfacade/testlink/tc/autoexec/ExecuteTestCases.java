@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
+import org.dbfacade.testlink.tc.autoexec.server.RemoteClientExecutor;
 
 
 public class ExecuteTestCases extends Thread
@@ -41,7 +42,7 @@ public class ExecuteTestCases extends Thread
 	private int total = 0;
 	private int remain = 0;
 	private TestCase tc;
-	private int port = -1;
+	private int port=-1;
 	
 	/**
 	 * Executes the tests for test cases in a test plan.
@@ -175,8 +176,15 @@ public class ExecuteTestCases extends Thread
 	public void run()
 	{
 		hasTestRun = false;
+		RemoteClientExecutor rte = null;
 		try {
 			executionStart();
+			
+			// Setup remote execution if in remote mode
+			if ( port > 0 ) {
+				rte = new RemoteClientExecutor(port, testPlan);
+			} 
+			
 			if ( this.testPlan == null || this.cases == null ) {
 				throw new TestLinkAPIException(
 					"All the variables have not been set so tests cannot be executed.");
@@ -228,20 +236,24 @@ public class ExecuteTestCases extends Thread
 				
 				try {
 					// Manual test cannot be run remotely since they
-					// require local input for the results.
+					// require local input for the results. In addition,
+					// the executor instantiated here must be registered
+					// as the executor for the test case.
 					if ( tc.isManualExec() ) {
+						tc.setExecutor(te);
 						ExecuteTestCase.execute(testPlan, tc, te);
 					} else {
-						ExecuteTestCase.execute(testPlan, tc, te, port);	
+						ExecuteTestCase.execute(testPlan, tc, te, rte);	
 					}
 					if ( te.getExecutionResult() != TestCaseExecutor.RESULT_PASSED ) {
 						hasTestFailed = true;
 					}			
 				} catch ( Exception e ) {
-					if ( te.getExecutionState() == TestCaseExecutor.STATE_BOMBED ) {
-						hasTestFailed = true;
-						testCaseBombed(tc, te, e);
-					} else {}
+					if ( te.getExecutionState() != TestCaseExecutor.STATE_BOMBED ) {
+						te.setExecutionState(TestCaseExecutor.STATE_BOMBED);
+					} 
+					hasTestFailed = true;
+					testCaseBombed(tc, te, e);
 				}
 
 				if ( reportResultsToTestLink && apiClient != null ) {
@@ -261,9 +273,15 @@ public class ExecuteTestCases extends Thread
 			hasTestFailed = true;
 			executionFailed(e);
 			hasTestRun = true;
+			if ( rte != null ) {
+				rte.closeConnection();
+			}
 			return;
 		}
 		hasTestRun = true;
+		if ( rte != null ) {
+			rte.closeConnection();
+		}
 		executionSuccess();
 	}
 	

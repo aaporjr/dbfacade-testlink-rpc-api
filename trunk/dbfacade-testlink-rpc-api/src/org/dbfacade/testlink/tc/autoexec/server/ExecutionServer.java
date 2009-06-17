@@ -81,9 +81,8 @@ public class ExecutionServer
 			ExecutionProtocol.debug(
 				"The server is alive on locolhost port: " + port + ", output: " + outputLine);
 
-			while ( (inputLine = in.readLine()) != null  ) {
-	
-				
+			while ( (inputLine = in.readLine()) != null ) {
+					
 				// Process input and send answer
 				outputLine = ep.processInput(inputLine);
 
@@ -102,7 +101,7 @@ public class ExecutionServer
 					ExecutionProtocol.debug(outputLine);
 					out.println(outputLine);
 				} else {
-					out.println(ExecutionProtocol.STR_PING);
+					out.println(ExecutionProtocol.STR_RESULT);
 					continue;
 				}
 			}
@@ -128,61 +127,80 @@ public class ExecutionServer
 		// Default result
 		String result = ExecutionProtocol.STR_RESULT + ExecutionProtocol.STR_EXEC_BOMBED
 			+ ExecutionProtocol.STR_EXEC_FAILED + ExecutionProtocol.STR_EXEC_NOTES
-			+ "Did not find requested test case and was unable to execute it.";
+			+ "Unable to process test case request.";
 		
 		try {
 			createTestPlan(request);
 		} catch ( Exception e ) {
 			// Do not use Request: it will confuse the protocol
-			return result + "{Req: "
+			return result + " Unable to create the needed plan. {Req: "
 				+ request.replaceAll(ExecutionProtocol.STR_REQUEST, "") + ", Exception: "
 				+ e.toString() + "}";
 		}
 		
 		// Extract test case id
-		int idx = request.indexOf(ExecutionProtocol.STR_REQUEST_TC_EXEC)
-			+ ExecutionProtocol.STR_REQUEST_TC_EXEC.length();
-		String strID = request.substring(idx);
-		Integer internalID = new Integer(strID);
+		try {
+			int idx = request.indexOf(ExecutionProtocol.STR_REQUEST_TC_EXEC)
+				+ ExecutionProtocol.STR_REQUEST_TC_EXEC.length();
+			String strID = request.substring(idx);
+			ExecutionProtocol.debug("Test case id " + strID);
+			Integer internalID = new Integer(strID);
 
-		TestCase tc = null;
-		TestCase[] cases = testPlan.getTestCases();
-		for ( int i = 0; i < cases.length; i++ ) {
-			TestCase tmp = cases[i];
-			if ( tmp.getTestCaseInternalID().intValue() == internalID.intValue() ) {
-				tc = tmp;
-				break;
-			}
-		}
-	
-		if ( tc != null ) {
-			TestCaseExecutor te = tc.getExecutor();
-			try {
-				ExecuteTestCase.execute(testPlan, tc, te);
-				result = ExecutionProtocol.STR_RESULT;
-				if ( te.getExecutionState() == TestCaseExecutor.STATE_BOMBED ) {
-					result += ExecutionProtocol.STR_EXEC_BOMBED
-						+ ExecutionProtocol.STR_EXEC_FAILED
-						+ ExecutionProtocol.STR_EXEC_NOTES + te.getExecutionNotes();					
-				} else {
-					result += ExecutionProtocol.STR_EXEC_COMPLETED;
-					if ( te.getExecutionResult() == TestCaseExecutor.RESULT_PASSED ) {
-						result += ExecutionProtocol.STR_EXEC_PASSED;
-					} else if ( te.getExecutionResult() == TestCaseExecutor.RESULT_BLOCKED ) {
-						result += ExecutionProtocol.STR_EXEC_BLOCKED;
-					} else {
-						result += ExecutionProtocol.STR_EXEC_FAILED;
-					}
-					result += ExecutionProtocol.STR_EXEC_NOTES + te.getExecutionNotes();
+			TestCase tc = null;
+			TestCase[] cases = testPlan.getTestCases();
+			for ( int i = 0; i < cases.length; i++ ) {
+				TestCase tmp = cases[i];
+				if ( tmp.getTestCaseInternalID().intValue() == internalID.intValue() ) {
+					tc = tmp;
+					break;
 				}
-			} catch ( Exception e ) {
-				result = ExecutionProtocol.STR_RESULT + ExecutionProtocol.STR_EXEC_BOMBED
-					+ ExecutionProtocol.STR_EXEC_FAILED + ExecutionProtocol.STR_EXEC_NOTES
-					+ "The test cases execution failed with an exeception. [Exception: "
-					+ e.toString() + "], [TC:" + internalID + "]";
 			}
-		} else {
-			result = result + "[Test Case ID: " + internalID + "].";
+	
+			try {
+				if ( tc != null ) {
+					TestCaseExecutor te = tc.getExecutor();
+					try {
+						ExecuteTestCase.execute(testPlan, tc, te);
+						result = ExecutionProtocol.STR_RESULT;
+						if ( te.getExecutionState() == TestCaseExecutor.STATE_BOMBED ) {
+							result += ExecutionProtocol.STR_EXEC_BOMBED
+								+ ExecutionProtocol.STR_EXEC_FAILED
+								+ ExecutionProtocol.STR_EXEC_NOTES + te.getExecutionNotes();					
+						} else {
+							result += ExecutionProtocol.STR_EXEC_COMPLETED;
+							if ( te.getExecutionResult() == TestCaseExecutor.RESULT_PASSED ) {
+								result += ExecutionProtocol.STR_EXEC_PASSED;
+							} else if ( te.getExecutionResult()
+								== TestCaseExecutor.RESULT_BLOCKED ) {
+								result += ExecutionProtocol.STR_EXEC_BLOCKED;
+							} else {
+								result += ExecutionProtocol.STR_EXEC_FAILED;
+							}
+							result += ExecutionProtocol.STR_EXEC_NOTES
+								+ te.getExecutionNotes();
+						}
+					} catch ( Exception e ) {
+						result = ExecutionProtocol.STR_RESULT
+							+ ExecutionProtocol.STR_EXEC_BOMBED
+							+ ExecutionProtocol.STR_EXEC_FAILED
+							+ ExecutionProtocol.STR_EXEC_NOTES
+							+ "The test cases execution failed with an exeception. [Exception: "
+							+ e.toString() + "], [TC:" + internalID + ", TE:" + te + "]";
+					}
+				} else {
+					result = result
+						+ " Failed while processing the test case. [Test Case ID: "
+						+ internalID + "].";
+				}
+			} catch ( Throwable tt ) {
+				return result + " Failed while trying to find the test case. Exception: "
+					+ tt.toString();
+			}
+			
+		} catch ( Throwable t ) {
+			// we must return a result
+			return result + " Failed while trying to find the test case. Exception: "
+				+ t.toString();
 		}
 		return result;
 	}

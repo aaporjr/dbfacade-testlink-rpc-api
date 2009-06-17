@@ -20,7 +20,7 @@ public class ExecuteTestCase
 		TestCase tc,
 		TestCaseExecutor te) throws Exception
 	{
-		execute(tp, tc, te, -1);
+		execute(tp, tc, te, null);
 	}
 
 	/**
@@ -37,14 +37,13 @@ public class ExecuteTestCase
 		TestPlan tp,
 		TestCase tc,
 		TestCaseExecutor te,
-		int port) throws Exception
+		RemoteClientExecutor rte) throws Exception
 	{
 		try {
-			if ( port < 1 ) {
+			if ( rte == null ) {
 				te.execute(tc);
 			} else {
 				try {
-					RemoteClientExecutor rte = new RemoteClientExecutor(port, tp);
 					rte.execute(tc);
 					te.setExecutionNotes(rte.getExecutionNotes());
 					te.setExecutionResult(rte.getExecutionResult());
