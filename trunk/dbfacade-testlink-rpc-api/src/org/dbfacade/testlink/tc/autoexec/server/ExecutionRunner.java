@@ -33,11 +33,8 @@ public class ExecutionRunner
 		} 
 	}
 	
-	/*
-	 * Private methods
-	 */
 		
-	private static void printArgs(
+	public static void printArgs(
 		String[] args,
 		Map argMap)
 	{
@@ -49,7 +46,7 @@ public class ExecutionRunner
 		System.out.println("\n" + argMap);
 	}
 
-	private static Map getArgs(
+	public static Map getArgs(
 		String[] args)
 	{
 		Map argMap = new HashMap();
@@ -86,6 +83,10 @@ public class ExecutionRunner
 		}
 		return argMap;
 	}
+	
+	/*
+	 * Private methods
+	 */
 		
 	private static boolean flag(
 		String arg)
