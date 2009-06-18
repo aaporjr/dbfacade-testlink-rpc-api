@@ -17,14 +17,18 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.dbfacade.testlink.eclipse.plugin.Activator;
 import org.dbfacade.testlink.eclipse.plugin.preferences.PreferenceConstants;
+import org.dbfacade.testlink.tc.autoexec.server.ExecutionRunner;
+import org.dbfacade.testlink.tc.autoexec.server.ExecutionServer;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate;
@@ -63,54 +67,11 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 				return;
 			}
 
-			String mainTypeName = verifyMainTypeName(configuration);
+			// Create the runner
 			IVMRunner runner = getVMRunner(configuration, mode);
 
-			File workingDir = verifyWorkingDirectory(configuration);
-			String workingDirName = null;
-			if ( workingDir != null ) {
-				workingDirName = workingDir.getAbsolutePath();
-			}
-
-			// Environment variables
-			String[] envp = getEnvironment(configuration);
-
-			ArrayList vmArguments = new ArrayList();
-			ArrayList programArguments = new ArrayList();
-			collectExecutionArguments(configuration, vmArguments, programArguments);
-
-			// VM-specific attributes
-			Map vmAttributesMap = getVMSpecificAttributesMap(configuration);
-
-			// Classpath
-			String[] classpath = getClasspath(configuration);
-			ArrayList aClasspath = new ArrayList();
-			for ( int i = 0; i < classpath.length; i++ ) {
-				String path = classpath[i];
-				if ( path != null ) {
-					aClasspath.add(path);
-				}
-			}
-			loadEclipseMissingJars(aClasspath);
-			classpath = new String[aClasspath.size()];
-			for ( int a = 0; a < aClasspath.size(); a++ ) {
-				String value = (String) aClasspath.get(a);
-				classpath[a] = value;
-			}
-			
 			// Create VM config
-			VMRunnerConfiguration runConfig = new VMRunnerConfiguration(mainTypeName,
-				classpath);
-			runConfig.setVMArguments(
-				(String[]) vmArguments.toArray(new String[vmArguments.size()]));
-			runConfig.setProgramArguments(
-				(String[]) programArguments.toArray(new String[programArguments.size()]));
-			runConfig.setEnvironment(envp);
-			runConfig.setWorkingDirectory(workingDirName);
-			runConfig.setVMSpecificAttributesMap(vmAttributesMap);
-
-			// Bootpath
-			runConfig.setBootClassPath(getBootpath(configuration));
+			VMRunnerConfiguration runConfig = createRunConfig(configuration);
 
 			// check for cancellation
 			if ( monitor.isCanceled() ) {
@@ -120,13 +81,12 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 			// done the verification phase
 			monitor.worked(1);
 
-			/*
-			 monitor.subTask(JUnitMessages.JUnitLaunchConfigurationDelegate_create_source_locator_description);
-			 */
-			
 			// set the default source locator if required
 			setDefaultSourceLocator(launch, configuration);
 			monitor.worked(1);
+			
+			// Show the view and add the project with the port connection
+			TestLinkShowViewAtLaunch.show(runConfig);
 
 			// Launch the configuration - 1 unit of work
 			runner.run(runConfig, launch, monitor);
@@ -148,7 +108,7 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 	public String verifyMainTypeName(
 		ILaunchConfiguration configuration) throws CoreException
 	{
-		return "org.dbfacade.testlink.eclipse.plugin.launcher.TestLinkRunner";
+		return "org.dbfacade.testlink.tc.autoexec.server.ExecutionRunner";
 	}
 
 	/**
@@ -183,7 +143,65 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 			programArguments);
 		setParamFromConfig(PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE, config,
 			programArguments);
+		
+		// Add the port
+		try {
+			int port = ExecutionServer.demandPort();
+			programArguments.add(ExecutionRunner.P_PORT);
+			programArguments.add(new Integer(port).toString()); 
+		} catch ( Exception e ) {
+			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.OK,
+				"Could not find an open port.", e); 
+			throw new CoreException(status);
+		}
 
+	}
+	
+	/*
+	 * Private methods
+	 */
+	private VMRunnerConfiguration createRunConfig(
+		ILaunchConfiguration configuration) throws CoreException
+	{
+		
+		// Verify main type
+		String mainTypeName = verifyMainTypeName(configuration);
+		
+		// Get the working directory
+		File workingDir = verifyWorkingDirectory(configuration);
+		String workingDirName = null;
+		if ( workingDir != null ) {
+			workingDirName = workingDir.getAbsolutePath();
+		}
+		
+		// Environment variables
+		String[] envp = getEnvironment(configuration);
+
+		// VM-specific attributes
+		Map vmAttributesMap = getVMSpecificAttributesMap(configuration);
+
+		// Classpath
+		String[] classpath = getClasspath(configuration);
+
+		// Collect parameters
+		ArrayList vmArguments = new ArrayList();
+		ArrayList programArguments = new ArrayList();
+		collectExecutionArguments(configuration, vmArguments, programArguments);
+		
+		VMRunnerConfiguration runConfig = new VMRunnerConfiguration(mainTypeName,
+			classpath);
+		runConfig.setVMArguments(
+			(String[]) vmArguments.toArray(new String[vmArguments.size()]));
+		runConfig.setProgramArguments(
+			(String[]) programArguments.toArray(new String[programArguments.size()]));
+		runConfig.setEnvironment(envp);
+		runConfig.setWorkingDirectory(workingDirName);
+		runConfig.setVMSpecificAttributesMap(vmAttributesMap);
+
+		// Bootpath
+		runConfig.setBootClassPath(getBootpath(configuration));
+			
+		return runConfig;
 	}
 	
 	/*
@@ -209,112 +227,4 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 			programArguments.add(value.toString()); 
 		}
 	}
-
-	private void loadEclipseMissingJars(
-		ArrayList classpath)
-	{
-		// Get the required list		
-		ArrayList required = getRequiredList();
-
-		// Now add what is needed by traversing eclipse home
-		try {
-			String property = System.getProperty("eclipse.home.location"); 
-			if ( property != null ) {
-				if ( property.startsWith("file:\\") || property.startsWith("file:/") ) {
-					property = property.replace("file:\\", "");
-					property = property.replace("file:/", "");
-				}
-				property = property + "/plugins";
-				File directory = new File(property);
-				if ( directory.isDirectory() ) {
-					loadEclipseMissingJars(directory, classpath, required);
-				}
-			}
-		} catch ( Exception e ) {} // Not required if user loads all jars using GUI		
-		
-		// return the unique list
-		try {	
-			Map unique = new HashMap();
-			for ( int i = 0; i < classpath.size(); i++ ) {
-				String path = (String) classpath.get(i);
-				if ( unique.containsKey(path) || unique.containsValue(path) ) {
-					classpath.remove(i);
-				}
-				unique.put(path, path);
-			}
-		} catch ( Exception e ) {} // Not required if user loads all jars using GUI
-	}
-		
-	private void loadEclipseMissingJars(
-		File directory,
-		ArrayList classpath,
-		ArrayList required)
-	{
-		try {
-			String baseDir = directory.getAbsolutePath();
-			String[] children = directory.list();
-			for ( int i = 0; i < children.length; i++ ) {
-				String child = children[i];
-				if ( child.startsWith("org") || child.endsWith("jar") ) {
-					File f = new File(baseDir + "/" + child);
-					if ( f.isDirectory() ) {
-						loadEclipseMissingJars(f, classpath, required);
-					} else if ( f.canRead() && child.endsWith("jar") ) {
-						for ( int r = 0; r < required.size(); r++ ) {
-							String rpath = (String) required.get(r);
-							if ( child.contains(rpath) ) {
-								String cpath = f.getAbsolutePath();
-								if ( cpath != null && !cpath.contains("source")
-									&& !classpath.contains(cpath) ) {
-									classpath.add(cpath);
-								}
-							}
-						}
-					}
-				}
-			}
-		} catch ( Exception e ) {} // this is not a requirement 
-	}
-	
-	/*
-	 * The list of needed files
-	 */
-	private ArrayList getRequiredList()
-	{
-		ArrayList required = new ArrayList();
-		required.add("org.eclipse.ui_");
-		required.add("org.eclipse.swt_");
-		required.add("org.eclipse.swt.win32.");
-		required.add("org.eclipse.jface_");
-		required.add("org.eclipse.core.commands_");
-		required.add("org.eclipse.ui.workbench_");
-		required.add("org.eclipse.core.runtime_");
-		required.add("org.eclipse.osgi_");
-		required.add("org.eclipse.equinox.common_");
-		required.add("org.eclipse.core.jobs_");
-		required.add("runtime_registry_compatibility");
-		required.add("org.eclipse.equinox.registry_");
-		required.add("org.eclipse.equinox.preferences_");
-		required.add("org.eclipse.core.contenttype_");
-		required.add("org.eclipse.equinox.app_");
-		required.add("org.eclipse.jdt.ui_");
-		required.add("com.ibm.icu_");
-		required.add("org.eclipse.core.resources_");
-		required.add("org.eclipse.core.variables_");
-		required.add("org.eclipse.debug.core_");
-		required.add("org.eclipse.debug.ui_");
-		required.add("org.eclipse.jdt.core_");
-		required.add("org.eclipse.jdt.compiler.apt_");
-		required.add("org.eclipse.jdt.compiler.tool_");
-		required.add("org.eclipse.jdt.debug.ui_");
-		required.add("jdi.jar");
-		required.add("jdimodel.jar");
-		required.add("org.eclipse.jdt.launching_");
-		required.add("org.eclipse.ui.ide_");
-		required.add("testlink");
-		required.add("xmlrpc-");
-		required.add("commons");
-		return required;
-	}
-
 }
