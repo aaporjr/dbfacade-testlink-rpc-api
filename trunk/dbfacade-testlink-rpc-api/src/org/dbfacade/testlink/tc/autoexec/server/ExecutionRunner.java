@@ -16,6 +16,7 @@ public class ExecutionRunner
 	public static final String P_TEST_CASE_CREATION_USER = "-tlUser";
 	public static final String P_DEFAULT_TESTPLAN_PREP_CLASS = "-tlPrepClass";
 	public static final String P_OPTIONAL_EXTERNAL_CONFIG_FILE = "-tlExternalPath";
+	public static final String P_PORT = "-tlPort";
 
 	public static void main(
 		String[] args)
