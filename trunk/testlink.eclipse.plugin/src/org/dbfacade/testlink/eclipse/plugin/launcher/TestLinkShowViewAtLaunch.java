@@ -1,14 +1,15 @@
 package org.dbfacade.testlink.eclipse.plugin.launcher;
 
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.dbfacade.testlink.eclipse.plugin.Activator;
+import org.dbfacade.testlink.eclipse.plugin.preferences.PreferenceConstants;
 import org.dbfacade.testlink.eclipse.plugin.views.TestLinkView;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ProjectTree;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.TreeNode;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.TreeParentNode;
-import org.dbfacade.testlink.tc.autoexec.server.ExecutionRunner;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -49,9 +50,9 @@ public class TestLinkShowViewAtLaunch
 						}
 						
 						String[] args = runConfig.getProgramArguments();
-						Map argMap = ExecutionRunner.getArgs(args);
-						String projectName = (String) argMap.get(ExecutionRunner.P_DEFAULT_PROJECT_NAME);
-						String port = (String) argMap.get(ExecutionRunner.P_PORT);
+						Map argMap = getArgs(args);
+						String projectName = (String) argMap.get(PreferenceConstants.P_DEFAULT_PROJECT_NAME);
+						String port = (String) argMap.get(PreferenceConstants.P_PORT);
 
 						
 						// Add project
@@ -85,6 +86,66 @@ public class TestLinkShowViewAtLaunch
 			throw new CoreException(status);
 		}
 	}
+	
+
+	public static Map getArgs(
+		String[] args)
+	{
+		Map argMap = new HashMap();
+		argMap.put(PreferenceConstants.P_REPORT_RESULTS_AFTER_TEST, false);
+		try {
+			for ( int i = 0; i < args.length; i++ ) {
+				if ( args[i].equals(PreferenceConstants.P_DEFAULT_PROJECT_NAME) ) {
+					i++;
+					argMap.put(PreferenceConstants.P_DEFAULT_PROJECT_NAME, args[i]);
+				}
+				if ( args[i].equals(PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS) ) {
+					i++;
+					argMap.put(PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS, args[i]);
+				}
+				if ( args[i].equals(PreferenceConstants.P_DEV_KEY) ) {
+					i++;
+					argMap.put(PreferenceConstants.P_DEV_KEY, args[i]);
+				}
+				if ( args[i].equals(PreferenceConstants.P_TESTLINK_URL) ) {
+					i++;
+					argMap.put(PreferenceConstants.P_TESTLINK_URL, args[i]);
+				}
+				if ( args[i].equals(PreferenceConstants.P_REPORT_RESULTS_AFTER_TEST) ) {
+					i++;
+					argMap.put(PreferenceConstants.P_REPORT_RESULTS_AFTER_TEST, new Boolean(flag(args[i])));
+				}
+				if ( args[i].equals(PreferenceConstants.P_TEST_CASE_CREATION_USER) ) {
+					i++;
+					argMap.put(PreferenceConstants.P_TEST_CASE_CREATION_USER, args[i]);
+				}
+				if ( args[i].equals(PreferenceConstants.P_PORT) ) {
+					i++;
+					argMap.put(PreferenceConstants.P_PORT, args[i]);
+				}
+			}
+		} catch ( Exception e ) {
+			e.printStackTrace();
+		}
+		return argMap;
+	}
+	
+	/*
+	 * Private methods
+	 */
+		
+	private static boolean flag(
+		String arg)
+	{
+		if ( arg != null ) {
+			if ( arg.equalsIgnoreCase("true") || arg.equalsIgnoreCase("Yes")
+				|| arg.equalsIgnoreCase("Y") ) {
+				return true;
+			}
+		}
+		return false;
+	}
+		
 
 }
 

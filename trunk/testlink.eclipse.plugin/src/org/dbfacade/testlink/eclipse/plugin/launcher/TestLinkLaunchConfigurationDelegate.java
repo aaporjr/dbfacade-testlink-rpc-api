@@ -14,16 +14,18 @@ package org.dbfacade.testlink.eclipse.plugin.launcher;
 
 
 import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.dbfacade.testlink.api.client.TestLinkAPIException;
 import org.dbfacade.testlink.eclipse.plugin.Activator;
 import org.dbfacade.testlink.eclipse.plugin.preferences.PreferenceConstants;
 import org.dbfacade.testlink.tc.autoexec.server.ExecutionRunner;
-import org.dbfacade.testlink.tc.autoexec.server.ExecutionServer;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -54,7 +56,7 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 		}
 
 		monitor.beginTask(
-			MessageFormat.format("{0}...", new String[] { configuration.getName()}), 5); // $NON-NLS-1$
+			MessageFormat.format("{0}...", (Object[]) new String[] { configuration.getName()}), 5); // $NON-NLS-1$
 		// check for cancellation
 		if ( monitor.isCanceled() ) {
 			return;
@@ -85,11 +87,11 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 			setDefaultSourceLocator(launch, configuration);
 			monitor.worked(1);
 			
-			// Show the view and add the project with the port connection
-			TestLinkShowViewAtLaunch.show(runConfig);
-
 			// Launch the configuration - 1 unit of work
 			runner.run(runConfig, launch, monitor);
+			
+			// Show the view and add the project with the port connection
+			//TestLinkShowViewAtLaunch.show(runConfig);
 
 			// check for cancellation
 			if ( monitor.isCanceled() ) {
@@ -108,7 +110,8 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 	public String verifyMainTypeName(
 		ILaunchConfiguration configuration) throws CoreException
 	{
-		return "org.dbfacade.testlink.tc.autoexec.server.ExecutionRunner";
+		String apirunner = "org.dbfacade.testlink.tc.autoexec.server.ExecutionRunner";
+		return apirunner;
 	}
 
 	/**
@@ -146,7 +149,7 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 		
 		// Add the port
 		try {
-			int port = ExecutionServer.demandPort();
+			int port = demandPort();
 			programArguments.add(ExecutionRunner.P_PORT);
 			programArguments.add(new Integer(port).toString()); 
 		} catch ( Exception e ) {
@@ -226,5 +229,43 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 			programArguments.add(key);
 			programArguments.add(value.toString()); 
 		}
+	}
+	
+	/**
+	 * Returns an open port on local host or throws an exception
+	 * 
+	 * @return
+	 * @throws TestLinkAPIException
+	 */
+	private static int demandPort() throws TestLinkAPIException
+	{
+		int port = findFreePort();
+		if ( port == -1 ) {
+			throw new TestLinkAPIException(
+				"Could not find a free port for the connection.");
+		}
+		return port;
+	}
+    
+	/**
+	 * Returns a free port number on localhost, or -1 if unable to find a free port.
+	 *
+	 * @return a free port number on localhost, or -1 if unable to find a free port
+	 * @since 3.0
+	 */
+	private static int findFreePort()
+	{
+		ServerSocket socket = null;
+		try {
+			socket = new ServerSocket(0);
+			return socket.getLocalPort();
+		} catch ( IOException e ) {} finally {
+			if ( socket != null ) {
+				try {
+					socket.close();
+				} catch ( IOException e ) {}
+			}
+		}
+		return -1;
 	}
 }
