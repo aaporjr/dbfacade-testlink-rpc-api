@@ -78,6 +78,10 @@ public class ExecutionRunner
 					i++;
 					argMap.put(P_TEST_CASE_CREATION_USER, args[i]);
 				}
+				if ( args[i].equals(P_PORT) ) {
+					i++;
+					argMap.put(P_PORT, args[i]);
+				}
 			}
 		} catch ( Exception e ) {
 			e.printStackTrace();
