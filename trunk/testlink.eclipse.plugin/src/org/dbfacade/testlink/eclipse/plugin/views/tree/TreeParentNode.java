@@ -44,13 +44,14 @@ public class TreeParentNode extends TreeNode
 	}
 
 	/**
-	 * Add descendant
+	 * Add descendant with proper preferences.
 	 * 
 	 * @param child
 	 */
 	public void addChild(
 		TreeNode child)
 	{
+		child.preferences = this.preferences;
 		children.add(child);
 		child.setParent(this);
 	}

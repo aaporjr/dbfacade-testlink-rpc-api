@@ -91,21 +91,17 @@ public class TestLinkView extends ViewPart
 			// Setup user message display
 			UserMsg.shell = viewer.getControl().getShell();
 			
-			// Setup preferences
+			// Setup preferences (This should be only preference to constructor in project)
 			TestLinkPreferences prefs = new TestLinkPreferences();
 		
 			// Setup adapter
 			drillDownAdapter = new DrillDownAdapter(viewer);
-			testLinkTree = new TestLinkTree(prefs.getDefaultProject());
+			testLinkTree = new TestLinkTree(prefs);
 		
 			// Setup content provider
 			ViewContentProvider contentProvider = null;
-			if ( TestLinkMode.isWorkbench() ) {
 				contentProvider = new ViewContentProvider(getViewSite(),
 					testLinkTree.getInvisibleRoot());
-			} else {
-				contentProvider = new ViewContentProvider(testLinkTree.getInvisibleRoot());
-			}
 			
 			viewer.setContentProvider(contentProvider);
 		
@@ -116,11 +112,7 @@ public class TestLinkView extends ViewPart
 		
 			// Complete tree setup
 			// viewer.setSorter(new NameSorter());
-			if ( TestLinkMode.isWorkbench() ) {
 				viewer.setInput(getViewSite());
-			} else {
-				viewer.setInput(testLinkTree.getInvisibleRoot());
-			}
 		
 			// Create actions
 			testPlanActions.makeActions(labelProvider);
@@ -214,20 +206,16 @@ public class TestLinkView extends ViewPart
 		Menu menu = menuMgr.createContextMenu(viewer.getControl());
 		viewer.getControl().setMenu(menu);
 		
-		if ( TestLinkMode.isWorkbench() ) {
 			IWorkbenchPartSite site = getSite();
 			site.registerContextMenu(menuMgr, viewer);
-		}
 	}
 
 	private void contributeToActionBars()
 	{
-		if ( TestLinkMode.isWorkbench() ) {
 			IViewSite site = getViewSite();
 			IActionBars bars = site.getActionBars();
 			testPlanActions.fillLocalPullDown(bars.getMenuManager());
 			testPlanActions.fillLocalToolBar(drillDownAdapter, bars.getToolBarManager());
-		}
 	}
 
 	private void hookDoubleClickAction()

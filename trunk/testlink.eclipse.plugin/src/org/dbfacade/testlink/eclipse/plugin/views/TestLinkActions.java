@@ -83,7 +83,8 @@ public class TestLinkActions
 		resubmitPreparation = new TestLinkAction(labels, TestLinkAction.RESUBMIT_PREPARE,
 			"Resubmits the plan to the preparation class defined in the preferences dialog.");
 		
-		info = new TestLinkAction(labels, TestLinkAction.TREE_NODE_INFO, "Get information about the node.");
+		info = new TestLinkAction(labels, TestLinkAction.TREE_NODE_INFO,
+			"Get information about the node.");
 		
 	}
 	
@@ -134,11 +135,9 @@ public class TestLinkActions
 		manager.add(info);
 		manager.add(refresh);
 		manager.add(new Separator());
-		
-		if ( TestLinkMode.isWorkbench() ) {
-			drillDownAdapter.addNavigationActions(manager);
-			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-		}
+
+		drillDownAdapter.addNavigationActions(manager);
+		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 	
 	/**

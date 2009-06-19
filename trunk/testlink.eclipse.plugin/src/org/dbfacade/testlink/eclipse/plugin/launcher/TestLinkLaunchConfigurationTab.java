@@ -117,7 +117,7 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 		setFromWorkingConfig(PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE,
 			testLinkExternalPath.getWidgetText(), config);
 		
-		// If nothing is set provide the defaults
+		// If nothing is set provide the defaults (The exception to the rule)
 		TestLinkPreferences pref = new TestLinkPreferences();
 		setFromPreference(PreferenceConstants.P_DEFAULT_PROJECT_NAME,
 			testLinkProject.getWidgetText(), pref.getDefaultProject());

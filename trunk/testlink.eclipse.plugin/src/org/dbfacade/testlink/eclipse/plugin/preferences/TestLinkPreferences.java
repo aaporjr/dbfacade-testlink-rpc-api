@@ -6,15 +6,15 @@ import java.util.Map;
 
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.eclipse.plugin.Activator;
-import org.dbfacade.testlink.eclipse.plugin.views.TestLinkMode;
 import org.dbfacade.testlink.tc.autoexec.TestPlanPrepare;
 import org.eclipse.core.runtime.Preferences;
 
 
 public class TestLinkPreferences
 {	
-	// static access
-	public static Map alternateStore = new HashMap();
+	// Alternate storage information
+	private Map alternateStore = new HashMap(); 
+	private boolean usePrefStore = true;
 
 	// Class variables
 	private Preferences prefStore;
@@ -26,11 +26,10 @@ public class TestLinkPreferences
 	private String testPlanPrepareClass;
 	private String externalPath;
 	private TestLinkAPIClient testLinkAPIClient;
-	private boolean usePrefStore = true;
+
 	
 	public TestLinkPreferences()
 	{
-		usePrefStore = (TestLinkMode.mode == TestLinkMode.WORKBENCH_MODE);
 		if ( usePrefStore ) {
 			Activator activator = Activator.getDefault();
 			if ( activator != null ) {
@@ -70,11 +69,11 @@ public class TestLinkPreferences
 		}
 	}
 	
-	public static void setAlternateStore(
+	public void setAlternateStore(
 		Map store)
 	{
 		alternateStore = store;
-		TestLinkMode.mode = TestLinkMode.APPLICATION_MODE;
+		usePrefStore = false;
 	}
 	
 	public boolean useResultReporting()

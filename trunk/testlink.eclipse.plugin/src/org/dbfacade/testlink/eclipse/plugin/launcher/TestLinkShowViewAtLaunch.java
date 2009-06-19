@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.dbfacade.testlink.eclipse.plugin.Activator;
 import org.dbfacade.testlink.eclipse.plugin.preferences.PreferenceConstants;
+import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
 import org.dbfacade.testlink.eclipse.plugin.views.TestLinkView;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.ProjectTree;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.TreeNode;
@@ -69,11 +70,18 @@ public class TestLinkShowViewAtLaunch
 								break;
 							}
 						}
+						
+						// Setup the preferences for the tree (Exception #2)
+						TestLinkPreferences prefs = new TestLinkPreferences();
+						Map newPrefs = getPreferences(argMap);
+						prefs.setAlternateStore(newPrefs);
+						
+						// Add the project to the tree
 						if ( replaceChild) {
 							invisibleRoot.removeChild(tree);
-							TestLinkView.testLinkTree.addProject(visibleRoot, projectName);
+							TestLinkView.testLinkTree.addProject(visibleRoot, prefs, projectName);
 						} else {
-							TestLinkView.testLinkTree.addProject(visibleRoot, projectName);
+							TestLinkView.testLinkTree.addProject(visibleRoot, prefs, projectName);
 						}
 						TestLinkView.refresh();
 					}
@@ -144,6 +152,11 @@ public class TestLinkShowViewAtLaunch
 			}
 		}
 		return false;
+	}
+	
+	private static Map getPreferences(Map argMap) {
+		Map newPrefs = new HashMap();
+		return newPrefs;
 	}
 		
 

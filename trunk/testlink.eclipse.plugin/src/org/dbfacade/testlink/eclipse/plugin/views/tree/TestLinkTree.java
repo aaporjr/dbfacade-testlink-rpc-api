@@ -36,7 +36,7 @@ public class TestLinkTree
 	private ProjectTree visibleRoot;
 	
 	public TestLinkTree(
-		String failMessage)
+		TestLinkPreferences prefs)
 	{
 		if ( invisibleRoot == null ) {
 			invisibleRoot = new TreeParentNode("");
@@ -47,17 +47,16 @@ public class TestLinkTree
 				invisibleRoot.removeChild(child);
 			}
 		}
-		addPreferedProject(visibleRoot, failMessage);
+		addPreferedProject(visibleRoot, prefs, prefs.getDefaultProject());
 	}
 	
 	public void addPreferedProject(
 		ProjectTree visibleRoot,
+		TestLinkPreferences pref,
 		String failMessage)
 	{
-		TestLinkPreferences pref=null;
 		try {
-			pref = new TestLinkPreferences();
-			addProject(visibleRoot, pref.getDefaultProject());
+			addProject(visibleRoot, pref, pref.getDefaultProject());
 		} catch ( Exception e ) {
 			visibleRoot = new ProjectTree(ProjectTree.UNABLE_TO_OPEN_PREFIX + failMessage);
 			invisibleRoot.addChild(visibleRoot);
@@ -76,17 +75,18 @@ public class TestLinkTree
 	
 	public void addProject(
 		ProjectTree visibleRoot,
+		TestLinkPreferences pref,
 		String projectName)
 	{
-		TestLinkPreferences pref=null;
 		try {
-			pref = new TestLinkPreferences();
 			TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
 			TestProject project = new TestProject(apiClient, projectName);
 			visibleRoot = new ProjectTree(project);
+			visibleRoot.preferences = pref;
 			invisibleRoot.addChild(visibleRoot);
 		} catch ( Exception e ) {
 			visibleRoot = new ProjectTree(ProjectTree.UNABLE_TO_OPEN_PREFIX + projectName);
+			visibleRoot.preferences=pref;
 			invisibleRoot.addChild(visibleRoot);
 			if ( pref != null ) {
 				UserMsg.error(e,

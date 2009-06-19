@@ -24,7 +24,6 @@ package org.dbfacade.testlink.eclipse.plugin.views.tree;
 import java.net.URL;
 
 import org.dbfacade.testlink.eclipse.plugin.views.TestLinkAction;
-import org.dbfacade.testlink.eclipse.plugin.views.TestLinkMode;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
 import org.dbfacade.testlink.tc.autoexec.TestCaseExecutor;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -34,6 +33,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 
 public class ViewLabelProvider extends LabelProvider
@@ -219,7 +219,7 @@ public class ViewLabelProvider extends LabelProvider
 		String strIcon)
 	{
 		try {
-			ImageDescriptor imageDescriptor = TestLinkMode.getImageDescriptor(
+			ImageDescriptor imageDescriptor = getImageDescriptor(
 				configElement, strIcon);
 			if ( imageDescriptor == null ) {
 				imageDescriptor = ImageDescriptor.createFromFile(this.getClass(), strIcon);
@@ -229,6 +229,24 @@ public class ViewLabelProvider extends LabelProvider
 			return null;
 		}
 	}
+	
+	public static ImageDescriptor getImageDescriptor(
+			IConfigurationElement configElement,
+			String strIcon)
+		{
+			ImageDescriptor imageDescriptor = null;
+			if (  configElement != null && strIcon != null ) {
+				try {
+					imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(
+						configElement.getNamespaceIdentifier(), strIcon);
+					return imageDescriptor;
+				} catch ( Exception e ) {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		}
 	
 	private Image getImage(
 		String strIcon)

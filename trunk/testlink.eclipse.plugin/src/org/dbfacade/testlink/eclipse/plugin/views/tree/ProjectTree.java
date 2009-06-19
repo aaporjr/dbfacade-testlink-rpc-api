@@ -100,7 +100,7 @@ public class ProjectTree extends TreeParentNode
 	public void findChildren()
 	{
 		try {
-			TestLinkPreferences pref = new TestLinkPreferences();
+			TestLinkPreferences pref = this.preferences;
 			TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
 
 			String pn = projectName;

@@ -21,11 +21,18 @@
 package org.dbfacade.testlink.eclipse.plugin.views.tree;
 
 
+import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
 import org.eclipse.core.runtime.IAdaptable;
 
 
 public class TreeNode implements IAdaptable
 {
+	/**
+	 * Preferences inherited from parent node. Do not
+	 * initialize to a default. Leave it null until
+	 * explicitly assigned.
+	 */
+	public TestLinkPreferences preferences=null;
 	private String name;
 	private TreeParentNode parent;
 	

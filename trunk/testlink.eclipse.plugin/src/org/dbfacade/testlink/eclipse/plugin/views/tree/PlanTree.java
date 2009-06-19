@@ -180,7 +180,7 @@ public class PlanTree extends TreeParentNode
 		// Lazy load test cases
 		TestCase[] cases = this.plan.getTestCases();
 		
-		TestLinkPreferences pref = new TestLinkPreferences();
+		TestLinkPreferences pref = this.preferences;
 		TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
 		TestPlanPrepare prep = pref.getTestPlanPrepare();
 		

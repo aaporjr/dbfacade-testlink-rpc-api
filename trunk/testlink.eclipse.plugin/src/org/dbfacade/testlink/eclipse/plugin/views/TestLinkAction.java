@@ -122,7 +122,7 @@ public class TestLinkAction extends Action
 		
 		try {
 			tree = (PlanTree) obj;
-			pref = new TestLinkPreferences();
+			pref = tree.preferences;
 			TestCase[] cases = tree.getChildrenAsTestCases();
 			exec = new ExecuteTestCases(pref.getTestLinkAPIClient(), tree.getTestPlan(),
 				cases, null, "org.dbfacade.testlink.eclipse.plugin.views.ManualExecutor");
@@ -192,7 +192,7 @@ public class TestLinkAction extends Action
 		TestLinkAPIResults results = null;
 		
 		try {
-			TestLinkPreferences pref = new TestLinkPreferences();
+			TestLinkPreferences pref = tree.preferences;
 			TestLinkAPIClient api = new TestLinkAPIClient(pref.getDevKey(),
 				pref.getTestLinkAPIURL());
 			results = api.getProjects();
@@ -215,10 +215,6 @@ public class TestLinkAction extends Action
 			ILabelProvider labelProvider = new LabelProvider();
 			Shell shell = TestLinkView.viewer.getControl().getShell();
 	
-			// TODO: ElementListSelectionDialog as a bug and only
-			// works with the workbench and does not work in stand 
-			// alone application we need working solution implementation.
-			if ( TestLinkMode.isWorkbench() ) {
 				ElementListSelectionDialog eDialog = new ElementListSelectionDialog(shell,
 				labelProvider);
 				
@@ -234,24 +230,7 @@ public class TestLinkAction extends Action
 					}
 				} else {
 					return;
-				}
-			} else {
-				ChooseSingleElementDialog lDialog = new ChooseSingleElementDialog(shell,
-			            "TestLink Project",
-			            "Select a TestLink Project",
-			            projects
-			            );
-				
-				if ( lDialog.open() == Window.OK ) {
-					newProject = lDialog.getChoice();
-					if ( newProject == null || newProject.equals(currentProject) ) {
-						return;
-					}
-				} else {
-					return;
-				}
-			}
-			
+				}			
 			
 		} catch ( Exception e ) {
 			UserMsg.error(e, "Could not diplay TestLink project listing.");
@@ -274,9 +253,9 @@ public class TestLinkAction extends Action
 		ProjectTree visibleRoot = null;
 		if ( replaceRoot ) {
 			invisibleRoot.removeChild(tree);
-			TestLinkView.testLinkTree.addProject(visibleRoot, projectName);
+			TestLinkView.testLinkTree.addProject(visibleRoot, tree.preferences, projectName);
 		} else {
-			TestLinkView.testLinkTree.addProject(visibleRoot, projectName);
+			TestLinkView.testLinkTree.addProject(visibleRoot, tree.preferences, projectName);
 		}
 		TestLinkView.refresh();
 	}

@@ -91,7 +91,7 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 			runner.run(runConfig, launch, monitor);
 			
 			// Show the view and add the project with the port connection
-			//TestLinkShowViewAtLaunch.show(runConfig);
+			TestLinkShowViewAtLaunch.show(runConfig);
 
 			// check for cancellation
 			if ( monitor.isCanceled() ) {
