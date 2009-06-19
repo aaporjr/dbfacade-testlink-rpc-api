@@ -32,8 +32,9 @@ public class ExecutionProtocol
 	
 	// States
 	private static final Integer ALIVE = new Integer(0);
-	private static final Integer REQUEST = new Integer(1);
-	private static final Integer SHUTDOWN = new Integer(2);
+	private static final Integer TC_REQUEST = new Integer(1);
+	private static final Integer PREP_REQUEST = new Integer(2);
+	private static final Integer SHUTDOWN = new Integer(3);
 	private Integer state = ALIVE;
     
 	// Inputs
@@ -42,8 +43,15 @@ public class ExecutionProtocol
 	// Outputs
 	public static final String STR_SHUTDOWN = "Shutdown";
 	public static final String STR_PING = "Ping";
-	public static final String STR_REQUEST = "Request:";
-	public static final String STR_RESULT = "Result:";
+	
+	public static final String STR_PLANPREP_REQUEST = "PPRequest:";
+	public static final String STR_PLANPREP_RESULT = "PPResult:";
+	public static final String STR_PLANPREP_PASSED = "PP_Passed:";
+	public static final String STR_PLANPREP_FAILED = "PP_Failed:";
+	
+	public static final String STR_TC_REQUEST = "TCRequest:";
+	public static final String STR_TC_RESULT = "TCResult:";
+	
 	public static final String STR_REQUEST_PROJECT_NAME = "[project]";
 	public static final String STR_REQUEST_PLAN_NAME = "[plan]";
 	public static final String STR_REQUEST_TC_EXEC = "[tc_execute]";
@@ -73,11 +81,11 @@ public class ExecutionProtocol
 		if ( theInput != null ) {
 			if ( inputs.containsKey(theInput) ) {
 				state = (Integer) inputs.get(theInput);
-			} else if ( theInput.startsWith(STR_RESULT) ) {
+			} else if ( theInput.startsWith(STR_TC_RESULT) ) {
 				theOutput = theInput;
-			} else if ( theInput.startsWith(STR_REQUEST) ) {
+			} else if ( theInput.startsWith(STR_TC_REQUEST) ) {
 				theOutput = theInput;
-				state = REQUEST;
+				state = TC_REQUEST;
 			} else {
 				state = SHUTDOWN;
 			}
@@ -95,14 +103,34 @@ public class ExecutionProtocol
 		return theOutput;
 	}
     
+	/**
+	 * True is request is a shutdown request
+	 * 
+	 * @return
+	 */
 	public boolean shutdown()
 	{
 		return (state.intValue() == SHUTDOWN.intValue());
 	}
 	
-	public boolean isRequest()
+	/**
+	 * True if it is a test case execution request
+	 * 
+	 * @return
+	 */
+	public boolean isTCRequest()
 	{
-		return (state.intValue() == REQUEST.intValue());
+		return (state.intValue() == TC_REQUEST.intValue());
+	}
+    
+	/**
+	 * True if it is a test plan prepare request
+	 * 
+	 * @return
+	 */
+	public boolean isPrepRequest()
+	{
+		return (state.intValue() == PREP_REQUEST.intValue());
 	}
     
 	/**

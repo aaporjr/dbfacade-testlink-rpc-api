@@ -37,12 +37,12 @@ import org.dbfacade.testlink.tc.autoexec.TestPlan;
 public class RemoteClientExecutor extends EmptyExecutor
 {
 	private ExecutionProtocol ep = new ExecutionProtocol();
-	private BufferedReader stdIn;
 	private String fromServer;
 	private Socket fSocket = null;
-	private PrintWriter out = null;
-	private BufferedReader in = null;
+	private PrintWriter messageSend = null;
+	private BufferedReader messageReceive = null;
 	private TestPlan testPlan;
+	private boolean isPreped = false;
 
 	/**
 	 * Requires that the remote port be provided.
@@ -61,7 +61,7 @@ public class RemoteClientExecutor extends EmptyExecutor
 				retry++;
 				Thread.sleep(500);
 				openConnection(port);
-				out.println(ExecutionProtocol.STR_PING);
+				messageSend.println(ExecutionProtocol.STR_PING);
 				ExecutionProtocol.debug("Opened connection to localhost port: " + port);
 				break;
 			} catch ( Exception e ) {
@@ -78,7 +78,56 @@ public class RemoteClientExecutor extends EmptyExecutor
 	}
     
 	/**
-	 * Make a request for remote execution and then shut the test down.
+	 * Send the server a shutdown request from the client
+	 */
+	public void sendServerShutdownRequest()
+	{
+		messageSend.println(ExecutionProtocol.STR_SHUTDOWN);	
+	}
+	
+	/**
+	 * Ask the server to prepare the test plan
+	 */
+	public void sendPlanPrepareRequest()
+	{
+		try {
+			String request = ExecutionProtocol.STR_PLANPREP_REQUEST 
+				+ ExecutionProtocol.STR_REQUEST_PROJECT_NAME
+				+ testPlan.getProject().getProjectName()
+				+ ExecutionProtocol.STR_REQUEST_PLAN_NAME + testPlan.getTestPlanName();
+			messageSend.println(request);	
+			// Wait for the response
+			while ( (fromServer = messageReceive.readLine()) != null ) {
+				ep.processInput(fromServer);
+				ExecutionProtocol.debug("Server: " + fromServer);
+				if ( fromServer.startsWith(ExecutionProtocol.STR_PLANPREP_RESULT) ) {
+					if ( fromServer.contains(ExecutionProtocol.STR_PLANPREP_PASSED) ) {
+						isPreped = true;
+					} else {
+						isPreped = false;
+					}
+					ExecutionProtocol.debug("Result from server: " + fromServer);
+					break;
+				}
+			}
+		} catch ( Exception e ) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * True if the plan was successfully prepared by the remote server.
+	 * 
+	 * @return
+	 */
+	public boolean isPreped()
+	{
+		return isPreped;
+	}
+	
+	/**
+	 * Make a request for remote test case execution.
 	 */
 	public void execute(
 		TestCase tc)
@@ -99,11 +148,10 @@ public class RemoteClientExecutor extends EmptyExecutor
 			sendTestCaseRequest(tc);
 			
 			// Wait for the response
-			stdIn = new BufferedReader(new InputStreamReader(System.in));
-			while ( (fromServer = in.readLine()) != null ) {
+			while ( (fromServer = messageReceive.readLine()) != null ) {
 				ep.processInput(fromServer);
 				ExecutionProtocol.debug("Server: " + fromServer);
-				if ( fromServer.startsWith(ExecutionProtocol.STR_RESULT) ) {
+				if ( fromServer.startsWith(ExecutionProtocol.STR_TC_RESULT) ) {
 					ExecutionProtocol.debug("Result from server: " + fromServer);
 					break;
 				}
@@ -130,11 +178,11 @@ public class RemoteClientExecutor extends EmptyExecutor
 	public void sendTestCaseRequest(
 		TestCase tc) throws Exception
 	{
-		String request = ExecutionProtocol.STR_REQUEST 
+		String request = ExecutionProtocol.STR_TC_REQUEST 
 			+ ExecutionProtocol.STR_REQUEST_PROJECT_NAME + tc.getProjectName()
 			+ ExecutionProtocol.STR_REQUEST_PLAN_NAME + testPlan.getTestPlanName()
 			+ ExecutionProtocol.STR_REQUEST_TC_EXEC + tc.getTestCaseInternalID().toString();
-		out.println(request);
+		messageSend.println(request);
 	}
 	
 	/**
@@ -173,8 +221,9 @@ public class RemoteClientExecutor extends EmptyExecutor
 	{
 		try {
 			fSocket = new Socket("localhost", port);
-			out = new PrintWriter(fSocket.getOutputStream(), true);
-			in = new BufferedReader(new InputStreamReader(fSocket.getInputStream()));
+			messageSend = new PrintWriter(fSocket.getOutputStream(), true);
+			messageReceive = new BufferedReader(
+				new InputStreamReader(fSocket.getInputStream()));
 		} catch ( UnknownHostException e ) {
 			System.err.println("Don't know about host: localhost.");
 			throw e;
@@ -194,17 +243,13 @@ public class RemoteClientExecutor extends EmptyExecutor
 	public void closeConnection()
 	{
 		try {
-			out.close();
+			messageSend.close();
 		} catch ( Exception e ) {}
 		
 		try {
-			in.close();
+			messageReceive.close();
 		} catch ( Exception e ) {}
 	
-		try {
-			stdIn.close();
-		} catch ( Exception e ) {}
-
 		try {
 			fSocket.close();
 		} catch ( Exception e ) {}

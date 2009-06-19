@@ -37,15 +37,24 @@ import org.dbfacade.testlink.tc.autoexec.TestCaseExecutor;
 import org.dbfacade.testlink.tc.autoexec.TestPlan;
 import org.dbfacade.testlink.tc.autoexec.TestPlanPrepare;
 
-
+/**
+ * The server implements a protocol for listening to request
+ * for test plan preparation and test case execution.
+ * 
+ * @author Daniel Padilla
+ *
+ */
 public class ExecutionServer
 {
 	private int port;
 	private TestLinkAPIClient apiClient;
 	private TestPlan testPlan = null;
-	TestPlanPrepare prep;
-	String defaultTestCaseUser;
-	String externalDir;
+	private TestPlanPrepare prep;
+	private String defaultTestCaseUser;
+	private String externalDir;
+	private PrintWriter messageSend;
+	private BufferedReader messageReceive;
+	private boolean isConnected = false;
 
 	/**
 	 * The execution server expects a test plan that has
@@ -69,6 +78,9 @@ public class ExecutionServer
 		this.externalDir = externalDir;
 	}
 	
+	/**
+	 * Start the remote test execution server.
+	 */
 	public void start()
 	{
 		try {
@@ -88,8 +100,8 @@ public class ExecutionServer
 				System.exit(1);
 			}
 
-			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-			BufferedReader in = new BufferedReader(
+			messageSend = new PrintWriter(clientSocket.getOutputStream(), true);
+			messageReceive = new BufferedReader(
 				new InputStreamReader(clientSocket.getInputStream()));
 			String inputLine,
 				outputLine;
@@ -97,41 +109,85 @@ public class ExecutionServer
 
 			// Process the first output to check things out
 			outputLine = ep.processInput(null);
-			out.println(outputLine);
+			messageSend.println(outputLine);
 			ExecutionProtocol.debug(
 				"The server is alive on locolhost port: " + port + ", output: " + outputLine);
 
-			while ( (inputLine = in.readLine()) != null ) {
+			isConnected = true;
+			while ( (inputLine = messageReceive.readLine()) != null ) {
 					
 				// Process input and send answer
 				outputLine = ep.processInput(inputLine);
 
 				// After answer is sent then process the requests
 				if ( ep.shutdown() ) {
-					out.println(ExecutionProtocol.STR_SHUTDOWN);
+					messageSend.println(ExecutionProtocol.STR_SHUTDOWN);
 					ExecutionProtocol.debug(
 						"The TestLink test execution server on port " + port
 						+ " is shutting down.");
 					break;
-				} else if ( ep.isRequest() 
+				} else if ( ep.isTCRequest() 
 					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_PROJECT_NAME)
 					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_PLAN_NAME)
 					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_TC_EXEC) ) {
 					outputLine = processTestCaseExecRequest(inputLine);
 					ExecutionProtocol.debug(outputLine);
-					out.println(outputLine);
+					messageSend.println(outputLine);
+				} else if ( ep.isPrepRequest() 
+					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_PROJECT_NAME)
+					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_PLAN_NAME) ) {
+					outputLine = processTestPlanPrepRequest(inputLine);
+					ExecutionProtocol.debug(outputLine);
+					messageSend.println(outputLine);
 				} else {
-					out.println(ExecutionProtocol.STR_RESULT);
+					messageSend.println(ExecutionProtocol.STR_PING);
 					continue;
 				}
 			}
-			out.close();
-			in.close();
+			isConnected = false;
+			messageSend.close();
+			messageReceive.close();
 			clientSocket.close();
 			serverSocket.close();
 		} catch ( Exception e ) {
+			isConnected = false;
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * True if the server is up and running and connected to the port.
+	 * 
+	 * @return
+	 */
+	public boolean isConnected()
+	{
+		return isConnected;
+	}
+	
+	/**
+	 * Process the test plan prepare request from the client.
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public String processTestPlanPrepRequest(
+		String request)
+	{
+		// Default result
+		String result = ExecutionProtocol.STR_PLANPREP_RESULT
+			+ ExecutionProtocol.STR_PLANPREP_FAILED;
+			
+		try {
+			createTestPlan(request);
+		} catch ( Exception e ) {
+			// Do not use Request: it will confuse the protocol
+			return result + " Unable to create the needed plan. {Req: "
+				+ request.replaceAll(ExecutionProtocol.STR_PLANPREP_REQUEST, "")
+				+ ", Exception: " + e.toString() + "}";
+		}
+		return ExecutionProtocol.STR_PLANPREP_RESULT
+			+ ExecutionProtocol.STR_PLANPREP_PASSED;
 	}
 	
 	/**
@@ -145,16 +201,16 @@ public class ExecutionServer
 		String request)
 	{
 		// Default result
-		String result = ExecutionProtocol.STR_RESULT + ExecutionProtocol.STR_EXEC_BOMBED
-			+ ExecutionProtocol.STR_EXEC_FAILED + ExecutionProtocol.STR_EXEC_NOTES
-			+ "Unable to process test case request.";
+		String result = ExecutionProtocol.STR_TC_RESULT
+			+ ExecutionProtocol.STR_EXEC_BOMBED + ExecutionProtocol.STR_EXEC_FAILED
+			+ ExecutionProtocol.STR_EXEC_NOTES + "Unable to process test case request.";
 		
 		try {
 			createTestPlan(request);
 		} catch ( Exception e ) {
 			// Do not use Request: it will confuse the protocol
 			return result + " Unable to create the needed plan. {Req: "
-				+ request.replaceAll(ExecutionProtocol.STR_REQUEST, "") + ", Exception: "
+				+ request.replaceAll(ExecutionProtocol.STR_TC_REQUEST, "") + ", Exception: "
 				+ e.toString() + "}";
 		}
 		
@@ -181,7 +237,7 @@ public class ExecutionServer
 					TestCaseExecutor te = tc.getExecutor();
 					try {
 						ExecuteTestCase.execute(testPlan, tc, te);
-						result = ExecutionProtocol.STR_RESULT;
+						result = ExecutionProtocol.STR_TC_RESULT;
 						if ( te.getExecutionState() == TestCaseExecutor.STATE_BOMBED ) {
 							result += ExecutionProtocol.STR_EXEC_BOMBED
 								+ ExecutionProtocol.STR_EXEC_FAILED
@@ -200,7 +256,7 @@ public class ExecutionServer
 								+ te.getExecutionNotes();
 						}
 					} catch ( Exception e ) {
-						result = ExecutionProtocol.STR_RESULT
+						result = ExecutionProtocol.STR_TC_RESULT
 							+ ExecutionProtocol.STR_EXEC_BOMBED
 							+ ExecutionProtocol.STR_EXEC_FAILED
 							+ ExecutionProtocol.STR_EXEC_NOTES
@@ -225,6 +281,12 @@ public class ExecutionServer
 		return result;
 	}
 	
+	/**
+	 * Create the test plan instance for this server if it does not yet exist.
+	 * 
+	 * @param request
+	 * @throws Exception
+	 */
 	public void createTestPlan(
 		String request) throws Exception
 	{
@@ -236,10 +298,18 @@ public class ExecutionServer
 		String projectName = request.substring(start, planIdx);
 		
 		start = planIdx + ExecutionProtocol.STR_REQUEST_PLAN_NAME.length();
-		String planName = request.substring(start, tcIdx);
+		String planName = null;
+		if ( tcIdx > planIdx ) {
+			planName = request.substring(start, tcIdx);
+		} else {
+			planName = request.substring(start);
+		}
 		
-		start = tcIdx + ExecutionProtocol.STR_REQUEST_TC_EXEC.length();
-		String caseInternalID = request.substring(start);
+		String caseInternalID = "";
+		if ( tcIdx > 0 ) {
+			start = tcIdx + ExecutionProtocol.STR_REQUEST_TC_EXEC.length();
+			caseInternalID = request.substring(start);
+		}
 		
 		ExecutionProtocol.debug(projectName + ", " + planName + ", " + caseInternalID);
 		
