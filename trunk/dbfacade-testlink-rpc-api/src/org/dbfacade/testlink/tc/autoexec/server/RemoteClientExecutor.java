@@ -43,6 +43,7 @@ public class RemoteClientExecutor extends EmptyExecutor
 	private BufferedReader messageReceive = null;
 	private TestPlan testPlan;
 	private boolean isPreped = false;
+	private String clientName = null;
 
 	/**
 	 * Requires that the remote port be provided.
@@ -55,13 +56,14 @@ public class RemoteClientExecutor extends EmptyExecutor
 		)
 	{	
 		this.testPlan = testPlan;
+		this.clientName = this.toString();
 		int retry = 0;
 		while ( retry < 3 ) {
 			try {
 				retry++;
 				Thread.sleep(500);
 				openConnection(port);
-				messageSend.println(ExecutionProtocol.STR_PING);
+				sendMessage(ExecutionProtocol.STR_PING);
 				ExecutionProtocol.debug("Opened connection to localhost port: " + port);
 				break;
 			} catch ( Exception e ) {
@@ -76,13 +78,17 @@ public class RemoteClientExecutor extends EmptyExecutor
 			}
 		}
 	}
+	
+	public void sendMessage(String message) {
+		messageSend.println(clientName + ":" + message);	
+	}
     
 	/**
 	 * Send the server a shutdown request from the client
 	 */
 	public void sendServerShutdownRequest()
 	{
-		messageSend.println(ExecutionProtocol.STR_SHUTDOWN);	
+		sendMessage(ExecutionProtocol.STR_SHUTDOWN);	
 	}
 	
 	/**
@@ -95,12 +101,12 @@ public class RemoteClientExecutor extends EmptyExecutor
 				+ ExecutionProtocol.STR_REQUEST_PROJECT_NAME
 				+ testPlan.getProject().getProjectName()
 				+ ExecutionProtocol.STR_REQUEST_PLAN_NAME + testPlan.getTestPlanName();
-			messageSend.println(request);	
+			sendMessage(request);	
 			// Wait for the response
 			while ( (fromServer = messageReceive.readLine()) != null ) {
 				ep.processInput(fromServer);
 				ExecutionProtocol.debug("Server: " + fromServer);
-				if ( fromServer.startsWith(ExecutionProtocol.STR_PLANPREP_RESULT) ) {
+				if ( fromServer.startsWith(clientName + ":") && fromServer.startsWith(ExecutionProtocol.STR_PLANPREP_RESULT) ) {
 					if ( fromServer.contains(ExecutionProtocol.STR_PLANPREP_PASSED) ) {
 						isPreped = true;
 					} else {
@@ -151,7 +157,7 @@ public class RemoteClientExecutor extends EmptyExecutor
 			while ( (fromServer = messageReceive.readLine()) != null ) {
 				ep.processInput(fromServer);
 				ExecutionProtocol.debug("Server: " + fromServer);
-				if ( fromServer.startsWith(ExecutionProtocol.STR_TC_RESULT) ) {
+				if ( fromServer.startsWith(clientName + ":") && fromServer.startsWith(ExecutionProtocol.STR_TC_RESULT) ) {
 					ExecutionProtocol.debug("Result from server: " + fromServer);
 					break;
 				}
@@ -182,7 +188,7 @@ public class RemoteClientExecutor extends EmptyExecutor
 			+ ExecutionProtocol.STR_REQUEST_PROJECT_NAME + tc.getProjectName()
 			+ ExecutionProtocol.STR_REQUEST_PLAN_NAME + testPlan.getTestPlanName()
 			+ ExecutionProtocol.STR_REQUEST_TC_EXEC + tc.getTestCaseInternalID().toString();
-		messageSend.println(request);
+		sendMessage(request);
 	}
 	
 	/**
@@ -253,5 +259,12 @@ public class RemoteClientExecutor extends EmptyExecutor
 		try {
 			fSocket.close();
 		} catch ( Exception e ) {}
+	}
+	
+	/**
+	 * Return the default client identifier plus project name.
+	 */
+	public final String toString() {
+		return this.testPlan.getTestPlanName() + "@" + this.toString();
 	}
 }

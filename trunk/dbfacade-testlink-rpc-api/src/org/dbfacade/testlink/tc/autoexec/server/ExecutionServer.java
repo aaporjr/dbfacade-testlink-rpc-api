@@ -115,13 +115,23 @@ public class ExecutionServer
 
 			isConnected = true;
 			while ( (inputLine = messageReceive.readLine()) != null ) {
+				
+				// Check for proper format
+				if ( !inputLine.contains(":") ) {
+					messageSend.println(ExecutionProtocol.STR_PING);
+					continue;
+				}
+				
+				// Get the client information
+				String client = inputLine.substring(0, inputLine.indexOf(":"));
+				inputLine = inputLine.substring(inputLine.indexOf(":")+1);
 					
 				// Process input and send answer
 				outputLine = ep.processInput(inputLine);
 
 				// After answer is sent then process the requests
 				if ( ep.shutdown() ) {
-					messageSend.println(ExecutionProtocol.STR_SHUTDOWN);
+					messageSend.println(client + ":" + ExecutionProtocol.STR_SHUTDOWN);
 					ExecutionProtocol.debug(
 						"The TestLink test execution server on port " + port
 						+ " is shutting down.");
@@ -132,15 +142,15 @@ public class ExecutionServer
 					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_TC_EXEC) ) {
 					outputLine = processTestCaseExecRequest(inputLine);
 					ExecutionProtocol.debug(outputLine);
-					messageSend.println(outputLine);
+					messageSend.println(client + ":" + outputLine);
 				} else if ( ep.isPrepRequest() 
 					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_PROJECT_NAME)
 					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_PLAN_NAME) ) {
 					outputLine = processTestPlanPrepRequest(inputLine);
 					ExecutionProtocol.debug(outputLine);
-					messageSend.println(outputLine);
+					messageSend.println(client + ":" + outputLine);
 				} else {
-					messageSend.println(ExecutionProtocol.STR_PING);
+					messageSend.println(client + ":" + ExecutionProtocol.STR_PING);
 					continue;
 				}
 			}
