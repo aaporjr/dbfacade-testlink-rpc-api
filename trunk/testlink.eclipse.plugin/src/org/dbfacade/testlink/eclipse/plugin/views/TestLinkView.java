@@ -37,6 +37,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IViewSite;
@@ -100,8 +101,8 @@ public class TestLinkView extends ViewPart
 		
 			// Setup content provider
 			ViewContentProvider contentProvider = null;
-				contentProvider = new ViewContentProvider(getViewSite(),
-					testLinkTree.getInvisibleRoot());
+			contentProvider = new ViewContentProvider(getViewSite(),
+				testLinkTree.getInvisibleRoot());
 			
 			viewer.setContentProvider(contentProvider);
 		
@@ -112,7 +113,7 @@ public class TestLinkView extends ViewPart
 		
 			// Complete tree setup
 			// viewer.setSorter(new NameSorter());
-				viewer.setInput(getViewSite());
+			viewer.setInput(getViewSite());
 		
 			// Create actions
 			testPlanActions.makeActions(labelProvider);
@@ -132,9 +133,18 @@ public class TestLinkView extends ViewPart
 	
 	public static void refresh()
 	{
-		Object[] expanded = viewer.getExpandedElements();
-		viewer.refresh();
-		viewer.setExpandedElements(expanded);
+		try {
+			Display display = Display.getDefault();
+			display.syncExec(new Runnable()
+			{
+				public void run()
+				{     
+					Object[] expanded = viewer.getExpandedElements();
+					viewer.refresh();
+					viewer.setExpandedElements(expanded);
+				}  
+			});
+		} catch ( Exception e ) {}
 	}
 	
 	public static void update(
@@ -153,7 +163,6 @@ public class TestLinkView extends ViewPart
 	public static void refresh(
 		Object element)
 	{
-
 		try {
 			if ( element != null ) {
 				viewer.refresh(element, true);
@@ -206,16 +215,16 @@ public class TestLinkView extends ViewPart
 		Menu menu = menuMgr.createContextMenu(viewer.getControl());
 		viewer.getControl().setMenu(menu);
 		
-			IWorkbenchPartSite site = getSite();
-			site.registerContextMenu(menuMgr, viewer);
+		IWorkbenchPartSite site = getSite();
+		site.registerContextMenu(menuMgr, viewer);
 	}
 
 	private void contributeToActionBars()
 	{
-			IViewSite site = getViewSite();
-			IActionBars bars = site.getActionBars();
-			testPlanActions.fillLocalPullDown(bars.getMenuManager());
-			testPlanActions.fillLocalToolBar(drillDownAdapter, bars.getToolBarManager());
+		IViewSite site = getViewSite();
+		IActionBars bars = site.getActionBars();
+		testPlanActions.fillLocalPullDown(bars.getMenuManager());
+		testPlanActions.fillLocalToolBar(drillDownAdapter, bars.getToolBarManager());
 	}
 
 	private void hookDoubleClickAction()

@@ -48,14 +48,16 @@ public class PlanTree extends TreeParentNode
 		}
 	}
 	
-	public RemoteClientExecutor getRemoteClient() {
+	public RemoteClientExecutor getRemoteClient()
+	{
 		return rte;
 	}
 	
 	/**
 	 * Send a shutdown request to the server
 	 */
-	public void shutdownRemoteTester() {
+	public void shutdownRemoteTester()
+	{
 		if ( rte != null ) {
 			rte.sendServerShutdownRequest();
 		}
@@ -108,7 +110,6 @@ public class PlanTree extends TreeParentNode
 		return (plan != null);
 	}
 	
-
 	/**
 	 * Get the test plan associated with this object.
 	 * @return
@@ -201,22 +202,39 @@ public class PlanTree extends TreeParentNode
 		try {
 			// Lazy load test cases
 			cases = this.plan.getTestCases();
-		
-			// Setup the apiClient
-			TestLinkPreferences pref = getPreferences();
-			TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
-		
-			// Prepare the plan after test cases are loaded
-			TestPlanPrepare prep = pref.getTestPlanPrepare();
-			prep.setTCUser(pref.getTestCaseCreator());
-			prep.setExternalPath(pref.getExternalPath());
-			prep.adjust(apiClient, this.plan);
 		} catch ( Exception e ) {
-			UserMsg.error(e,
-				"The test plan prepare class " + getPreferences().getTestPlanPrepareClass()
-				+ " was unable to prepare the plan.");
-		}			
-		return cases;
+			UserMsg.error(e, "The test plan test cases could not be loaded and prepared.");
+		}	
+
+		// If the plan is in remote test mode do not
+		// prepare the test cases locally. Prepare 
+		// the cases remotely and get results.
+		if ( rte != null ) {
+			rte.sendPlanPrepareRequest(cases);
+			if ( ! rte.isPreped() ) {
+				UserMsg.error("The test plan prepare failed on the remote server.");
+			}
+			return cases;
+		} else {
+			try {
+				
+				// Setup the apiClient
+				TestLinkPreferences pref = getPreferences();
+				TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
+		
+				// Prepare the plan after test cases are loaded
+				TestPlanPrepare prep = pref.getTestPlanPrepare();
+				prep.setTCUser(pref.getTestCaseCreator());
+				prep.setExternalPath(pref.getExternalPath());
+				prep.adjust(apiClient, this.plan);
+			} catch ( Exception e ) {
+				UserMsg.error(e,
+					"The test plan prepare class "
+					+ getPreferences().getTestPlanPrepareClass()
+					+ " was unable to prepare the plan.");
+			}			
+			return cases;
+		}
 	}
 	
 	/**

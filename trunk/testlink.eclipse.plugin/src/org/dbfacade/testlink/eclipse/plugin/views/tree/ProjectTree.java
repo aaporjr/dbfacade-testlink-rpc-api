@@ -8,22 +8,26 @@ import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.eclipse.plugin.UserMsg;
 import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
 import org.dbfacade.testlink.eclipse.plugin.views.HtmlMessageText;
+import org.dbfacade.testlink.eclipse.plugin.views.TestLinkView;
 import org.dbfacade.testlink.tc.autoexec.TestPlan;
 import org.dbfacade.testlink.tc.autoexec.TestPlanLoader;
 import org.dbfacade.testlink.tc.autoexec.TestProject;
+import org.dbfacade.testlink.tc.autoexec.server.RemoteClientConnection;
+import org.dbfacade.testlink.tc.autoexec.server.RemoteClientListener;
+import org.dbfacade.testlink.tc.autoexec.server.RemoteConnectionManager;
 
 
 ;
 
 
-public class ProjectTree extends TreeParentNode
+public class ProjectTree extends TreeParentNode implements RemoteClientListener
 {
 	public static final String OPEN_TREE_PLACE_HOLDER = "Right click to open project";
 	public static final String UNABLE_TO_OPEN_PREFIX = "Unable to open project: ";
 	private String projectName;
 	private TestProject project = null;
-	private int port=-1;
-	private boolean isConnected=false;
+	private int port = -1;
+	private boolean isConnected = false;
 	
 	/**
 	 * Used for initial display
@@ -38,7 +42,7 @@ public class ProjectTree extends TreeParentNode
 	}
 	
 	/**
-	 * Use for full initializarion
+	 * Use for full initialization
 	 * 
 	 * @param project
 	 */
@@ -54,6 +58,8 @@ public class ProjectTree extends TreeParentNode
 		if ( port > 0 ) {
 			this.port = port;
 			this.isConnected = true;
+			RemoteClientConnection conn = RemoteConnectionManager.getOrCreateConnection(port);
+			conn.addListener(this);
 		}
 	}
 	
@@ -118,7 +124,6 @@ public class ProjectTree extends TreeParentNode
 		child.setParent(null);
 	}
 
-	
 	/**
 	 * When a project is not a place holder project always return true.
 	 * <p>
@@ -185,7 +190,8 @@ public class ProjectTree extends TreeParentNode
 	 * 
 	 * @return
 	 */
-	public int getPort() {
+	public int getPort()
+	{
 		return port;
 	}
 	
@@ -194,7 +200,8 @@ public class ProjectTree extends TreeParentNode
 	 * 
 	 * @return
 	 */
-	public boolean isInRemoteMode() {
+	public boolean isInRemoteMode()
+	{
 		return (port > 0);
 	}
 	
@@ -203,7 +210,8 @@ public class ProjectTree extends TreeParentNode
 	 * been shutdown.
 	 * 
 	 */
-	public void disconnect() {
+	public void disconnect()
+	{
 		isConnected = false;
 	}
 	
@@ -212,11 +220,26 @@ public class ProjectTree extends TreeParentNode
 	 * 
 	 * @return
 	 */
-	public boolean isConnected() {
+	public boolean isConnected()
+	{
 		if ( !isInRemoteMode() ) {
 			return false;
 		}
 		return isConnected;
+	}
+	
+	public void sentMessage(
+		String output)
+	{}
+
+	public void receivedMessage(
+		String input)
+	{}
+	
+	public void receivedShutdown()
+	{
+		disconnect();
+		TestLinkView.refresh();
 	}
 	
 }

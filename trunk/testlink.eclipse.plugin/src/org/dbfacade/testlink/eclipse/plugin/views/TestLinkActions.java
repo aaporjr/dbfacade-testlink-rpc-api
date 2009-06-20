@@ -122,12 +122,12 @@ public class TestLinkActions
 		if ( node instanceof ProjectTree ) {
 			ProjectTree tree = (ProjectTree) node;
 			if ( tree.isInRemoteMode() ) {
+				manager.add(disconnect);
+				manager.add(closeProject);
+			} else {
 				manager.add(openProject);
 				manager.add(closeProject);
 				manager.add(switchProject);
-			} else {
-				manager.add(disconnect);
-				manager.add(closeProject);
 			}
 		} else if ( node instanceof PlanTree ) {
 			PlanTree tree = (PlanTree) node;

@@ -25,7 +25,6 @@ import java.util.Map;
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
 import org.dbfacade.testlink.eclipse.plugin.Activator;
 import org.dbfacade.testlink.eclipse.plugin.preferences.PreferenceConstants;
-import org.dbfacade.testlink.eclipse.plugin.views.tree.ProjectTree;
 import org.dbfacade.testlink.tc.autoexec.server.ExecutionRunner;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -88,15 +87,14 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 			setDefaultSourceLocator(launch, configuration);
 			monitor.worked(1);
 			
-			// Show the view and add the project with the port connection
-			ProjectTree tree = TestLinkShowViewAtLaunch.show(runConfig);
-			
+
 			// Launch the configuration - 1 unit of work
-			try {
-				runner.run(runConfig, launch, monitor);
-			} catch (CoreException ce) {
-				tree.disconnect();
-			}
+			runner.run(runConfig, launch, monitor);
+			
+			
+			// Show the view and add the project with the port connection
+			// after the launch because it needs the server to have started.
+			TestLinkShowViewAtLaunch.show(runConfig);
 			
 			// check for cancellation
 			if ( monitor.isCanceled() ) {

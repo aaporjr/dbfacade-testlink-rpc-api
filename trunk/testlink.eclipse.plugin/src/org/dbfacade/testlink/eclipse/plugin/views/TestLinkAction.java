@@ -40,7 +40,7 @@ public class TestLinkAction extends Action
 	public static final String DOUBLE_CLICK = "doble click";
 	public static final String REFRESH = "Refresh";
 	public static final String TREE_NODE_INFO = "TestLink Item Details";
-	public static final String DISCONNECT = "Disconnect remote testing";
+	public static final String DISCONNECT = "Disconnect";
 
 	// private
 	private String actionName;
@@ -84,6 +84,8 @@ public class TestLinkAction extends Action
 				handleProjectAction(obj, true);
 			} else if ( actionName.equals(CLOSE_PROJECT) ) {
 				removeProject(obj);
+			} else if ( actionName.equals(DISCONNECT) ) {
+				disconnectProject(obj);
 			} else if ( actionName.equals(DOUBLE_CLICK)
 				|| actionName.equals(TREE_NODE_INFO) ) {
 				if ( obj instanceof TreeNode ) {
@@ -213,27 +215,27 @@ public class TestLinkAction extends Action
 			}
 		}
 	
-		String newProject=null;
+		String newProject = null;
 		try {
 			ILabelProvider labelProvider = new LabelProvider();
 			Shell shell = TestLinkView.viewer.getControl().getShell();
 	
-				ElementListSelectionDialog eDialog = new ElementListSelectionDialog(shell,
+			ElementListSelectionDialog eDialog = new ElementListSelectionDialog(shell,
 				labelProvider);
 				
-				eDialog.setTitle("TestLink Project");
-				eDialog.setMessage("TestLink Projects");
-				eDialog.setElements(projects);
-				eDialog.create();
+			eDialog.setTitle("TestLink Project");
+			eDialog.setMessage("TestLink Projects");
+			eDialog.setElements(projects);
+			eDialog.create();
 		        
-				if ( eDialog.open() == Window.OK ) {
-					newProject = (String) eDialog.getFirstResult();
-					if ( newProject == null || newProject.equals(currentProject) ) {
-						return;
-					}
-				} else {
+			if ( eDialog.open() == Window.OK ) {
+				newProject = (String) eDialog.getFirstResult();
+				if ( newProject == null || newProject.equals(currentProject) ) {
 					return;
-				}			
+				}
+			} else {
+				return;
+			}			
 			
 		} catch ( Exception e ) {
 			UserMsg.error(e, "Could not diplay TestLink project listing.");
@@ -273,6 +275,16 @@ public class TestLinkAction extends Action
 				ProjectTree visibleRoot = new ProjectTree("Right click to open project");
 				invisibleRoot.addChild(visibleRoot);
 			}
+			TestLinkView.refresh();
+		}
+	}
+
+	private void disconnectProject(
+		Object obj)
+	{
+		if ( obj instanceof ProjectTree ) {
+			ProjectTree tree = (ProjectTree) obj;
+			tree.disconnect();
 			TestLinkView.refresh();
 		}
 	}

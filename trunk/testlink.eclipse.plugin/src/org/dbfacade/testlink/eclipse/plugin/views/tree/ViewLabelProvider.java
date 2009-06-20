@@ -212,6 +212,9 @@ public class ViewLabelProvider extends LabelProvider
 			if ( a.getActionName().equals(TestLinkAction.SWITCH_PROJECT) ) {
 				return getImageDescriptor(fileProjectSwitch);
 			}
+			if ( a.getActionName().equals(TestLinkAction.DISCONNECT) ) {
+				return getImageDescriptor(fileProjectDisconnected);
+			}
 			if ( a.getActionName().startsWith(
 				TestLinkAction.PLAN_EXEC_DEFAULT.substring(0, 5)) ) {
 				return getImageDescriptor(fileExec);
