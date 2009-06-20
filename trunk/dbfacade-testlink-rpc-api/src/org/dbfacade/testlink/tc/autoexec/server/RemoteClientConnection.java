@@ -203,7 +203,7 @@ public class RemoteClientConnection
 	 */
 	public boolean isGood()
 	{
-		return (fSocket.isConnected() && !fSocket.isClosed());
+		return (fSocket.isConnected() && !fSocket.isClosed() && !isClosed);
 	}
 	
 	/**
