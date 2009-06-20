@@ -49,38 +49,64 @@ public class RemoteClientConnection
 	private int port = -1;
 	private Map messageCache = new HashMap();
 	private boolean cacheLocked = false;
-	private Random randomizer=new Random(new Date().getTime());
-	private boolean isClosed=false;
+	private Random randomizer = new Random(new Date().getTime());
+	private boolean isClosed = false;
 	private ArrayList listeners = new ArrayList();
 	
-	public RemoteClientConnection(
+	/**
+	 * Restrict to the package.
+	 * 
+	 * @param port
+	 */
+	RemoteClientConnection(
 		int port)
 	{
 		this.port = port;
 	}
 	
-	public void addListener(RemoteClientListener listener) {
+	public void addListener(
+		RemoteClientListener listener)
+	{
 		listeners.add(listener);
 	}
 	
 	public void openConnection() throws Exception
 	{
-		try {
-			fSocket = new Socket("localhost", port);
-			messageSend = new PrintWriter(fSocket.getOutputStream(), true);
-			messageReceive = new BufferedReader(
-				new InputStreamReader(fSocket.getInputStream()));
-			RemoteClientConnectionMonitor monitor = new RemoteClientConnectionMonitor(this);
-			monitor.start();
-		} catch ( UnknownHostException e ) {
-			System.err.println("Don't know about host: localhost.");
-			throw e;
-		} catch ( IOException e ) {
-			System.err.println("Couldn't get I/O for the connection to: localhost.");
-			throw e;
-		} catch ( Exception e ) {
-			System.err.println("Couldn't get connection established.");
-			throw e;
+		int retry = 0;
+		while ( retry < 3 ) {
+			try {
+				try {
+					fSocket = new Socket("localhost", port);
+					messageSend = new PrintWriter(fSocket.getOutputStream(), true);
+					messageReceive = new BufferedReader(
+						new InputStreamReader(fSocket.getInputStream()));
+					RemoteClientConnectionMonitor monitor = new RemoteClientConnectionMonitor(
+						this);
+					monitor.start();
+					break;
+				} catch ( UnknownHostException e ) {
+					System.out.println("Don't know about host: localhost.");
+					shutdownNotify();
+					throw e;
+				} catch ( IOException e ) {
+					System.out.println(
+						"Couldn't get I/O for the connection to: localhost. Port:" + port);
+					shutdownNotify();
+					throw e;
+				} catch ( Exception e ) {
+					System.out.println("Couldn't get connection established. Port: " + port);
+					shutdownNotify();
+					throw e;
+				}
+			} catch ( Exception e ) {
+				retry++;
+				if ( retry >= 3) {
+					throw e;
+				}
+				try {
+					Thread.sleep(1500);
+				} catch ( Exception ee ) {}
+			}
 		}
 	}
 		
@@ -92,21 +118,18 @@ public class RemoteClientConnection
 	{
 		try {
 			messageSend.close();
-		} catch ( Exception e ) {}
+		} catch ( Throwable e ) {}
 			
 		try {
 			messageReceive.close();
-		} catch ( Exception e ) {}
+		} catch ( Throwable e ) {}
 		
 		try {
 			fSocket.close();
-		} catch ( Exception e ) {}
+		} catch ( Throwable e ) {}
 		
 		isClosed = true;
-		for (int i=0; i < listeners.size(); i++) {
-			RemoteClientListener listener = (RemoteClientListener) listeners.get(i);
-			listener.receivedShutdown();
-		}
+		shutdownNotify();
 	}
 	
 	/**
@@ -121,7 +144,7 @@ public class RemoteClientConnection
 	{
 		String sendMsg = clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR + message;
 		messageSend.println(sendMsg);	
-		for (int i=0; i < listeners.size(); i++) {
+		for ( int i = 0; i < listeners.size(); i++ ) {
 			RemoteClientListener listener = (RemoteClientListener) listeners.get(i);
 			listener.sentMessage(sendMsg);
 		}
@@ -133,7 +156,8 @@ public class RemoteClientConnection
 	 * @return
 	 * @throws Exception
 	 */
-	public String receiveMessage(String client) throws Exception
+	public String receiveMessage(
+		String client) throws Exception
 	{
 		if ( isClosed ) {
 			throw new Exception("The connections is closed and cannot be accessed.");
@@ -152,7 +176,7 @@ public class RemoteClientConnection
 					return fromServer;
 				}
 			}
-		} catch (Throwable e) {
+		} catch ( Throwable e ) {
 			e.printStackTrace();
 			cacheLocked = false;
 			throw new Exception(e);
@@ -202,9 +226,8 @@ public class RemoteClientConnection
 		
 		// Get the client identification information. Must have client target to cache.
 		String client = fromServer.substring(0,
-				fromServer.indexOf(ExecutionProtocol.STR_CLIENT_SEPARATOR));
+			fromServer.indexOf(ExecutionProtocol.STR_CLIENT_SEPARATOR));
 
-		
 		// Cache the data for the client
 		waitForCache();
 		cacheLocked = true;
@@ -215,7 +238,7 @@ public class RemoteClientConnection
 				messageCache.put(client, messages);
 			}
 			messages.add(fromServer);
-			for (int i=0; i < listeners.size(); i++) {
+			for ( int i = 0; i < listeners.size(); i++ ) {
 				RemoteClientListener listener = (RemoteClientListener) listeners.get(i);
 				listener.receivedMessage(fromServer);
 			}
@@ -229,7 +252,8 @@ public class RemoteClientConnection
 	/*
 	 * Private methods
 	 */
-	private void waitForCache() {
+	private void waitForCache()
+	{
 		try {
 			while ( cacheLocked == true ) {
 				sleepRandom();
@@ -242,10 +266,22 @@ public class RemoteClientConnection
 	/*
 	 * Called by message receivers to try to keep consumers on different schedule.
 	 */
-	private void sleepRandom() {
+	private void sleepRandom()
+	{
 		try {
 			int sleep = randomizer.nextInt(97) + 1;
 			Thread.sleep(sleep);
-		} catch (Throwable e) {	}
+		} catch ( Throwable e ) {}
+	}
+	
+	/*
+	 * Let the listeners know about the shutdown
+	 */
+	private void shutdownNotify()
+	{
+		for ( int i = 0; i < listeners.size(); i++ ) {
+			RemoteClientListener listener = (RemoteClientListener) listeners.get(i);
+			listener.receivedShutdown();
+		}
 	}
 }
