@@ -69,6 +69,10 @@ public class RemoteClientExecutor extends EmptyExecutor
 		}
 	}
 	
+	public  RemoteClientConnection getConnection() {
+		return conn;
+	}
+	
 	public void sendMessage(
 		String message)
 	{
