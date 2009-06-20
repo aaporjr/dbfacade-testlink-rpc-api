@@ -275,6 +275,7 @@ public class RemoteClientExecutor extends EmptyExecutor
 	 */
 	public final String toString()
 	{
-		return this.testPlan.getTestPlanName() + "@" + this.toString();
+		String superToString = super.toString();
+		return this.testPlan.getTestPlanName() + "@" + superToString;
 	}
 }
