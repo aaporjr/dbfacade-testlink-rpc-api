@@ -79,8 +79,10 @@ public class RemoteClientExecutor extends EmptyExecutor
 		}
 	}
 	
-	public void sendMessage(String message) {
-		messageSend.println(clientName + ":" + message);	
+	public void sendMessage(
+		String message)
+	{
+		messageSend.println(clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR + message);	
 	}
     
 	/**
@@ -106,7 +108,9 @@ public class RemoteClientExecutor extends EmptyExecutor
 			while ( (fromServer = messageReceive.readLine()) != null ) {
 				ep.processInput(fromServer);
 				ExecutionProtocol.debug("Server: " + fromServer);
-				if ( fromServer.startsWith(clientName + ":") && fromServer.startsWith(ExecutionProtocol.STR_PLANPREP_RESULT) ) {
+				if ( fromServer.startsWith(
+					clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR)
+						&& fromServer.startsWith(ExecutionProtocol.STR_PLANPREP_RESULT) ) {
 					if ( fromServer.contains(ExecutionProtocol.STR_PLANPREP_PASSED) ) {
 						isPreped = true;
 					} else {
@@ -157,13 +161,18 @@ public class RemoteClientExecutor extends EmptyExecutor
 			while ( (fromServer = messageReceive.readLine()) != null ) {
 				ep.processInput(fromServer);
 				ExecutionProtocol.debug("Server: " + fromServer);
-				if ( fromServer.startsWith(clientName + ":") && fromServer.startsWith(ExecutionProtocol.STR_TC_RESULT) ) {
+				if ( fromServer.startsWith(
+					clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR)
+						&& fromServer.startsWith(ExecutionProtocol.STR_TC_RESULT) ) {
 					ExecutionProtocol.debug("Result from server: " + fromServer);
 					break;
 				}
 			}
 			
 			// Process Result
+			fromServer = fromServer.substring(
+				fromServer.indexOf(ExecutionProtocol.STR_CLIENT_SEPARATOR)
+					+ ExecutionProtocol.STR_CLIENT_SEPARATOR.length());
 			processTestCaseResult(fromServer);
 			
 		} catch ( Exception e ) {
@@ -264,7 +273,8 @@ public class RemoteClientExecutor extends EmptyExecutor
 	/**
 	 * Return the default client identifier plus project name.
 	 */
-	public final String toString() {
+	public final String toString()
+	{
 		return this.testPlan.getTestPlanName() + "@" + this.toString();
 	}
 }

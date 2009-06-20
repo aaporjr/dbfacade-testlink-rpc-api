@@ -43,6 +43,7 @@ public class ExecutionProtocol
 	// Outputs
 	public static final String STR_SHUTDOWN = "Shutdown";
 	public static final String STR_PING = "Ping";
+	public static final String STR_CLIENT_SEPARATOR = "@:#";
 	
 	public static final String STR_PLANPREP_REQUEST = "PPRequest:";
 	public static final String STR_PLANPREP_RESULT = "PPResult:";

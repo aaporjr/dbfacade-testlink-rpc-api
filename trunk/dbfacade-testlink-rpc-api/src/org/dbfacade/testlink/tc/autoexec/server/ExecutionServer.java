@@ -117,14 +117,15 @@ public class ExecutionServer
 			while ( (inputLine = messageReceive.readLine()) != null ) {
 				
 				// Check for proper format
-				if ( !inputLine.contains(":") ) {
+				if ( !inputLine.contains(ExecutionProtocol.STR_CLIENT_SEPARATOR) ) {
 					messageSend.println(ExecutionProtocol.STR_PING);
 					continue;
 				}
 				
 				// Get the client information
-				String client = inputLine.substring(0, inputLine.indexOf(":"));
-				inputLine = inputLine.substring(inputLine.indexOf(":")+1);
+				String client = inputLine.substring(0, inputLine.indexOf(ExecutionProtocol.STR_CLIENT_SEPARATOR ));
+				inputLine = inputLine.substring(inputLine.indexOf(ExecutionProtocol.STR_CLIENT_SEPARATOR )+
+						ExecutionProtocol.STR_CLIENT_SEPARATOR.length());
 					
 				// Process input and send answer
 				outputLine = ep.processInput(inputLine);
@@ -142,15 +143,15 @@ public class ExecutionServer
 					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_TC_EXEC) ) {
 					outputLine = processTestCaseExecRequest(inputLine);
 					ExecutionProtocol.debug(outputLine);
-					messageSend.println(client + ":" + outputLine);
+					messageSend.println(client + ExecutionProtocol.STR_CLIENT_SEPARATOR + outputLine);
 				} else if ( ep.isPrepRequest() 
 					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_PROJECT_NAME)
 					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_PLAN_NAME) ) {
 					outputLine = processTestPlanPrepRequest(inputLine);
 					ExecutionProtocol.debug(outputLine);
-					messageSend.println(client + ":" + outputLine);
+					messageSend.println(client + ExecutionProtocol.STR_CLIENT_SEPARATOR + outputLine);
 				} else {
-					messageSend.println(client + ":" + ExecutionProtocol.STR_PING);
+					messageSend.println(client + ExecutionProtocol.STR_CLIENT_SEPARATOR  + ExecutionProtocol.STR_PING);
 					continue;
 				}
 			}
