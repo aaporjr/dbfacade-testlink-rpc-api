@@ -3,7 +3,6 @@ package org.dbfacade.testlink.junit.autoexec;
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.junit.constants.TestConst;
 import org.dbfacade.testlink.tc.autoexec.example.RandomTestResultPrep;
-import org.dbfacade.testlink.tc.autoexec.server.ExecutionProtocol;
 import org.dbfacade.testlink.tc.autoexec.server.ExecutionServer;
 
 public class RemoteServerTest {
@@ -14,7 +13,6 @@ public class RemoteServerTest {
 		try {
 			api = new TestLinkAPIClient(TestConst.userKey, TestConst.apiURL, true);
 			api.ping();
-			ExecutionProtocol.inDebugMode=true;
 			int port = 59168;
 			System.out.println(port);
 			RandomTestResultPrep prep = new RandomTestResultPrep();
