@@ -90,6 +90,7 @@ public class RemoteClientExecutor extends EmptyExecutor
 	 */
 	public void sendPlanPrepareRequest(TestCase[] cases)
 	{
+		isPreped = false;
 		try {
 			String request = ExecutionProtocol.STR_PLANPREP_REQUEST 
 				+ ExecutionProtocol.STR_REQUEST_PROJECT_NAME
