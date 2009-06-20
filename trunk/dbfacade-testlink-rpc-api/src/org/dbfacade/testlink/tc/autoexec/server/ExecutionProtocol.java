@@ -46,6 +46,7 @@ public class ExecutionProtocol
 	public static final String STR_PLANPREP_RESULT = "PPResult:";
 	public static final String STR_PLANPREP_PASSED = "PP_Passed:";
 	public static final String STR_PLANPREP_FAILED = "PP_Failed:";
+	public static final String STR_PLANPREP_DETAIL = "[PP_DETAIL]";
 	
 	public static final String STR_TC_REQUEST = "TCRequest:";
 	public static final String STR_TC_RESULT = "TCResult:";

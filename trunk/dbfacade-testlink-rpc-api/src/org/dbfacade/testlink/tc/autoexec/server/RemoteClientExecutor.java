@@ -72,7 +72,8 @@ public class RemoteClientExecutor extends EmptyExecutor
 	public void sendMessage(
 		String message)
 	{
-		ExecutionProtocol.debug("Send Message: " + clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR + message);
+		ExecutionProtocol.debug(
+			"Send Message: " + clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR + message);
 		conn.sendMessage(clientName, message);	
 	}
     
@@ -87,7 +88,7 @@ public class RemoteClientExecutor extends EmptyExecutor
 	/**
 	 * Ask the server to prepare the test plan
 	 */
-	public void sendPlanPrepareRequest()
+	public void sendPlanPrepareRequest(TestCase[] cases)
 	{
 		try {
 			String request = ExecutionProtocol.STR_PLANPREP_REQUEST 
@@ -97,7 +98,7 @@ public class RemoteClientExecutor extends EmptyExecutor
 			sendMessage(request);
 			
 			// Wait for the response
-			String fromServer="";
+			String fromServer = "";
 			while ( true ) {
 				
 				fromServer = conn.receiveMessage(clientName);
@@ -106,18 +107,53 @@ public class RemoteClientExecutor extends EmptyExecutor
 				}
 				
 				ep.processInput("client prep " + conn.getPort(), fromServer);
+				
 				if ( ep.shutdown() ) {
 					ExecutionProtocol.debug("Shutdown request sent by server");
 					break;
 				}
+				
 				ExecutionProtocol.debug("Server: " + fromServer);
-				if ( fromServer.startsWith(
-					clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR)
-						&& fromServer.startsWith(ExecutionProtocol.STR_PLANPREP_RESULT) ) {
+				if ( fromServer.contains(clientName)
+					&& fromServer.contains(ExecutionProtocol.STR_PLANPREP_RESULT) ) {
+					
+					// Setup if it passed
 					if ( fromServer.contains(ExecutionProtocol.STR_PLANPREP_PASSED) ) {
 						isPreped = true;
 					} else {
 						isPreped = false;
+					}
+					
+					// Check the server results for test case prep detail
+					if ( isPreped && fromServer.contains(ExecutionProtocol.STR_PLANPREP_DETAIL) )
+					{
+						int idx = fromServer.indexOf(ExecutionProtocol.STR_PLANPREP_DETAIL) +
+						ExecutionProtocol.STR_PLANPREP_DETAIL.length();
+						String detail = fromServer.substring(idx);
+						// Get the list of test cases with assigned executers
+						// base on what is returned from the server.
+						if ( detail.length() > 0 ) {
+							String[] caseIDs = detail.split(",");
+							for (int c=0; c < caseIDs.length; c++) {
+								String caseID = caseIDs[c];
+								if ( caseID != null && caseID.length() > 0) {
+									// Match-up with local test case
+									for (int rc=0; rc < cases.length; rc++) {
+										TestCase tc = cases[rc];
+										Integer tcid = tc.getTestCaseInternalID();
+										try {
+											Integer rtcid = new Integer(caseID);
+											if ( tcid.equals(rtcid) ) {
+												// Fill in a test case for UI display
+												// this executor is not used.
+												tc.setExecutor(new EmptyExecutor());
+												break;
+											}
+										} catch (Exception e) {}
+									}
+								}
+							}
+						}
 					}
 					ExecutionProtocol.debug("Result from server: " + fromServer);
 					break;
@@ -145,11 +181,11 @@ public class RemoteClientExecutor extends EmptyExecutor
 	public void execute(
 		TestCase tc)
 	{
-		String fromServer=null;
+		String fromServer = null;
 		try {
 			
 			// Check connection
-			if ( ! conn.isGood() ) {
+			if ( !conn.isGood() ) {
 				throw new Exception("The connection is no longer available.");
 			}
 			
@@ -170,15 +206,17 @@ public class RemoteClientExecutor extends EmptyExecutor
 					continue;
 				}
 				
-				ep.processInput("client tc exec " + conn.getPort() +", " + clientName, fromServer);
+				ep.processInput("client tc exec " + conn.getPort() + ", " + clientName,
+					fromServer);
 				if ( fromServer.contains(clientName) ) {
 					ExecutionProtocol.debug("The data returned contains client name.");
 				}
 				if ( fromServer.contains(ExecutionProtocol.STR_TC_RESULT) ) {
-					ExecutionProtocol.debug("The message returned contains the result string.");
+					ExecutionProtocol.debug(
+						"The message returned contains the result string.");
 				} 
 				if ( fromServer.contains(clientName)
-						&& fromServer.contains(ExecutionProtocol.STR_TC_RESULT) ) {
+					&& fromServer.contains(ExecutionProtocol.STR_TC_RESULT) ) {
 					ExecutionProtocol.debug("Result from server: " + fromServer);
 					break;
 				} else {
@@ -189,7 +227,7 @@ public class RemoteClientExecutor extends EmptyExecutor
 			// Process Result
 			int beginIdx = fromServer.indexOf(ExecutionProtocol.STR_CLIENT_SEPARATOR)
 				+ ExecutionProtocol.STR_CLIENT_SEPARATOR.length();
-			if ( beginIdx > 0) {
+			if ( beginIdx > 0 ) {
 				fromServer = fromServer.substring(beginIdx);
 			}
 			processTestCaseResult(fromServer);
@@ -200,9 +238,11 @@ public class RemoteClientExecutor extends EmptyExecutor
 			setExecutionResult(TestCaseExecutor.RESULT_FAILED);
 			setExecutionState(TestCaseExecutor.STATE_BOMBED);
 			setExecutionNotes(
-				"Unable to complete the remote test request due to exception. " + e.toString());
+				"Unable to complete the remote test request due to exception. "
+					+ e.toString());
 			ExecutionProtocol.debug(
-				"Unable to complete the remote test request due to exception. " + e.toString());
+				"Unable to complete the remote test request due to exception. "
+					+ e.toString());
 		} 
 	}
 	
@@ -251,8 +291,6 @@ public class RemoteClientExecutor extends EmptyExecutor
 		
 		// Notes are expected at the end of the string
 	}
-	
-
 	
 	/**
 	 * Return the default client identifier plus project name.

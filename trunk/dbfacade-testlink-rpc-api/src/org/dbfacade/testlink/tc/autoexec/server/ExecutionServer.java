@@ -146,7 +146,7 @@ public class ExecutionServer
 				if ( ep.shutdown() ) {
 					
 					// Inform the clients of the shutdown
-					for (int i=0; i < clients.size(); i++) {
+					for ( int i = 0; i < clients.size(); i++ ) {
 						client = (String) clients.get(i);
 						sendMessage(client, ExecutionProtocol.STR_SHUTDOWN);
 					}
@@ -181,7 +181,7 @@ public class ExecutionServer
 			serverSocket.close();
 		} catch ( Exception e ) {
 			// Inform the clients of the shutdown
-			for (int i=0; i < clients.size(); i++) {
+			for ( int i = 0; i < clients.size(); i++ ) {
 				String client = (String) clients.get(i);
 				sendMessage(client, ExecutionProtocol.STR_SHUTDOWN);
 			}
@@ -201,8 +201,8 @@ public class ExecutionServer
 		String clientName,
 		String message)
 	{
-		ExecutionProtocol.debug("Send Message: " + 
-			clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR + message);
+		ExecutionProtocol.debug(
+			"Send Message: " + clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR + message);
 		messageSend.println(clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR + message);	
 	}
 	
@@ -230,16 +230,33 @@ public class ExecutionServer
 		String result = ExecutionProtocol.STR_PLANPREP_RESULT
 			+ ExecutionProtocol.STR_PLANPREP_FAILED;
 			
+		TestPlan testPlan = null;
 		try {
-			createTestPlan(clientID, request);
+			testPlan = createTestPlan(clientID, request);
 		} catch ( Exception e ) {
 			// Do not use Request: it will confuse the protocol
 			return result + " Unable to create the needed plan. {Req: "
 				+ request.replaceAll(ExecutionProtocol.STR_PLANPREP_REQUEST, "")
 				+ ", Exception: " + e.toString() + "}";
 		}
-		return ExecutionProtocol.STR_PLANPREP_RESULT
+		String passed = ExecutionProtocol.STR_PLANPREP_RESULT
 			+ ExecutionProtocol.STR_PLANPREP_PASSED;
+		
+		if ( testPlan != null ) {
+			passed += ExecutionProtocol.STR_PLANPREP_DETAIL;
+			TestCase[] cases = testPlan.getTestCases();
+			for ( int i = 0; i < cases.length; i++ ) {
+				TestCase tc = cases[i];
+				if ( tc != null ) {
+					TestCaseExecutor te = tc.getExecutor();
+					if ( te != null && tc.getTestCaseInternalID() != null ) {
+						passed += "," + tc.getTestCaseInternalID().toString();
+					}
+				}
+			}
+		}
+		
+		return passed;
 	}
 	
 	/**
@@ -341,7 +358,7 @@ public class ExecutionServer
 	 * @param request
 	 * @throws Exception
 	 */
-	public void createTestPlan(
+	public TestPlan createTestPlan(
 		String clientID,
 		String request) throws Exception
 	{
@@ -378,6 +395,8 @@ public class ExecutionServer
 				prep.adjust(apiClient, testPlan);
 			}
 		}
+		
+		return testPlan;
 	}
 	
 	/**
