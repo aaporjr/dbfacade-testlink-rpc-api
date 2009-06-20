@@ -53,7 +53,7 @@ public class TestLinkShowViewAtLaunch
 						String[] args = runConfig.getProgramArguments();
 						Map argMap = getArgs(args);
 						String projectName = (String) argMap.get(PreferenceConstants.P_DEFAULT_PROJECT_NAME);
-						String port = (String) argMap.get(PreferenceConstants.P_PORT);
+						String portNum = (String) argMap.get(PreferenceConstants.P_PORT);
 
 						
 						// Add project
@@ -73,15 +73,15 @@ public class TestLinkShowViewAtLaunch
 						
 						// Setup the preferences for the tree (Exception #2)
 						TestLinkPreferences prefs = new TestLinkPreferences();
-						Map newPrefs = getPreferences(argMap);
-						prefs.setAlternateStore(newPrefs);
+						prefs.setAlternateStore(argMap);
 						
 						// Add the project to the tree
+						int port = new Integer(portNum).intValue();
 						if ( replaceChild) {
 							invisibleRoot.removeChild(tree);
-							TestLinkView.testLinkTree.addProject(visibleRoot, prefs, projectName);
+							TestLinkView.testLinkTree.addProject(visibleRoot, prefs, projectName, port);
 						} else {
-							TestLinkView.testLinkTree.addProject(visibleRoot, prefs, projectName);
+							TestLinkView.testLinkTree.addProject(visibleRoot, prefs, projectName, port);
 						}
 						TestLinkView.refresh();
 					}
@@ -152,13 +152,7 @@ public class TestLinkShowViewAtLaunch
 			}
 		}
 		return false;
-	}
-	
-	private static Map getPreferences(Map argMap) {
-		Map newPrefs = new HashMap();
-		return newPrefs;
-	}
-		
+	}		
 
 }
 

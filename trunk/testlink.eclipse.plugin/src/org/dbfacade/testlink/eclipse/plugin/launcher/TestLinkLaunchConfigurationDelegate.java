@@ -47,10 +47,7 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 		String mode,
 		ILaunch launch,
 		IProgressMonitor monitor) throws CoreException
-	{
-
-		// TODO Auto-generated method stub
-		
+	{	
 		if ( monitor == null ) {
 			monitor = new NullProgressMonitor();
 		}

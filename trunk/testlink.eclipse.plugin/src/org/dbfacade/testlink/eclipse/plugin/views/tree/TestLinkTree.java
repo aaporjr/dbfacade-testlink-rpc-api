@@ -78,15 +78,25 @@ public class TestLinkTree
 		TestLinkPreferences pref,
 		String projectName)
 	{
+		addProject(visibleRoot, pref, projectName, -1);
+			
+	}
+	
+	public void addProject(
+		ProjectTree visibleRoot,
+		TestLinkPreferences pref,
+		String projectName,
+		int port)
+	{
 		try {
 			TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
 			TestProject project = new TestProject(apiClient, projectName);
-			visibleRoot = new ProjectTree(project);
+			visibleRoot = new ProjectTree(project, port);
 			visibleRoot.preferences = pref;
 			invisibleRoot.addChild(visibleRoot);
 		} catch ( Exception e ) {
 			visibleRoot = new ProjectTree(ProjectTree.UNABLE_TO_OPEN_PREFIX + projectName);
-			visibleRoot.preferences=pref;
+			visibleRoot.preferences = pref;
 			invisibleRoot.addChild(visibleRoot);
 			if ( pref != null ) {
 				UserMsg.error(e,

@@ -22,6 +22,8 @@ public class ProjectTree extends TreeParentNode
 	public static final String UNABLE_TO_OPEN_PREFIX = "Unable to open project: ";
 	private String projectName;
 	private TestProject project = null;
+	private int port=-1;
+	private boolean isConnected=false;
 	
 	/**
 	 * Used for initial display
@@ -41,7 +43,8 @@ public class ProjectTree extends TreeParentNode
 	 * @param project
 	 */
 	public ProjectTree(
-		TestProject project)
+		TestProject project,
+		int port)
 	{
 		super(project.getProjectName());
 		this.project = project;
@@ -114,7 +117,7 @@ public class ProjectTree extends TreeParentNode
 			while ( planIDs.hasNext() ) {
 				Object planID = planIDs.next();
 				TestPlan plan = (TestPlan) plans.get(planID);
-				PlanTree planRoot = new PlanTree(plan);
+				PlanTree planRoot = new PlanTree(plan, port);
 				this.addChild(planRoot);
 			}
 		} catch ( Exception e ) {
@@ -137,11 +140,50 @@ public class ProjectTree extends TreeParentNode
 	{
 		String detail = "No detail information is available.";
 		if ( project != null ) {
-			detail = HtmlMessageText.OPEN_HTML_DOC + "<b>Name:</b></p><p>" + project.getProjectName() 
-			+ "</p><p>" + "<b>Description:</b></p><p>"
+			detail = HtmlMessageText.OPEN_HTML_DOC + "<b>Name:</b></p><p>"
+				+ project.getProjectName() + "</p><p>" + "<b>Description:</b></p><p>"
 				+ project.getProjectDescription() + HtmlMessageText.CLOSE_HTML_DOC;
 		}
 		return detail;
+	}
+	
+	/**
+	 * Returns the port that should be used for remote testing
+	 * 
+	 * @return
+	 */
+	public int getPort() {
+		return port;
+	}
+	
+	/**
+	 * The tree was built to make remote request.
+	 * 
+	 * @return
+	 */
+	public boolean isInRemoteMode() {
+		return (port > 0);
+	}
+	
+	/**
+	 * Let the tree know that the remote server has
+	 * been shutdown.
+	 * 
+	 */
+	public void disconnect() {
+		isConnected = false;
+	}
+	
+	/**
+	 * True if the tree has been notified of a disconnect.
+	 * 
+	 * @return
+	 */
+	public boolean isConnected() {
+		if ( !isInRemoteMode() ) {
+			return false;
+		}
+		return isConnected;
 	}
 	
 }

@@ -44,6 +44,7 @@ public class TestLinkActions
 	private Action resubmitPreparation;
 	private Action refresh;
 	private Action info;
+	private Action disconnect;
 
 	/**
 	 * Create all the actions for the view.
@@ -86,6 +87,9 @@ public class TestLinkActions
 		info = new TestLinkAction(labels, TestLinkAction.TREE_NODE_INFO,
 			"Get information about the node.");
 		
+		disconnect = new TestLinkAction(labels, TestLinkAction.DISCONNECT,
+		"Shutdown the remote server.");
+		
 	}
 	
 	/**
@@ -116,9 +120,14 @@ public class TestLinkActions
 		IMenuManager manager)
 	{
 		if ( node instanceof ProjectTree ) {
-			manager.add(openProject);
-			manager.add(closeProject);
-			manager.add(switchProject);
+			ProjectTree tree = (ProjectTree) node;
+			if ( tree.isInRemoteMode() ) {
+				manager.add(openProject);
+				manager.add(closeProject);
+				manager.add(switchProject);
+			} else {
+				manager.add(disconnect);
+			}
 		} else if ( node instanceof PlanTree ) {
 			PlanTree tree = (PlanTree) node;
 			if ( !tree.isEmptyProjectNode() && tree.isActive() ) {

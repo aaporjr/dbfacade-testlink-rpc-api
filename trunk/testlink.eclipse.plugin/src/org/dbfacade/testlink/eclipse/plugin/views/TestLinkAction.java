@@ -41,6 +41,7 @@ public class TestLinkAction extends Action
 	public static final String DOUBLE_CLICK = "doble click";
 	public static final String REFRESH = "Refresh";
 	public static final String TREE_NODE_INFO = "TestLink Item Details";
+	public static final String DISCONNECT = "Disconnect remote testing";
 
 	// private
 	private String actionName;

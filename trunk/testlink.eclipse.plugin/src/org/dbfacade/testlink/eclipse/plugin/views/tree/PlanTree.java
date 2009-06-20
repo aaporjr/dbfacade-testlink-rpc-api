@@ -10,6 +10,7 @@ import org.dbfacade.testlink.tc.autoexec.TestCase;
 import org.dbfacade.testlink.tc.autoexec.TestCaseExecutor;
 import org.dbfacade.testlink.tc.autoexec.TestPlan;
 import org.dbfacade.testlink.tc.autoexec.TestPlanPrepare;
+import org.dbfacade.testlink.tc.autoexec.server.RemoteClientExecutor;
 
 
 public class PlanTree extends TreeParentNode
@@ -18,6 +19,7 @@ public class PlanTree extends TreeParentNode
 	private TestPlan plan;
 	private boolean hasTestRun = false;
 	private boolean hasTestFailed = false;
+	private RemoteClientExecutor rte = null; 
 	
 	/**
 	 * Used to inform user no plans were acquired
@@ -29,6 +31,23 @@ public class PlanTree extends TreeParentNode
 	{
 		super(planName);
 	}
+	
+	/**
+	 * Create a new test plan node.
+	 * 
+	 * @param plan
+	 */
+	public PlanTree(
+		TestPlan plan,
+		int port)
+	{
+		super(plan.getTestPlanName());
+		this.plan = plan;
+		if ( port > 0 && plan != null ) {
+			rte = new RemoteClientExecutor(port, plan);
+		}
+	}
+	
 	
 	/**
 	 * True if the test has run to completion
@@ -77,18 +96,7 @@ public class PlanTree extends TreeParentNode
 		return (plan != null);
 	}
 	
-	/**
-	 * Create a new test plan node.
-	 * 
-	 * @param plan
-	 */
-	public PlanTree(
-		TestPlan plan)
-	{
-		super(plan.getTestPlanName());
-		this.plan = plan;
-	}
-	
+
 	/**
 	 * Get the test plan associated with this object.
 	 * @return
@@ -176,22 +184,26 @@ public class PlanTree extends TreeParentNode
 	{
 		hasTestRun = false;
 		hasTestFailed = false;
+		TestCase[] cases = null;
 		
-		// Lazy load test cases
-		TestCase[] cases = this.plan.getTestCases();
+		try {
+			// Lazy load test cases
+			cases = this.plan.getTestCases();
 		
-		TestLinkPreferences pref = this.preferences;
-		TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
-		TestPlanPrepare prep = pref.getTestPlanPrepare();
+			// Setup the apiClient
+			TestLinkPreferences pref = this.preferences;
+			TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
 		
-		// Prepare the plan after test cases are loaded
-		prep.setTCUser(pref.getTestCaseCreator());
-		prep.setExternalPath(pref.getExternalPath());
-		prep.adjust(apiClient, this.plan);
-		
-		hasTestRun = false;
-		hasTestFailed = false;
-		
+			// Prepare the plan after test cases are loaded
+			TestPlanPrepare prep = pref.getTestPlanPrepare();
+			prep.setTCUser(pref.getTestCaseCreator());
+			prep.setExternalPath(pref.getExternalPath());
+			prep.adjust(apiClient, this.plan);
+		} catch ( Exception e ) {
+			UserMsg.error(e,
+				"The test plan prepare class " + this.preferences.getTestPlanPrepareClass()
+				+ " was unable to prepare the plan.");
+		}			
 		return cases;
 	}
 	

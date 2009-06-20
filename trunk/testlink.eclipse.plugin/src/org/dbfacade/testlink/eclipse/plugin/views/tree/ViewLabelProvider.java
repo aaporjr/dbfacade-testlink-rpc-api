@@ -54,10 +54,14 @@ public class ViewLabelProvider extends LabelProvider
 	private Image manual_exec;
 	private Image projectClose;
 	private Image projectOpen;
+	private Image projectConnected;
+	private Image projectDisconnected;
 	
 	// Image Files
 	private String fileProjectOpen = "icons/drawer_open.png";
 	private String fileProjectClose = "icons/drawer.png";
+	private String fileProjectConnected = "icons/connected.png";
+	private String fileProjectDisconnected = "icons/disconnected.png";
 	private String fileProjectSwitch = "icons/drawer_switch.png";
 	private String fileExec = "icons/exec.gif";
 	private String filePrep = "icons/new_con.gif";
@@ -68,6 +72,8 @@ public class ViewLabelProvider extends LabelProvider
 		this.configElement = cfg;
 		projectOpen = getImage(fileProjectOpen);
 		projectClose = getImage(fileProjectClose);
+		projectConnected = getImage(fileProjectConnected);
+		projectDisconnected = getImage(fileProjectDisconnected);
 		plan_ready = getImage("icons/folder_yellow.png");
 		plan_passed = getImage("icons/folder.png");
 		plan_failed = getImage("icons/folder_red.png");
@@ -104,10 +110,18 @@ public class ViewLabelProvider extends LabelProvider
 		// Take care of project tree requests
 		if ( obj instanceof ProjectTree ) {
 			ProjectTree tree = (ProjectTree) obj;
+			if ( tree.isInRemoteMode() ) {
+				if ( tree.isConnected() ) {
+					return projectConnected;
+				} else {
+					return projectDisconnected;
+				}
+			} else {
 			if ( tree.isOpen() ) {
 				return projectOpen;
 			} else {
 				return projectClose;
+			}
 			}
 		}
 		
