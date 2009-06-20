@@ -44,11 +44,17 @@ public class ProjectTree extends TreeParentNode
 	 */
 	public ProjectTree(
 		TestProject project,
+		TestLinkPreferences pref,
 		int port)
 	{
 		super(project.getProjectName());
 		this.project = project;
 		setProjectName(project.getProjectName());
+		setPreferences(pref);
+		if ( port > 0 ) {
+			this.port = port;
+			this.isConnected = true;
+		}
 	}
 	
 	public boolean isOpen()
@@ -87,6 +93,33 @@ public class ProjectTree extends TreeParentNode
 	}
 	
 	/**
+	 * Dispose of the parent and all descendants
+	 * 
+	 * @param child
+	 */
+	public void removeChild(
+		TreeNode child)
+	{
+
+		if ( child instanceof PlanTree ) {
+			PlanTree ptChild = (PlanTree) child;
+			ptChild.shutdownRemoteTester();
+		}
+		
+		if ( child instanceof TreeParentNode ) {
+			TreeParentNode childInParentRole = (TreeParentNode) child;
+			TreeNode[] grandchildren = childInParentRole.getChildren(true);
+			for ( int i = 0; i < grandchildren.length; i++ ) {
+				TreeNode grandchild = grandchildren[i];
+				removeChild(grandchild);
+			}
+		}
+		children.remove(child);
+		child.setParent(null);
+	}
+
+	
+	/**
 	 * When a project is not a place holder project always return true.
 	 * <p>
 	 * Note: If there are no children we will open a no test plans message.
@@ -103,7 +136,7 @@ public class ProjectTree extends TreeParentNode
 	public void findChildren()
 	{
 		try {
-			TestLinkPreferences pref = this.preferences;
+			TestLinkPreferences pref = getPreferences();
 			TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
 
 			String pn = projectName;

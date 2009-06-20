@@ -48,6 +48,18 @@ public class PlanTree extends TreeParentNode
 		}
 	}
 	
+	public RemoteClientExecutor getRemoteClient() {
+		return rte;
+	}
+	
+	/**
+	 * Send a shutdown request to the server
+	 */
+	public void shutdownRemoteTester() {
+		if ( rte != null ) {
+			rte.sendServerShutdownRequest();
+		}
+	}
 	
 	/**
 	 * True if the test has run to completion
@@ -191,7 +203,7 @@ public class PlanTree extends TreeParentNode
 			cases = this.plan.getTestCases();
 		
 			// Setup the apiClient
-			TestLinkPreferences pref = this.preferences;
+			TestLinkPreferences pref = getPreferences();
 			TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
 		
 			// Prepare the plan after test cases are loaded
@@ -201,7 +213,7 @@ public class PlanTree extends TreeParentNode
 			prep.adjust(apiClient, this.plan);
 		} catch ( Exception e ) {
 			UserMsg.error(e,
-				"The test plan prepare class " + this.preferences.getTestPlanPrepareClass()
+				"The test plan prepare class " + getPreferences().getTestPlanPrepareClass()
 				+ " was unable to prepare the plan.");
 		}			
 		return cases;

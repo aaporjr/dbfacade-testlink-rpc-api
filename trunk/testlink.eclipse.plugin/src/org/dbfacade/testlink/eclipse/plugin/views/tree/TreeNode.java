@@ -32,7 +32,7 @@ public class TreeNode implements IAdaptable
 	 * initialize to a default. Leave it null until
 	 * explicitly assigned.
 	 */
-	public TestLinkPreferences preferences=null;
+	private TestLinkPreferences preferences;
 	private String name;
 	private TreeParentNode parent;
 	
@@ -45,6 +45,10 @@ public class TreeNode implements IAdaptable
 	public String getName()
 	{
 		return name;
+	}
+	
+	public void setPreferences(TestLinkPreferences pref) {
+		preferences = pref;
 	}
 
 	public void setParent(
@@ -71,6 +75,10 @@ public class TreeNode implements IAdaptable
 		Class key)
 	{
 		return null;
+	}
+	
+	public TestLinkPreferences getPreferences() {
+		return preferences;
 	}
 	
 	/**

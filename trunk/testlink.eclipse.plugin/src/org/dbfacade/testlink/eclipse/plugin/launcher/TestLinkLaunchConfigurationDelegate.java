@@ -25,6 +25,7 @@ import java.util.Map;
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
 import org.dbfacade.testlink.eclipse.plugin.Activator;
 import org.dbfacade.testlink.eclipse.plugin.preferences.PreferenceConstants;
+import org.dbfacade.testlink.eclipse.plugin.views.tree.ProjectTree;
 import org.dbfacade.testlink.tc.autoexec.server.ExecutionRunner;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -42,6 +43,8 @@ import org.eclipse.jdt.launching.VMRunnerConfiguration;
 
 public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfigurationDelegate
 {
+	private String remoteRunnerClass = "org.dbfacade.testlink.tc.autoexec.server.ExecutionRunner";
+	
 	public void launch(
 		ILaunchConfiguration configuration,
 		String mode,
@@ -53,7 +56,8 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 		}
 
 		monitor.beginTask(
-			MessageFormat.format("{0}...", (Object[]) new String[] { configuration.getName()}), 5); // $NON-NLS-1$
+			MessageFormat.format("{0}...", (Object[]) new String[] { configuration.getName()}),
+			5); // $NON-NLS-1$
 		// check for cancellation
 		if ( monitor.isCanceled() ) {
 			return;
@@ -84,12 +88,16 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 			setDefaultSourceLocator(launch, configuration);
 			monitor.worked(1);
 			
-			// Launch the configuration - 1 unit of work
-			runner.run(runConfig, launch, monitor);
-			
 			// Show the view and add the project with the port connection
-			TestLinkShowViewAtLaunch.show(runConfig);
-
+			ProjectTree tree = TestLinkShowViewAtLaunch.show(runConfig);
+			
+			// Launch the configuration - 1 unit of work
+			try {
+				runner.run(runConfig, launch, monitor);
+			} catch (CoreException ce) {
+				tree.disconnect();
+			}
+			
 			// check for cancellation
 			if ( monitor.isCanceled() ) {
 				return;
@@ -107,8 +115,7 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 	public String verifyMainTypeName(
 		ILaunchConfiguration configuration) throws CoreException
 	{
-		String apirunner = "org.dbfacade.testlink.tc.autoexec.server.ExecutionRunner";
-		return apirunner;
+		return remoteRunnerClass;
 	}
 
 	/**

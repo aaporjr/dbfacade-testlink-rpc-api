@@ -127,6 +127,7 @@ public class TestLinkActions
 				manager.add(switchProject);
 			} else {
 				manager.add(disconnect);
+				manager.add(closeProject);
 			}
 		} else if ( node instanceof PlanTree ) {
 			PlanTree tree = (PlanTree) node;

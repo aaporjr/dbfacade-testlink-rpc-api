@@ -32,9 +32,10 @@ public class TestLinkShowViewAtLaunch
 {
 	public static final String VIEW_ID = "org.dbfacade.testlink.eclipse.plugin.views.TestLinkView";
 
-	public static void show(final VMRunnerConfiguration runConfig) throws CoreException
+	public static ProjectTree show(final VMRunnerConfiguration runConfig) throws CoreException
 	{
 		try {
+			final Map ret = new HashMap();
 			Display display = Display.getDefault();
 			display.syncExec(
 				new Runnable()
@@ -58,7 +59,6 @@ public class TestLinkShowViewAtLaunch
 						
 						// Add project
 						TreeParentNode invisibleRoot = TestLinkView.testLinkTree.getInvisibleRoot();
-						ProjectTree visibleRoot = null;
 						TreeNode[] nodes = invisibleRoot.getChildren();
 						TreeNode tree = null;
 						boolean replaceChild = false;
@@ -77,17 +77,20 @@ public class TestLinkShowViewAtLaunch
 						
 						// Add the project to the tree
 						int port = new Integer(portNum).intValue();
+						ProjectTree ptree=null;
 						if ( replaceChild) {
 							invisibleRoot.removeChild(tree);
-							TestLinkView.testLinkTree.addProject(visibleRoot, prefs, projectName, port);
+							ptree = TestLinkView.testLinkTree.addProject(prefs, projectName, port);
 						} else {
-							TestLinkView.testLinkTree.addProject(visibleRoot, prefs, projectName, port);
+							ptree = TestLinkView.testLinkTree.addProject(prefs, projectName, port);
 						}
+						ret.put("PTREE", ptree);
 						TestLinkView.refresh();
 					}
 				}  
 			});
-
+			ProjectTree rptree = (ProjectTree) ret.get("PTREE");
+			return rptree;
 		} catch ( Exception e ) {
 			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.OK,
 				"Could not open the TestLink view.", e); 

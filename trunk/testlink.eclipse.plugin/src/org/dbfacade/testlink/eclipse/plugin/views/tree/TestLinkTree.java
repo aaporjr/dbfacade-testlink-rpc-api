@@ -32,9 +32,6 @@ public class TestLinkTree
 	// Singleton for a single viewer
 	private TreeParentNode invisibleRoot;
 	
-	// First visible root
-	private ProjectTree visibleRoot;
-	
 	public TestLinkTree(
 		TestLinkPreferences prefs)
 	{
@@ -47,16 +44,17 @@ public class TestLinkTree
 				invisibleRoot.removeChild(child);
 			}
 		}
-		addPreferedProject(visibleRoot, prefs, prefs.getDefaultProject());
+		addPreferedProject(prefs, prefs.getDefaultProject());
 	}
 	
-	public void addPreferedProject(
-		ProjectTree visibleRoot,
+	
+	public ProjectTree addPreferedProject(
 		TestLinkPreferences pref,
 		String failMessage)
 	{
+		ProjectTree visibleRoot = null;
 		try {
-			addProject(visibleRoot, pref, pref.getDefaultProject());
+			visibleRoot = addProject( pref, pref.getDefaultProject());
 		} catch ( Exception e ) {
 			visibleRoot = new ProjectTree(ProjectTree.UNABLE_TO_OPEN_PREFIX + failMessage);
 			invisibleRoot.addChild(visibleRoot);
@@ -71,32 +69,29 @@ public class TestLinkTree
 					+ "The preferences for the project are null.");
 			}
 		}	
+		return visibleRoot;
 	}
 	
-	public void addProject(
-		ProjectTree visibleRoot,
+	public ProjectTree addProject(
 		TestLinkPreferences pref,
 		String projectName)
 	{
-		addProject(visibleRoot, pref, projectName, -1);
-			
+		return addProject(pref, projectName, -1);		
 	}
 	
-	public void addProject(
-		ProjectTree visibleRoot,
+	public ProjectTree addProject(
 		TestLinkPreferences pref,
 		String projectName,
 		int port)
 	{
+		ProjectTree visibleRoot = null;
 		try {
 			TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
 			TestProject project = new TestProject(apiClient, projectName);
-			visibleRoot = new ProjectTree(project, port);
-			visibleRoot.preferences = pref;
+			visibleRoot = new ProjectTree(project, pref, port);
 			invisibleRoot.addChild(visibleRoot);
 		} catch ( Exception e ) {
 			visibleRoot = new ProjectTree(ProjectTree.UNABLE_TO_OPEN_PREFIX + projectName);
-			visibleRoot.preferences = pref;
 			invisibleRoot.addChild(visibleRoot);
 			if ( pref != null ) {
 				UserMsg.error(e,
@@ -108,7 +103,8 @@ public class TestLinkTree
 					"Failed to build the project root node.\n"
 					+ "The preferences for the project are null.");
 			}
-		}			
+		}
+		return visibleRoot;
 	}
 	
 	public TreeParentNode getInvisibleRoot()

@@ -5,7 +5,6 @@ import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIConst;
 import org.dbfacade.testlink.api.client.TestLinkAPIResults;
 import org.dbfacade.testlink.eclipse.plugin.UserMsg;
-import org.dbfacade.testlink.eclipse.plugin.handlers.ChooseSingleElementDialog;
 import org.dbfacade.testlink.eclipse.plugin.handlers.ExecuteTestListener;
 import org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPreferences;
 import org.dbfacade.testlink.eclipse.plugin.views.tree.PlanTree;
@@ -123,10 +122,13 @@ public class TestLinkAction extends Action
 		
 		try {
 			tree = (PlanTree) obj;
-			pref = tree.preferences;
+			pref = tree.getPreferences();
 			TestCase[] cases = tree.getChildrenAsTestCases();
 			exec = new ExecuteTestCases(pref.getTestLinkAPIClient(), tree.getTestPlan(),
 				cases, null, "org.dbfacade.testlink.eclipse.plugin.views.ManualExecutor");
+			if ( tree.getRemoteClient() != null ) {
+				exec.setRemoteTestMode(tree.getRemoteClient());
+			}
 			runInBackground = MessageDialog.openQuestion(
 				TestLinkView.viewer.getControl().getShell(), "Execute Test Cases",
 				"Run in the background (no refresh) ?");
@@ -193,7 +195,7 @@ public class TestLinkAction extends Action
 		TestLinkAPIResults results = null;
 		
 		try {
-			TestLinkPreferences pref = tree.preferences;
+			TestLinkPreferences pref = tree.getPreferences();
 			TestLinkAPIClient api = new TestLinkAPIClient(pref.getDevKey(),
 				pref.getTestLinkAPIURL());
 			results = api.getProjects();
@@ -251,12 +253,11 @@ public class TestLinkAction extends Action
 		boolean replaceRoot)
 	{
 		TreeParentNode invisibleRoot = TestLinkView.testLinkTree.getInvisibleRoot();
-		ProjectTree visibleRoot = null;
 		if ( replaceRoot ) {
 			invisibleRoot.removeChild(tree);
-			TestLinkView.testLinkTree.addProject(visibleRoot, tree.preferences, projectName);
+			TestLinkView.testLinkTree.addProject(tree.getPreferences(), projectName);
 		} else {
-			TestLinkView.testLinkTree.addProject(visibleRoot, tree.preferences, projectName);
+			TestLinkView.testLinkTree.addProject(tree.getPreferences(), projectName);
 		}
 		TestLinkView.refresh();
 	}

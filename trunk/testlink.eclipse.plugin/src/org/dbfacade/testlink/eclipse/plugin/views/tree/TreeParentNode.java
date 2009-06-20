@@ -51,7 +51,10 @@ public class TreeParentNode extends TreeNode
 	public void addChild(
 		TreeNode child)
 	{
-		child.preferences = this.preferences;
+		// Avoid invisible root/parent null preferences
+		if ( getPreferences() != null ) {
+			child.setPreferences(getPreferences());
+		}
 		children.add(child);
 		child.setParent(this);
 	}
