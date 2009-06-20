@@ -1,3 +1,23 @@
+/*
+ * Daniel R Padilla
+ *
+ * Copyright (c) 2009, Daniel R Padilla
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ * Boston, MA  02110-1301  USA
+ */
 package org.dbfacade.testlink.tc.autoexec.server;
 
 
@@ -7,6 +27,12 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.Vector;
 
 
 /**
@@ -21,11 +47,21 @@ public class RemoteClientConnection
 	private PrintWriter messageSend = null;
 	private BufferedReader messageReceive = null;
 	private int port = -1;
+	private Map messageCache = new HashMap();
+	private boolean cacheLocked = false;
+	private Random randomizer=new Random(new Date().getTime());
+	private boolean isClosed=false;
+	private ArrayList listeners = new ArrayList();
 	
-	public RemoteClientConnection(int port) {
+	public RemoteClientConnection(
+		int port)
+	{
 		this.port = port;
 	}
 	
+	public void addListener(RemoteClientListener listener) {
+		listeners.add(listener);
+	}
 	
 	public void openConnection() throws Exception
 	{
@@ -34,6 +70,8 @@ public class RemoteClientConnection
 			messageSend = new PrintWriter(fSocket.getOutputStream(), true);
 			messageReceive = new BufferedReader(
 				new InputStreamReader(fSocket.getInputStream()));
+			RemoteClientConnectionMonitor monitor = new RemoteClientConnectionMonitor(this);
+			monitor.start();
 		} catch ( UnknownHostException e ) {
 			System.err.println("Don't know about host: localhost.");
 			throw e;
@@ -63,6 +101,12 @@ public class RemoteClientConnection
 		try {
 			fSocket.close();
 		} catch ( Exception e ) {}
+		
+		isClosed = true;
+		for (int i=0; i < listeners.size(); i++) {
+			RemoteClientListener listener = (RemoteClientListener) listeners.get(i);
+			listener.receivedShutdown();
+		}
 	}
 	
 	/**
@@ -71,17 +115,60 @@ public class RemoteClientConnection
 	 * @param clientName
 	 * @param message
 	 */
-	public void sendMessage(String clientName, String message) {
-		messageSend.println(clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR + message);	
+	public void sendMessage(
+		String clientName,
+		String message)
+	{
+		String sendMsg = clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR + message;
+		messageSend.println(sendMsg);	
+		for (int i=0; i < listeners.size(); i++) {
+			RemoteClientListener listener = (RemoteClientListener) listeners.get(i);
+			listener.sentMessage(sendMsg);
+		}
 	}
 	
 	/**
-	 * Read a message from the server.
+	 * Read a message from the cache for a specific client.
 	 * 
 	 * @return
 	 * @throws Exception
 	 */
-	public String receiveMessage() throws Exception {
+	public String receiveMessage(String client) throws Exception
+	{
+		if ( isClosed ) {
+			throw new Exception("The connections is closed and cannot be accessed.");
+		}
+		
+		sleepRandom();
+		waitForCache();
+		cacheLocked = true;
+		try {
+			Vector messages = (Vector) messageCache.get(client);
+			if ( messages != null ) {
+				if ( messages.size() != 0 ) {
+					String fromServer = (String) messages.get(0);
+					messages.remove(0);
+					cacheLocked = false;
+					return fromServer;
+				}
+			}
+		} catch (Throwable e) {
+			e.printStackTrace();
+			cacheLocked = false;
+			throw new Exception(e);
+		}
+		cacheLocked = false;
+		return null;
+	}
+	
+	/**
+	 * Pop a message from the socket comming from the server.
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String popMessage() throws Exception
+	{
 		String receive = messageReceive.readLine();
 		return receive;
 	}
@@ -90,7 +177,8 @@ public class RemoteClientConnection
 	 * True if the connection is good
 	 * @return
 	 */
-	public boolean isGood() {
+	public boolean isGood()
+	{
 		return (fSocket.isConnected() && !fSocket.isClosed());
 	}
 	
@@ -99,7 +187,65 @@ public class RemoteClientConnection
 	 * 
 	 * @return
 	 */
-	public int getPort() {
+	public int getPort()
+	{
 		return port;
+	}
+	
+	public void cacheMessage(
+		String fromServer)
+	{
+		// No client is the target so no need to cache
+		if ( fromServer.indexOf(ExecutionProtocol.STR_CLIENT_SEPARATOR) < 1 ) {
+			return;
+		}
+		
+		// Get the client identification information. Must have client target to cache.
+		String client = fromServer.substring(0,
+				fromServer.indexOf(ExecutionProtocol.STR_CLIENT_SEPARATOR));
+
+		
+		// Cache the data for the client
+		waitForCache();
+		cacheLocked = true;
+		try {
+			Vector messages = (Vector) messageCache.get(client);
+			if ( messages == null ) {
+				messages = new Vector();
+				messageCache.put(client, messages);
+			}
+			messages.add(fromServer);
+			for (int i=0; i < listeners.size(); i++) {
+				RemoteClientListener listener = (RemoteClientListener) listeners.get(i);
+				listener.receivedMessage(fromServer);
+			}
+		} catch ( Throwable e ) {
+			e.printStackTrace();
+			cacheLocked = false;
+		}
+		cacheLocked = false;
+	}
+	
+	/*
+	 * Private methods
+	 */
+	private void waitForCache() {
+		try {
+			while ( cacheLocked == true ) {
+				sleepRandom();
+			}
+		} catch ( Throwable e ) {
+			e.printStackTrace();
+		}
+	}
+	
+	/*
+	 * Called by message receivers to try to keep consumers on different schedule.
+	 */
+	private void sleepRandom() {
+		try {
+			int sleep = randomizer.nextInt(97) + 1;
+			Thread.sleep(sleep);
+		} catch (Throwable e) {	}
 	}
 }

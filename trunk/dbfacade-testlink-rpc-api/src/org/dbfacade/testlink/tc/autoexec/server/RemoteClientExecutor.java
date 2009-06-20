@@ -30,7 +30,6 @@ import org.dbfacade.testlink.tc.autoexec.TestPlan;
 public class RemoteClientExecutor extends EmptyExecutor
 {
 	private ExecutionProtocol ep = new ExecutionProtocol();
-	private String fromServer;
 	private TestPlan testPlan;
 	private boolean isPreped = false;
 	private String clientName = null;
@@ -46,7 +45,6 @@ public class RemoteClientExecutor extends EmptyExecutor
 		TestPlan testPlan
 		)
 	{	
-		ExecutionProtocol.inDebugMode = true;
 		this.testPlan = testPlan;
 		this.clientName = this.toString();
 		int retry = 0;
@@ -96,9 +94,17 @@ public class RemoteClientExecutor extends EmptyExecutor
 				+ ExecutionProtocol.STR_REQUEST_PROJECT_NAME
 				+ testPlan.getProject().getProjectName()
 				+ ExecutionProtocol.STR_REQUEST_PLAN_NAME + testPlan.getTestPlanName();
-			sendMessage(request);	
+			sendMessage(request);
+			
 			// Wait for the response
-			while ( (fromServer = conn.receiveMessage()) != null ) {
+			String fromServer="";
+			while ( true ) {
+				
+				fromServer = conn.receiveMessage(clientName);
+				if ( fromServer == null ) {
+					continue;
+				}
+				
 				ep.processInput("client prep " + conn.getPort(), fromServer);
 				if ( ep.shutdown() ) {
 					ExecutionProtocol.debug("Shutdown request sent by server");
@@ -139,6 +145,7 @@ public class RemoteClientExecutor extends EmptyExecutor
 	public void execute(
 		TestCase tc)
 	{
+		String fromServer=null;
 		try {
 			
 			// Check connection
@@ -155,10 +162,22 @@ public class RemoteClientExecutor extends EmptyExecutor
 			sendTestCaseRequest(tc);
 			
 			// Wait for the response
-			while ( (fromServer = conn.receiveMessage()) != null ) {
+			ExecutionProtocol.debug("Waiting for server response"); 
+			while ( true ) {
+				
+				fromServer = conn.receiveMessage(clientName);
+				if ( fromServer == null ) {
+					continue;
+				}
+				
 				ep.processInput("client tc exec " + conn.getPort() +", " + clientName, fromServer);
-				if ( fromServer.startsWith(
-					clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR)
+				if ( fromServer.contains(clientName) ) {
+					ExecutionProtocol.debug("The data returned contains client name.");
+				}
+				if ( fromServer.contains(ExecutionProtocol.STR_TC_RESULT) ) {
+					ExecutionProtocol.debug("The message returned contains the result string.");
+				} 
+				if ( fromServer.contains(clientName)
 						&& fromServer.contains(ExecutionProtocol.STR_TC_RESULT) ) {
 					ExecutionProtocol.debug("Result from server: " + fromServer);
 					break;
@@ -168,18 +187,22 @@ public class RemoteClientExecutor extends EmptyExecutor
 			}
 			
 			// Process Result
-			fromServer = fromServer.substring(
-				fromServer.indexOf(ExecutionProtocol.STR_CLIENT_SEPARATOR)
-					+ ExecutionProtocol.STR_CLIENT_SEPARATOR.length());
+			int beginIdx = fromServer.indexOf(ExecutionProtocol.STR_CLIENT_SEPARATOR)
+				+ ExecutionProtocol.STR_CLIENT_SEPARATOR.length();
+			if ( beginIdx > 0) {
+				fromServer = fromServer.substring(beginIdx);
+			}
 			processTestCaseResult(fromServer);
 			
 		} catch ( Exception e ) {
+			e.printStackTrace();
+			ExecutionProtocol.debug("The message that failed. " + fromServer); 
 			setExecutionResult(TestCaseExecutor.RESULT_FAILED);
 			setExecutionState(TestCaseExecutor.STATE_BOMBED);
 			setExecutionNotes(
-				"Unable to complete the remote test request. " + e.toString());
+				"Unable to complete the remote test request due to exception. " + e.toString());
 			ExecutionProtocol.debug(
-				"Unable to complete the remote test request. " + e.toString());
+				"Unable to complete the remote test request due to exception. " + e.toString());
 		} 
 	}
 	

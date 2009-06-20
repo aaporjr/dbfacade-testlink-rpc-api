@@ -28,6 +28,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,6 +59,7 @@ public class ExecutionServer
 	private PrintWriter messageSend;
 	private BufferedReader messageReceive;
 	private boolean isConnected = false;
+	private ArrayList clients = new ArrayList();
 
 	/**
 	 * The execution server expects a test plan that has
@@ -131,13 +133,25 @@ public class ExecutionServer
 				// Get the client information
 				String client = inputLine.substring(0,
 					inputLine.indexOf(ExecutionProtocol.STR_CLIENT_SEPARATOR));
+				if ( !clients.contains(client) ) {
+					clients.add(client);
+				}
+				
+				// Strip client information and get the message
 				inputLine = inputLine.substring(
 					inputLine.indexOf(ExecutionProtocol.STR_CLIENT_SEPARATOR)
 						+ ExecutionProtocol.STR_CLIENT_SEPARATOR.length());
 
 				// After answer is sent then process the requests
 				if ( ep.shutdown() ) {
-					sendMessage("All clients", ExecutionProtocol.STR_SHUTDOWN);
+					
+					// Inform the clients of the shutdown
+					for (int i=0; i < clients.size(); i++) {
+						client = (String) clients.get(i);
+						sendMessage(client, ExecutionProtocol.STR_SHUTDOWN);
+					}
+					
+					// Output debug
 					ExecutionProtocol.debug(
 						"The TestLink test execution server on port " + port
 						+ " is shutting down.");
@@ -166,6 +180,12 @@ public class ExecutionServer
 			clientSocket.close();
 			serverSocket.close();
 		} catch ( Exception e ) {
+			// Inform the clients of the shutdown
+			for (int i=0; i < clients.size(); i++) {
+				String client = (String) clients.get(i);
+				sendMessage(client, ExecutionProtocol.STR_SHUTDOWN);
+			}
+			
 			isConnected = false;
 			sendMessage("All clients: " + e.toString(), ExecutionProtocol.STR_SHUTDOWN);
 			e.printStackTrace();

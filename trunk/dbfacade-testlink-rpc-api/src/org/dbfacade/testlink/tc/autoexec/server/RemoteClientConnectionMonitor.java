@@ -21,37 +21,41 @@
 package org.dbfacade.testlink.tc.autoexec.server;
 
 
-import java.util.HashMap;
-import java.util.Map;
-
-
-public class RemoteConnectionManager
+/**
+ * Monitors a server for messages and pops the messages from 
+ * the socket and stores the results with the connection.
+ * 
+ * @author Daniel Padilla
+ *
+ */
+public class RemoteClientConnectionMonitor extends Thread
 {
-	private static Map connections = new HashMap();
+	private RemoteClientConnection conn;
 	
-	public static RemoteClientConnection getOrCreateConnection(
-		int port)
+	public RemoteClientConnectionMonitor(
+		RemoteClientConnection conn)
 	{
-		RemoteClientConnection conn = (RemoteClientConnection) connections.get(port);
-		if ( conn == null ) {
-			conn = new RemoteClientConnection(port);
-			try {
-				conn.openConnection();
-				connections.put(port, conn);
-			} catch ( Exception e ) {
-				e.printStackTrace();
-			}	
-		}
-		return conn;
+		this.conn = conn;
 	}
 	
-	public static void closeClientConnection(
-		int port)
+	public void run()
 	{
-		RemoteClientConnection conn = (RemoteClientConnection) connections.get(port);
-		if ( conn != null ) {
+		ExecutionProtocol ep = new ExecutionProtocol();
+		try {
+			String fromServer;
+			while ( (fromServer = conn.popMessage()) != null ) {
+				ep.processInput("monitor", fromServer);
+				if ( ep.shutdown() ) {
+					conn.cacheMessage(fromServer);
+					conn.closeConnection();
+					break;
+				} else {
+					conn.cacheMessage(fromServer);
+				}
+			}
+		} catch ( Exception e ) {
+			ExecutionProtocol.debug("Monitor failed with exeception. " + e.toString());
 			conn.closeConnection();
 		}
 	}
-	
 }
