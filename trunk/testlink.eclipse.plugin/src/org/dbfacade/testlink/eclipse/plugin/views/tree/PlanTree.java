@@ -245,10 +245,14 @@ public class PlanTree extends TreeParentNode
 		TestCaseLeaf last = null;
 		for ( int i = 0; i < children.size(); i++ ) {
 			TestCaseLeaf tcf = (TestCaseLeaf) children.get(i);
-			TestCaseExecutor te = tcf.getTestCase().getExecutor();
-			te.setExecutionState(TestCaseExecutor.STATE_READY);
-			te.setExecutionResult(TestCaseExecutor.RESULT_UNKNOWN);
-			last = tcf;
+            if ( tcf != null ) {
+            	TestCaseExecutor te = tcf.getTestCase().getExecutor();
+            	if ( te != null ) {
+            		te.setExecutionState(TestCaseExecutor.STATE_READY);
+            		te.setExecutionResult(TestCaseExecutor.RESULT_UNKNOWN);
+            	}
+            	last = tcf;
+            }
 		}
 		
 		if ( last != null ) {

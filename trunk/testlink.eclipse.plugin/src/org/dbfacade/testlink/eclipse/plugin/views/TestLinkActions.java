@@ -88,7 +88,7 @@ public class TestLinkActions
 			"Get information about the node.");
 		
 		disconnect = new TestLinkAction(labels, TestLinkAction.DISCONNECT,
-		"Shutdown the remote server.");
+			"Shutdown the remote server.");
 		
 	}
 	
@@ -134,10 +134,18 @@ public class TestLinkActions
 			if ( !tree.isEmptyProjectNode() && tree.isActive() ) {
 				TreeNode[] children = tree.getChildren();
 				if ( children.length > 0 ) {
-					manager.add(resubmitPreparation);
-					manager.add(executeTestDefault);
-					manager.add(executeTestNoReport);
-					manager.add(executeTestReport);
+					if ( tree.getRemoteClient() == null ) {
+						manager.add(resubmitPreparation);
+						manager.add(executeTestDefault);
+						manager.add(executeTestNoReport);
+						manager.add(executeTestReport);
+					} else if ( tree.getRemoteClient().getConnection() != null 
+						&& tree.getRemoteClient().getConnection().isGood() ) {
+						manager.add(resubmitPreparation);
+						manager.add(executeTestDefault);
+						manager.add(executeTestNoReport);
+						manager.add(executeTestReport);
+					}
 				}
 			}
 		}
