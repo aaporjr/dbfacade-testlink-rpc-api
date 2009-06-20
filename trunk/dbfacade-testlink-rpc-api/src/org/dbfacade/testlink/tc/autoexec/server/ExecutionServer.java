@@ -28,6 +28,8 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.dbfacade.testlink.api.client.TestLinkAPIClient;
 import org.dbfacade.testlink.api.client.TestLinkAPIException;
@@ -36,6 +38,7 @@ import org.dbfacade.testlink.tc.autoexec.TestCase;
 import org.dbfacade.testlink.tc.autoexec.TestCaseExecutor;
 import org.dbfacade.testlink.tc.autoexec.TestPlan;
 import org.dbfacade.testlink.tc.autoexec.TestPlanPrepare;
+
 
 /**
  * The server implements a protocol for listening to request
@@ -48,7 +51,7 @@ public class ExecutionServer
 {
 	private int port;
 	private TestLinkAPIClient apiClient;
-	private TestPlan testPlan = null;
+	private Map testPlans = new HashMap();
 	private TestPlanPrepare prep;
 	private String defaultTestCaseUser;
 	private String externalDir;
@@ -108,7 +111,7 @@ public class ExecutionServer
 			ExecutionProtocol ep = new ExecutionProtocol();
 
 			// Process the first output to check things out
-			outputLine = ep.processInput(null);
+			outputLine = ep.processInput("server", null);
 			messageSend.println(outputLine);
 			ExecutionProtocol.debug(
 				"The server is alive on locolhost port: " + port + ", output: " + outputLine);
@@ -116,23 +119,25 @@ public class ExecutionServer
 			isConnected = true;
 			while ( (inputLine = messageReceive.readLine()) != null ) {
 				
+				// Process input and setup a state
+				outputLine = ep.processInput("server", inputLine);
+				
 				// Check for proper format
 				if ( !inputLine.contains(ExecutionProtocol.STR_CLIENT_SEPARATOR) ) {
-					messageSend.println(ExecutionProtocol.STR_PING);
+					sendMessage("No client", ExecutionProtocol.STR_PING);
 					continue;
 				}
 				
 				// Get the client information
-				String client = inputLine.substring(0, inputLine.indexOf(ExecutionProtocol.STR_CLIENT_SEPARATOR ));
-				inputLine = inputLine.substring(inputLine.indexOf(ExecutionProtocol.STR_CLIENT_SEPARATOR )+
-						ExecutionProtocol.STR_CLIENT_SEPARATOR.length());
-					
-				// Process input and send answer
-				outputLine = ep.processInput(inputLine);
+				String client = inputLine.substring(0,
+					inputLine.indexOf(ExecutionProtocol.STR_CLIENT_SEPARATOR));
+				inputLine = inputLine.substring(
+					inputLine.indexOf(ExecutionProtocol.STR_CLIENT_SEPARATOR)
+						+ ExecutionProtocol.STR_CLIENT_SEPARATOR.length());
 
 				// After answer is sent then process the requests
 				if ( ep.shutdown() ) {
-					messageSend.println(client + ":" + ExecutionProtocol.STR_SHUTDOWN);
+					sendMessage("All clients", ExecutionProtocol.STR_SHUTDOWN);
 					ExecutionProtocol.debug(
 						"The TestLink test execution server on port " + port
 						+ " is shutting down.");
@@ -141,17 +146,17 @@ public class ExecutionServer
 					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_PROJECT_NAME)
 					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_PLAN_NAME)
 					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_TC_EXEC) ) {
-					outputLine = processTestCaseExecRequest(inputLine);
+					outputLine = processTestCaseExecRequest(client, inputLine);
 					ExecutionProtocol.debug(outputLine);
-					messageSend.println(client + ExecutionProtocol.STR_CLIENT_SEPARATOR + outputLine);
+					sendMessage(client, outputLine);
 				} else if ( ep.isPrepRequest() 
 					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_PROJECT_NAME)
 					&& inputLine.contains(ExecutionProtocol.STR_REQUEST_PLAN_NAME) ) {
-					outputLine = processTestPlanPrepRequest(inputLine);
+					outputLine = processTestPlanPrepRequest(client, inputLine);
 					ExecutionProtocol.debug(outputLine);
-					messageSend.println(client + ExecutionProtocol.STR_CLIENT_SEPARATOR + outputLine);
+					sendMessage(client, outputLine);
 				} else {
-					messageSend.println(client + ExecutionProtocol.STR_CLIENT_SEPARATOR  + ExecutionProtocol.STR_PING);
+					sendMessage(client, ExecutionProtocol.STR_PING);
 					continue;
 				}
 			}
@@ -162,8 +167,23 @@ public class ExecutionServer
 			serverSocket.close();
 		} catch ( Exception e ) {
 			isConnected = false;
+			sendMessage("All clients: " + e.toString(), ExecutionProtocol.STR_SHUTDOWN);
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Send the message 
+	 * 
+	 * @param message
+	 */
+	public void sendMessage(
+		String clientName,
+		String message)
+	{
+		ExecutionProtocol.debug("Send Message: " + 
+			clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR + message);
+		messageSend.println(clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR + message);	
 	}
 	
 	/**
@@ -183,6 +203,7 @@ public class ExecutionServer
 	 * @return
 	 */
 	public String processTestPlanPrepRequest(
+		String clientID,
 		String request)
 	{
 		// Default result
@@ -190,7 +211,7 @@ public class ExecutionServer
 			+ ExecutionProtocol.STR_PLANPREP_FAILED;
 			
 		try {
-			createTestPlan(request);
+			createTestPlan(clientID, request);
 		} catch ( Exception e ) {
 			// Do not use Request: it will confuse the protocol
 			return result + " Unable to create the needed plan. {Req: "
@@ -209,6 +230,7 @@ public class ExecutionServer
 	 * @param request
 	 */
 	public String processTestCaseExecRequest(
+		String clientID,
 		String request)
 	{
 		// Default result
@@ -217,7 +239,7 @@ public class ExecutionServer
 			+ ExecutionProtocol.STR_EXEC_NOTES + "Unable to process test case request.";
 		
 		try {
-			createTestPlan(request);
+			createTestPlan(clientID, request);
 		} catch ( Exception e ) {
 			// Do not use Request: it will confuse the protocol
 			return result + " Unable to create the needed plan. {Req: "
@@ -233,6 +255,7 @@ public class ExecutionServer
 			ExecutionProtocol.debug("Test case id " + strID);
 			Integer internalID = new Integer(strID);
 
+			TestPlan testPlan = (TestPlan) testPlans.get(clientID);
 			TestCase tc = null;
 			TestCase[] cases = testPlan.getTestCases();
 			for ( int i = 0; i < cases.length; i++ ) {
@@ -299,8 +322,10 @@ public class ExecutionServer
 	 * @throws Exception
 	 */
 	public void createTestPlan(
+		String clientID,
 		String request) throws Exception
 	{
+		TestPlan testPlan = (TestPlan) testPlans.get(clientID);
 		int projectIdx = request.indexOf(ExecutionProtocol.STR_REQUEST_PROJECT_NAME);
 		int planIdx = request.indexOf(ExecutionProtocol.STR_REQUEST_PLAN_NAME);
 		int tcIdx = request.indexOf(ExecutionProtocol.STR_REQUEST_TC_EXEC);
@@ -326,6 +351,7 @@ public class ExecutionServer
 		
 		if ( testPlan == null || !(testPlan.getTestPlanName().equals(planName)) ) {
 			testPlan = new TestPlan(apiClient, projectName, planName);	
+			testPlans.put(clientID, testPlan);
 			if ( prep != null ) {
 				prep.setExternalPath(externalDir);
 				prep.setTCUser(defaultTestCaseUser);

@@ -72,6 +72,8 @@ public class ExecutionRunner
 			TestLinkAPIClient apiClient = new TestLinkAPIClient(devKey, url);
 			TestPlanPrepare prep = (TestPlanPrepare) Class.forName(prepClass).newInstance();		
 			
+			ExecutionProtocol.inDebugMode = true;
+			
 			ExecutionServer server = new ExecutionServer(
 					port,
 					apiClient,

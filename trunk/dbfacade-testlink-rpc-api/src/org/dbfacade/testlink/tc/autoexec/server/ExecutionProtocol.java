@@ -21,8 +21,6 @@
 package org.dbfacade.testlink.tc.autoexec.server;
 
 
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class ExecutionProtocol
@@ -34,11 +32,10 @@ public class ExecutionProtocol
 	private static final Integer ALIVE = new Integer(0);
 	private static final Integer TC_REQUEST = new Integer(1);
 	private static final Integer PREP_REQUEST = new Integer(2);
-	private static final Integer SHUTDOWN = new Integer(3);
+	private static final Integer TC_RESULT = new Integer(3);
+	private static final Integer PREP_RESULT = new Integer(4);
+	private static final Integer SHUTDOWN = new Integer(5);
 	private Integer state = ALIVE;
-    
-	// Inputs
-	Map inputs = new HashMap();
     
 	// Outputs
 	public static final String STR_SHUTDOWN = "Shutdown";
@@ -66,40 +63,38 @@ public class ExecutionProtocol
 	public static final String STR_EXEC_NOTES = "[tc_exec_notes]";
     
     
-	public ExecutionProtocol()
-	{
-		inputs.put(STR_SHUTDOWN, SHUTDOWN);
-		inputs.put(STR_PING, ALIVE);
-	}
-
 	public String processInput(
+		String who,
 		String theInput)
 	{
 		String theOutput = null;
 		
-		debug("The input: " + theInput);
+		debug("Receive Message(" + who + "): " + theInput);
 
 		if ( theInput != null ) {
-			if ( inputs.containsKey(theInput) ) {
-				state = (Integer) inputs.get(theInput);
-			} else if ( theInput.startsWith(STR_TC_RESULT) ) {
-				theOutput = theInput;
-			} else if ( theInput.startsWith(STR_TC_REQUEST) ) {
-				theOutput = theInput;
+			theOutput = theInput;
+			if ( theInput.contains(STR_PLANPREP_REQUEST) ) {
+				state = PREP_REQUEST;
+			} else if ( theInput.contains(STR_PLANPREP_RESULT) ) {
+				state = PREP_RESULT;
+			} else if ( theInput.contains(STR_TC_RESULT) ) {
+				state = TC_RESULT;
+			} else if ( theInput.contains(STR_TC_REQUEST) ) {
 				state = TC_REQUEST;
-			} else {
+			} else if ( theInput.contains(STR_SHUTDOWN) ) {
 				state = SHUTDOWN;
+			} else {
+				state = ALIVE;
 			}
 		} else {
 			state = ALIVE;
+			theOutput="";
 		}
         
-		// Send back a shutdown request or empty message
-		if ( shutdown() == false && theOutput == null ) {
-			theOutput = "";
-		} else {
+		// Send back a shutdown request 
+		if ( shutdown() == true ) {
 			theOutput = STR_SHUTDOWN;
-		}
+		} 
        
 		return theOutput;
 	}

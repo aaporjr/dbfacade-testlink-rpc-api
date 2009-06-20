@@ -21,13 +21,6 @@
 package org.dbfacade.testlink.tc.autoexec.server;
 
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
-
 import org.dbfacade.testlink.tc.autoexec.EmptyExecutor;
 import org.dbfacade.testlink.tc.autoexec.TestCase;
 import org.dbfacade.testlink.tc.autoexec.TestCaseExecutor;
@@ -38,12 +31,10 @@ public class RemoteClientExecutor extends EmptyExecutor
 {
 	private ExecutionProtocol ep = new ExecutionProtocol();
 	private String fromServer;
-	private Socket fSocket = null;
-	private PrintWriter messageSend = null;
-	private BufferedReader messageReceive = null;
 	private TestPlan testPlan;
 	private boolean isPreped = false;
 	private String clientName = null;
+	private RemoteClientConnection conn;
 
 	/**
 	 * Requires that the remote port be provided.
@@ -55,6 +46,7 @@ public class RemoteClientExecutor extends EmptyExecutor
 		TestPlan testPlan
 		)
 	{	
+		ExecutionProtocol.inDebugMode = true;
 		this.testPlan = testPlan;
 		this.clientName = this.toString();
 		int retry = 0;
@@ -62,7 +54,7 @@ public class RemoteClientExecutor extends EmptyExecutor
 			try {
 				retry++;
 				Thread.sleep(500);
-				openConnection(port);
+				conn = RemoteConnectionManager.getOrCreateConnection(port);
 				sendMessage(ExecutionProtocol.STR_PING);
 				ExecutionProtocol.debug("Opened connection to localhost port: " + port);
 				break;
@@ -82,7 +74,8 @@ public class RemoteClientExecutor extends EmptyExecutor
 	public void sendMessage(
 		String message)
 	{
-		messageSend.println(clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR + message);	
+		ExecutionProtocol.debug("Send Message: " + clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR + message);
+		conn.sendMessage(clientName, message);	
 	}
     
 	/**
@@ -105,8 +98,12 @@ public class RemoteClientExecutor extends EmptyExecutor
 				+ ExecutionProtocol.STR_REQUEST_PLAN_NAME + testPlan.getTestPlanName();
 			sendMessage(request);	
 			// Wait for the response
-			while ( (fromServer = messageReceive.readLine()) != null ) {
-				ep.processInput(fromServer);
+			while ( (fromServer = conn.receiveMessage()) != null ) {
+				ep.processInput("client prep " + conn.getPort(), fromServer);
+				if ( ep.shutdown() ) {
+					ExecutionProtocol.debug("Shutdown request sent by server");
+					break;
+				}
 				ExecutionProtocol.debug("Server: " + fromServer);
 				if ( fromServer.startsWith(
 					clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR)
@@ -145,7 +142,7 @@ public class RemoteClientExecutor extends EmptyExecutor
 		try {
 			
 			// Check connection
-			if ( !fSocket.isConnected() && fSocket.isClosed() ) {
+			if ( ! conn.isGood() ) {
 				throw new Exception("The connection is no longer available.");
 			}
 			
@@ -158,14 +155,15 @@ public class RemoteClientExecutor extends EmptyExecutor
 			sendTestCaseRequest(tc);
 			
 			// Wait for the response
-			while ( (fromServer = messageReceive.readLine()) != null ) {
-				ep.processInput(fromServer);
-				ExecutionProtocol.debug("Server: " + fromServer);
+			while ( (fromServer = conn.receiveMessage()) != null ) {
+				ep.processInput("client tc exec " + conn.getPort() +", " + clientName, fromServer);
 				if ( fromServer.startsWith(
 					clientName + ExecutionProtocol.STR_CLIENT_SEPARATOR)
-						&& fromServer.startsWith(ExecutionProtocol.STR_TC_RESULT) ) {
+						&& fromServer.contains(ExecutionProtocol.STR_TC_RESULT) ) {
 					ExecutionProtocol.debug("Result from server: " + fromServer);
 					break;
+				} else {
+					ExecutionProtocol.debug("Dispose from server: " + fromServer);
 				}
 			}
 			
@@ -231,44 +229,7 @@ public class RemoteClientExecutor extends EmptyExecutor
 		// Notes are expected at the end of the string
 	}
 	
-	public void openConnection(
-		int port) throws Exception
-	{
-		try {
-			fSocket = new Socket("localhost", port);
-			messageSend = new PrintWriter(fSocket.getOutputStream(), true);
-			messageReceive = new BufferedReader(
-				new InputStreamReader(fSocket.getInputStream()));
-		} catch ( UnknownHostException e ) {
-			System.err.println("Don't know about host: localhost.");
-			throw e;
-		} catch ( IOException e ) {
-			System.err.println("Couldn't get I/O for the connection to: localhost.");
-			throw e;
-		} catch ( Exception e ) {
-			System.err.println("Couldn't get connection established.");
-			throw e;
-		}
-	}
-	
-	/**
-	 * Close all the connections. No exception is thrown. The exceptions
-	 * are ignored in case the other side is already closed.
-	 */
-	public void closeConnection()
-	{
-		try {
-			messageSend.close();
-		} catch ( Exception e ) {}
-		
-		try {
-			messageReceive.close();
-		} catch ( Exception e ) {}
-	
-		try {
-			fSocket.close();
-		} catch ( Exception e ) {}
-	}
+
 	
 	/**
 	 * Return the default client identifier plus project name.
