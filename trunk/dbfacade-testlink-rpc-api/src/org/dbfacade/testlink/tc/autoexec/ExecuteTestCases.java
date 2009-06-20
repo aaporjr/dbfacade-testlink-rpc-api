@@ -42,7 +42,7 @@ public class ExecuteTestCases extends Thread
 	private int total = 0;
 	private int remain = 0;
 	private TestCase tc;
-	private int port=-1;
+	RemoteClientExecutor rte=null;
 	
 	/**
 	 * Executes the tests for test cases in a test plan.
@@ -101,17 +101,10 @@ public class ExecuteTestCases extends Thread
 		this.remain = this.total;
 	}
 	
-	/**
-	 * Request that the test be run remotely.
-	 * 
-	 * @param port
-	 */
-	public void setRemoteExecutionMode(
-		int port)
-	{
-		this.port = port;
+	public void setRemoteTestMode(RemoteClientExecutor rte) {
+		this.rte = rte;
 	}
-	
+		
 	/**
 	 * True if the test has run to completion
 	 */
@@ -176,15 +169,9 @@ public class ExecuteTestCases extends Thread
 	public void run()
 	{
 		hasTestRun = false;
-		RemoteClientExecutor rte = null;
 		try {
 			executionStart();
-			
-			// Setup remote execution if in remote mode
-			if ( port > 0 ) {
-				rte = new RemoteClientExecutor(port, testPlan);
-			} 
-			
+						
 			if ( this.testPlan == null || this.cases == null ) {
 				throw new TestLinkAPIException(
 					"All the variables have not been set so tests cannot be executed.");
@@ -273,15 +260,9 @@ public class ExecuteTestCases extends Thread
 			hasTestFailed = true;
 			executionFailed(e);
 			hasTestRun = true;
-			if ( rte != null ) {
-				rte.closeConnection();
-			}
 			return;
 		}
 		hasTestRun = true;
-		if ( rte != null ) {
-			rte.closeConnection();
-		}
 		executionSuccess();
 	}
 	
