@@ -20,6 +20,7 @@ public class PlanTree extends TreeParentNode
 	private boolean hasTestRun = false;
 	private boolean hasTestFailed = false;
 	private RemoteClientExecutor rte = null; 
+	private boolean isPreped=false;
 	
 	/**
 	 * Used to inform user no plans were acquired
@@ -212,7 +213,10 @@ public class PlanTree extends TreeParentNode
 		if ( rte != null ) {
 			rte.sendPlanPrepareRequest(cases);
 			if ( ! rte.isPreped() ) {
+				isPreped=false;
 				UserMsg.error("The test plan prepare failed on the remote server.");
+			} else {
+				isPreped = true;
 			}
 			return cases;
 		} else {
@@ -227,7 +231,9 @@ public class PlanTree extends TreeParentNode
 				prep.setTCUser(pref.getTestCaseCreator());
 				prep.setExternalPath(pref.getExternalPath());
 				prep.adjust(apiClient, this.plan);
+				isPreped=true;
 			} catch ( Exception e ) {
+				isPreped=false;
 				UserMsg.error(e,
 					"The test plan prepare class "
 					+ getPreferences().getTestPlanPrepareClass()
@@ -235,6 +241,14 @@ public class PlanTree extends TreeParentNode
 			}			
 			return cases;
 		}
+	}
+	
+	/**
+	 * True if the test plan has been successfully prepared.
+	 * @return
+	 */
+	public boolean isPreped() {
+		return isPreped;
 	}
 	
 	/**

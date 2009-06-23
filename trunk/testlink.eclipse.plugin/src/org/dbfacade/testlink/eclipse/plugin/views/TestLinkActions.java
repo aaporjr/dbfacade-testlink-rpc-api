@@ -134,13 +134,13 @@ public class TestLinkActions
 			if ( !tree.isEmptyProjectNode() && tree.isActive() ) {
 				TreeNode[] children = tree.getChildren();
 				if ( children.length > 0 ) {
-					if ( tree.getRemoteClient() == null ) {
+					if ( tree.getRemoteClient() == null && tree.isPreped() ) {
 						manager.add(resubmitPreparation);
 						manager.add(executeTestDefault);
 						manager.add(executeTestNoReport);
 						manager.add(executeTestReport);
 					} else if ( tree.getRemoteClient().getConnection() != null 
-						&& tree.getRemoteClient().getConnection().isGood() ) {
+						&& tree.getRemoteClient().getConnection().isGood() && tree.isPreped() ) {
 						manager.add(resubmitPreparation);
 						manager.add(executeTestDefault);
 						manager.add(executeTestNoReport);
