@@ -156,7 +156,6 @@ public class TestLinkView extends ViewPart
 			}
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			System.out.println("The element could not be update. " + element);
 		}
 	}
 	
@@ -176,7 +175,6 @@ public class TestLinkView extends ViewPart
 			}
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			System.out.println("The element could not be refreshed. " + element);
 		}
 	}
 	
