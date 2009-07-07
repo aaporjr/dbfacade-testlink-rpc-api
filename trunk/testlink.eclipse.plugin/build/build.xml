@@ -39,9 +39,6 @@
 		<copy todir="${plugin.lib.home}" preservelastmodified="true">
 			<fileset dir="${compile.lib}" includes="**/*"/>
 		</copy>
-		<copy todir="${plugin.lib.home}" preservelastmodified="true">
-			<fileset dir="plugins" includes="**/*.jar"/>
-		</copy>
 		<tar destfile="${plugin.tar}" basedir="." includes="${plugin.home}/**"/>		
 		<tar destfile="${plugin.tar}" basedir="." includes="${plugin.home}/**"/>		
 		<zip destfile="${plugin.zip}" basedir="." includes="${plugin.home}/**"/>		
