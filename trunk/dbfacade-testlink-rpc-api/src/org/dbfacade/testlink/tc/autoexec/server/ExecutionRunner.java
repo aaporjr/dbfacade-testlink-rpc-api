@@ -21,8 +21,6 @@
 package org.dbfacade.testlink.tc.autoexec.server;
 
 
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +56,6 @@ public class ExecutionRunner
 				
 			// Get args
 			Map argMap = getArgs(args);
-			printClasspath();
 			
 			int port = new Integer((String) argMap.get(P_PORT)).intValue();
 			String devKey = (String) argMap.get(P_DEV_KEY);
@@ -143,20 +140,5 @@ public class ExecutionRunner
 			}
 		}
 		return false;
-	}
-		
-	public static void printClasspath()
-	{
-		 
-		// Get the System Classloader
-		ClassLoader sysClassLoader = ClassLoader.getSystemClassLoader();
-
-		// Get the URLs
-		URL[] urls = ((URLClassLoader) sysClassLoader).getURLs();
-
-		for ( int i = 0; i < urls.length; i++ ) {
-			System.out.println(urls[i].getFile());
-		}       
-
 	}
 }
