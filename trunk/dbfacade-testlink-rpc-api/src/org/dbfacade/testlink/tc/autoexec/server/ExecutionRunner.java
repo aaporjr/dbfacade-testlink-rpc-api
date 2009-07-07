@@ -58,7 +58,6 @@ public class ExecutionRunner
 				
 			// Get args
 			Map argMap = getArgs(args);
-			printArgs(args, argMap);
 			printClasspath();
 			
 			int port = new Integer((String) argMap.get(P_PORT)).intValue();
@@ -88,18 +87,6 @@ public class ExecutionRunner
 	}
 	
 		
-	public static void printArgs(
-		String[] args,
-		Map argMap)
-	{
-		System.out.print("[");
-		for ( int i = 0; i < args.length; i++ ) {
-			System.out.print(args[i] + ", ");
-		}
-		System.out.print("]\n");
-		System.out.println("\n" + argMap);
-	}
-
 	public static Map getArgs(
 		String[] args)
 	{

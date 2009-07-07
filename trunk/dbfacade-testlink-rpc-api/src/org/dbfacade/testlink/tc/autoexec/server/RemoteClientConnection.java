@@ -85,16 +85,16 @@ public class RemoteClientConnection
 					monitor.start();
 					break;
 				} catch ( UnknownHostException e ) {
-					System.out.println("Don't know about host: localhost.");
+					ExecutionProtocol.debug("Don't know about host: localhost.");
 					shutdownNotify();
 					throw e;
 				} catch ( IOException e ) {
-					System.out.println(
+					ExecutionProtocol.debug(
 						"Couldn't get I/O for the connection to: localhost. Port:" + port);
 					shutdownNotify();
 					throw e;
 				} catch ( Exception e ) {
-					System.out.println("Couldn't get connection established. Port: " + port);
+					ExecutionProtocol.debug("Couldn't get connection established. Port: " + port);
 					shutdownNotify();
 					throw e;
 				}
