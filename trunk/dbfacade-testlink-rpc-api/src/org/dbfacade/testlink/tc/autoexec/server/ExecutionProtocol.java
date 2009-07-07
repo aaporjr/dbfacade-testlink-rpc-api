@@ -26,7 +26,7 @@ package org.dbfacade.testlink.tc.autoexec.server;
 public class ExecutionProtocol
 {
 	// debug variable for unit testing
-	private static boolean inDebugMode=true;
+	private static boolean inDebugMode=false;
 	
 	// States
 	private static final Integer ALIVE = new Integer(0);
