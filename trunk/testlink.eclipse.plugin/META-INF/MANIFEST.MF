@@ -10,13 +10,13 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.ui
 Eclipse-LazyStart: true
 Bundle-ClassPath: runtimelibs/commons-logging-1.1.jar,
- runtimelibs/testlink-api-client-1.0.jar,
  runtimelibs/ws-commons-util-1.0.2.jar,
  runtimelibs/xmlrpc-client-3.1.jar,
  runtimelibs/xmlrpc-client-3.1-sources.jar,
  runtimelibs/xmlrpc-common-3.1.jar,
  runtimelibs/xmlrpc-common-3.1-sources.jar,
- .
+ .,
+ runtimelibs/testlink-api-client-1.1.jar
 Import-Package: com.ibm.icu.text,
  org.eclipse.core.resources,
  org.eclipse.core.variables,
