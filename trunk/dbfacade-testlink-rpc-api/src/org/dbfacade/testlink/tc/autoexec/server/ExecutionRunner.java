@@ -82,7 +82,7 @@ public class ExecutionRunner
 				
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			System.out.println("The launch failed due to an exception.");
+			ExecutionProtocol.debug("The launch failed due to an exception.");
 		} 
 	}
 	
