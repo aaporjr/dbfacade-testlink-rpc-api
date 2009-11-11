@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="runtimelibs/testlink-api-client-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="runtimelibs/commons-logging-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="runtimelibs/ws-commons-util-1.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="runtimelibs/xmlrpc-client-3.1.jar"/>
@@ -10,5 +9,6 @@
 	<classpathentry exported="true" kind="lib" path="runtimelibs/xmlrpc-common-3.1-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="lib" path="runtimelibs/testlink-api-client-2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

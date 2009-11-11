@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Plugin Plug-in
 Bundle-SymbolicName: testlink.eclipse.plugin; singleton:=true
-Bundle-Version: 0.20.9
-Bundle-Activator: org.dbfacade.testlink.eclipse.plugin.Activator
+Bundle-Version: 0.97.11
+Bundle-Activator: testlink.eclipse.plugin.Activator
 Bundle-Vendor: Daniel Padilla
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -16,7 +16,7 @@ Bundle-ClassPath: runtimelibs/commons-logging-1.1.jar,
  runtimelibs/xmlrpc-common-3.1.jar,
  runtimelibs/xmlrpc-common-3.1-sources.jar,
  .,
- runtimelibs/testlink-api-client-1.1.jar
+ runtimelibs/testlink-api-client-2.0.jar
 Import-Package: com.ibm.icu.text,
  org.eclipse.core.resources,
  org.eclipse.core.variables,
@@ -46,14 +46,14 @@ Export-Package: org.apache.commons.logging,
  org.apache.xmlrpc.parser,
  org.apache.xmlrpc.serializer,
  org.apache.xmlrpc.util,
- org.dbfacade.testlink.api.client,
- org.dbfacade.testlink.eclipse.plugin,
- org.dbfacade.testlink.eclipse.plugin.handlers,
- org.dbfacade.testlink.eclipse.plugin.launcher,
- org.dbfacade.testlink.eclipse.plugin.preferences,
- org.dbfacade.testlink.eclipse.plugin.views,
- org.dbfacade.testlink.eclipse.plugin.views.tree,
- org.dbfacade.testlink.junit.autoexec,
- org.dbfacade.testlink.junit.client,
- org.dbfacade.testlink.junit.constants,
- org.dbfacade.testlink.tc.autoexec
+ testlink.api.java.client,
+ testlink.api.java.client.junit.autoexec,
+ testlink.api.java.client.junit.client,
+ testlink.api.java.client.junit.constants,
+ testlink.api.java.client.tc.autoexec,
+ testlink.eclipse.plugin,
+ testlink.eclipse.plugin.handlers,
+ testlink.eclipse.plugin.launcher,
+ testlink.eclipse.plugin.preferences,
+ testlink.eclipse.plugin.views,
+ testlink.eclipse.plugin.views.tree

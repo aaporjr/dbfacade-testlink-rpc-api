@@ -9,9 +9,9 @@
             name="TestLink"
             delegateDescription="TestLink test plan execution runner."
             delegateName="TestLink"
-            delegate="org.dbfacade.testlink.eclipse.plugin.launcher.TestLinkLaunchConfigurationDelegate"
+            delegate="testlink.eclipse.plugin.launcher.TestLinkLaunchConfigurationDelegate"
             modes="run, debug"
-            id="org.dbfacade.testlink.eclipse.plugin.launchconfig"
+            id="testlink.eclipse.plugin.launchconfig"
             sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
             sourcePathComputerId="org.eclipse.jdt.launching.sourceLookup.javaSourcePathComputer">
             <!-- migrationDelegate="org.eclipse.jdt.internal.junit.launcher.JUnitMigrationDelegate" -->
@@ -21,9 +21,9 @@
    <extension
          point="org.eclipse.debug.core.launchConfigurationComparators">
       <launchConfigurationComparator
-            attribute="org.dbfacade.testlink.eclipse.plugin.CONTAINER"
-            class="org.dbfacade.testlink.eclipse.plugin.launcher.TestLinkContainerComparator"
-            id="org.dbfacade.testlink.eclipse.plugin.containerComparator">
+            attribute="testlink.eclipse.plugin.CONTAINER"
+            class="testlink.eclipse.plugin.launcher.TestLinkContainerComparator"
+            id="testlink.eclipse.plugin.containerComparator">
       </launchConfigurationComparator>
    </extension>
    
@@ -31,7 +31,7 @@
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
             icon="icons/testlink_logo.png"
-            configTypeID="org.dbfacade.testlink.eclipse.plugin.launchconfig"
+            configTypeID="testlink.eclipse.plugin.launchconfig"
             id="org.eclipse.jdt.junit.launchimage">
       </launchConfigurationTypeImage>
    </extension>
@@ -39,10 +39,10 @@
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
-            type="org.dbfacade.testlink.eclipse.plugin.launchconfig"
-            helpContextId="org.dbfacade.testlink.eclipse.plugin.testlink_tab_group"
-            class="org.dbfacade.testlink.eclipse.plugin.launcher.TestLinkTabGroup"
-            id="org.dbfacade.testlink.eclipse.plugin.launchConfigurationTabGroup.testlink">
+            type="testlink.eclipse.plugin.launchconfig"
+            helpContextId="testlink.eclipse.plugin.testlink_tab_group"
+            class="testlink.eclipse.plugin.launcher.TestLinkTabGroup"
+            id="testlink.eclipse.plugin.launchConfigurationTabGroup.testlink">
          <launchMode
                perspective="org.eclipse.debug.ui.DebugPerspective"
                description="testlink.debug"
@@ -74,7 +74,7 @@
          point="org.eclipse.ui.handlers">
       <handler
             commandId="testlink.eclipse.plugin.commands.testlinkview" 
-            class="org.dbfacade.testlink.eclipse.plugin.handlers.TestLinkHandler">
+            class="testlink.eclipse.plugin.handlers.TestLinkHandler">
       </handler>
    </extension>
    <extension
@@ -118,14 +118,14 @@
          point="org.eclipse.ui.preferencePages">
       <page
             name="TestLink"
-            class="org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPage"
-            id="org.dbfacade.testlink.eclipse.plugin.preferences.TestLinkPage">
+            class="testlink.eclipse.plugin.preferences.TestLinkPage"
+            id="testlink.eclipse.plugin.preferences.TestLinkPage">
       </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="org.dbfacade.testlink.eclipse.plugin.preferences.PreferenceInitializer">
+            class="testlink.eclipse.plugin.preferences.PreferenceInitializer">
       </initializer>
    </extension>
    <extension
@@ -138,8 +138,8 @@
             name="TestLink Test Plan Execution"
             icon="icons/testlink_logo.png"
             category="testlink.eclipse.plugin"
-            class="org.dbfacade.testlink.eclipse.plugin.views.TestLinkView"
-            id="org.dbfacade.testlink.eclipse.plugin.views.TestLinkView">
+            class="testlink.eclipse.plugin.views.TestLinkView"
+            id="testlink.eclipse.plugin.views.TestLinkView">
       </view>
    </extension>
    <extension
@@ -150,7 +150,7 @@
                ratio="0.5"
                relative="org.eclipse.ui.views.TaskList"
                relationship="right"
-               id="org.dbfacade.testlink.eclipse.plugin.views.TestLinkView">
+               id="testlink.eclipse.plugin.views.TestLinkView">
          </view>
       </perspectiveExtension>
    </extension>
