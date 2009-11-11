@@ -8,18 +8,17 @@
 
 	<!-- set global properties for this build -->
 	<property name="src.home" value="../src"/>
-	<property name="dist.home" value="dbfacade-testlink-client-${dist.date}"/>
+	<property name="dist.home" value="testlink-api-client-${dist.date}"/>
 	<property name="compile.home" value="../bin"/>
 	<property name="compile.lib" value="../lib"/>
-	<property name="dist.version" value="1.1"/>
+	<property name="dist.version" value="2.0"/>
 	<property name="dist.prefix" value="testlink-api-client-${dist.version}"/>
 	<property name="dist.jar" value="${dist.home}/${dist.prefix}.jar"/>
 	<property name="dist.zip" value="${dist.prefix}.zip"/>
 	<property name="dist.tar" value="${dist.prefix}.tar"/>
 	<property name="javadoc.home" value="${dist.home}/javadoc"/>
-	<property name="javadoc.include" value="org/dbfacade/testlink/**"/>
-	<property name="javadoc.exclude" value="org/dbfacade/testlink/api/client/junit/**"/>
-
+	<property name="javadoc.include" value="testlink/api/java/client/**"/>
+	<property name="javadoc.exclude" value="testlink/api/java/client/junit/**"/>
     
 	<path id="local.classpath">
 		<fileset dir="${compile.lib}">
@@ -76,8 +75,7 @@
 	
 			<doctitle><![CDATA[<h1>TestLink API Java Client</h1>]]></doctitle>
 			<bottom><![CDATA[<i>Copyright &#169; 2009 Database Facade. All Rights Reserved.</i>]]></bottom>
-			<group title="TestLink API Client Package" packages="org.dbfacade.testlink.a*"/>
-			<group title="Automated Testing Support Package" packages="org.dbfacade.testlink.t*"/>
+			<group title="TestLink API Client Package" packages="testlink.api.*"/>
 		</javadoc>
 	</target>
 	
