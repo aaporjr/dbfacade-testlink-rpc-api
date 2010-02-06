@@ -12,7 +12,7 @@ public class RemoteServerTest {
 	public static void main(String[] args) throws Exception
 	{
 		try {
-			api = new TestLinkAPIClient(TestConst.userKey, TestConst.apiURL, true);
+			api = new TestLinkAPIClient(TestConst.userKey, TestConst.api182URL, true);
 			api.ping();
 			int port = 59168;
 			System.out.println(port);

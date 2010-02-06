@@ -65,7 +65,7 @@ public class ExecutableTestCaseTest implements TestLinkAPIConst, TestConst
 	@Before
 	public void setUp() throws Exception
 	{
-		api = new TestLinkAPIClient(userKey, apiURL, true);
+		api = new TestLinkAPIClient(userKey, api182URL, true);
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class ExecutableTestCaseTest implements TestLinkAPIConst, TestConst
 	public void testTestPlanConstructor()
 	{
 		try {
-			Map projectInfo= TestLinkAPIHelper.getProjectInfo(api, JUNIT_PLAN_PROJECT);
+			Map projectInfo= TestLinkAPIHelper.getProjectInfo(api, JUNIT_STATIC_PROJECT);
 			TestProject project = new TestProject(projectInfo);
 			project.getProjectID();
 		} catch ( Exception e ) {
@@ -99,13 +99,13 @@ public class ExecutableTestCaseTest implements TestLinkAPIConst, TestConst
 	{
 		try {
 			// Get IDs
-			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_PLAN_PROJECT);
-			Integer caseID = TestLinkAPIHelper.getCaseIDByName(api, projectID, JUNIT_PLAN_CASE);
+			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_STATIC_PROJECT);
+			Integer caseID = TestLinkAPIHelper.getCaseIDByName(api, projectID, JUNIT_STATIC_CASE);
 			
 			// Get information for the ids
 			Map testCaseInfo = TestLinkAPIHelper.getTestCaseInfo(api, projectID, caseID);
-			Map projectInfo= TestLinkAPIHelper.getProjectInfo(api, JUNIT_PLAN_PROJECT);
-			Map suiteInfo = TestLinkAPIHelper.getSuiteInfo(api, projectID, JUNIT_PLAN_SUITE);
+			Map projectInfo= TestLinkAPIHelper.getProjectInfo(api, JUNIT_STATIC_PROJECT);
+			Map suiteInfo = TestLinkAPIHelper.getSuiteInfo(api, projectID, JUNIT_STATIC_SUITE);
 			
 			// Create the classes
 			TestProject testProject = new TestProject(projectInfo);

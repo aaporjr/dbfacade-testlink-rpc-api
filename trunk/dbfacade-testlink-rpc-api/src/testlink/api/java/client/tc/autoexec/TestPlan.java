@@ -472,7 +472,7 @@ public class TestPlan
 		TestCase tc)
 	{
 		try {
-			apiClient.addTestCaseToTestPlan(testProject.getProjectID(), testPlanID,
+			apiClient.addTestCaseToTestPlan(testProject.getProjectID(), testPlanID, null,
 				tc.getTestCaseVisibleID(), null, null, null);
 		} catch ( Exception e ) {}
 	}

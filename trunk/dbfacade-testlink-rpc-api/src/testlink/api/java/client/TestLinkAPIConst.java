@@ -186,15 +186,20 @@ public interface TestLinkAPIConst
 	/*
 	 * Variables used for JUnit testing
 	 */
-	public static final String JUNIT_ID = new Long(new Date().getTime()).toString();
-	public static final String JUNIT_PROJECT = "Test Project " + JUNIT_ID;
-	public static final String JUNIT_SUITE = "Test Suite " + JUNIT_ID;
-	public static final String JUNIT_CASE = "Test Case " + JUNIT_ID;
-	public static final String JUNIT_BUILD = "Build " + JUNIT_ID;
-	public static final String JUNIT_PREFIX = JUNIT_ID;
-	public static final String JUNIT_PLAN_PROJECT = "My Test Plan Project";
-	public static final String JUNIT_PLAN_SUITE = "My Test Plan Suite";
-	public static final String JUNIT_PLAN_CASE = "My Test Plan Case";
-	public static final String JUNIT_PLAN_NAME = "My Test Plan";
+	public static final String JUNIT_DYNAMIC_ID = new Long(new Date().getTime()).toString();
+	public static final String JUNIT_DYNAMIC_PROJECT = "Java API Dynamic Junit Project " + JUNIT_DYNAMIC_ID;
+	public static final String JUNIT_DYNAMIC_SUITE = "Java API Dynamic JUnit Suite " + JUNIT_DYNAMIC_ID;
+	public static final String JUNIT_DYNAMIC_CASE = "Java API Dynamic JUnit Case " + JUNIT_DYNAMIC_ID;
+	public static final String JUNIT_DYNAMIC_BUILD = "Java API Dynamic JUnit Build " + JUNIT_DYNAMIC_ID;
+	public static final String JUNIT_DYNAMIC_PREFIX = JUNIT_DYNAMIC_ID;
+	
+	/*
+	 * Standard JUnit testing plans and projects for the java API
+	 */
+	public static final String JUNIT_STATIC_PROJECT = "Java API Static JUnit Project";
+	public static final String JUNIT_STATIC_PREFIX = "1";
+	public static final String JUNIT_STATIC_SUITE = "Java API Static JUnit Suite";
+	public static final String JUNIT_STATIC_CASE = "Java API Static JUnit Case";
+	public static final String JUNIT_STATIC_TEST_PLAN = "Java API Static JUnit Test Plan";
     
 }

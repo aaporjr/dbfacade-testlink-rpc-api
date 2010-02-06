@@ -666,7 +666,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		String visibleTestCaseID = prefix.toString() + '-' + externalID.toString();
 		Object version = caseInfo.get(API_PARAM_VERSION);
 		TestLinkAPIResults results = addTestCaseToTestPlan(projectID, planID,
-			visibleTestCaseID, new Integer(version.toString()), execOrder, urgency);	
+				caseID, visibleTestCaseID, new Integer(version.toString()), execOrder, urgency);	
 		return results;
 	}
 	
@@ -685,6 +685,7 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 	public TestLinkAPIResults addTestCaseToTestPlan(
 		Integer projectID,
 		Integer planID,
+		Integer testCaseID,
 		String testCaseVisibleID,
 		Integer version,
 		Integer execOrder,
@@ -695,6 +696,11 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 		setParam(params, REQUIRED, API_PARAM_DEV_KEY, DEV_KEY);
 		setParam(params, REQUIRED, API_PARAM_TEST_PROJECT_ID, projectID);
 		setParam(params, REQUIRED, API_PARAM_TEST_PLAN_ID, planID);
+		
+		if ( testCaseID != null ) {
+			setParam(params, OPTIONAL, API_PARAM_TEST_CASE_ID, testCaseID);
+		}
+		
 		setParam(params, REQUIRED, API_PARAM_TEST_CASE_ID_EXTERNAL, testCaseVisibleID);
 		setParam(params, REQUIRED, API_PARAM_VERSION, version);
 		setParam(params, OPTIONAL, API_PARAM_URGENCY, urgency);
@@ -1263,7 +1269,16 @@ public class TestLinkAPIClient implements TestLinkAPIConst
 					}
 				}
 			} catch ( Exception ee ) {
-				throw new TestLinkAPIException("The call to the xml-rpc client failed.", e);
+				String msg = "The call to the xml-rpc client failed." +
+				              "\nURL: " + SERVER_URL
+				              + "\nMethod: " + method + "\nParameters:";
+				Iterator paramNames = executionData.keySet().iterator();
+				while ( paramNames.hasNext() ) {
+					Object paramName = paramNames.next();
+					msg = msg + "\n    " + paramName + "='" + executionData.get(paramName) + "'";
+				}
+				ee.printStackTrace();
+				throw new TestLinkAPIException(msg, e);
 			}
 		}
 		return results;

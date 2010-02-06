@@ -23,6 +23,9 @@ package testlink.api.java.client.junit.client;
 
 import static org.junit.Assert.fail;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -48,10 +51,14 @@ import testlink.api.java.client.junit.constants.TestConst;
  * @author Daniel Padilla
  *
  */
-public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
+public class TestLinkAPIGetterTest implements TestLinkAPIConst,
+	TestConst
 {	
 	// The api instance
-	public static TestLinkAPIClient api=null;
+	public static HashMap<String,
+		TestLinkAPIClient> apiList = new HashMap();
+	public static TestLinkAPIClient api = null;
+	public static String version;
 	
 	/**
 	 * @throws java.lang.Exception
@@ -66,8 +73,11 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
 	@Before
 	public void setUp() throws Exception
 	{
-		if ( api == null ) {
-			api = new TestLinkAPIClient(userKey, apiURL, true);
+		if ( apiList.size() < 1 ) {
+			TestLinkAPIClient api = new TestLinkAPIClient(userKey, api182URL, true);
+			apiList.put("TestLink1.8.2", api);
+			api = new TestLinkAPIClient(userKey, api185URL, true);
+			apiList.put("TestLink1.8.5", api);
 		}
 	}
 
@@ -85,11 +95,16 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
 	public void testAbout()
 	{
 		try {
-			TestLinkAPIResults results = api.about();
-			if ( results == null ) {
-				throw new Exception("Unable to run about method.");
+			Iterator versions = apiList.keySet().iterator();
+			while ( versions.hasNext() ) {
+				version = (String) versions.next();
+				api = apiList.get(version);
+				TestLinkAPIResults results = api.about();
+				if ( results == null ) {
+					throw new Exception("Unable to run about method. Version=" + version);
+				}
+				printResults("testAbout (" + version + ") ", results);
 			}
-			printResults("testAbout", results);
 		} catch ( Exception e ) {
 			e.printStackTrace();
 			fail("Failed to run TestLink API about method.");
@@ -103,14 +118,19 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
 	public void testPing()
 	{
 		try {
-			TestLinkAPIResults results = api.ping();
-			if ( results == null ) {
-				throw new Exception("Unable to run ping method.");
+			Iterator versions = apiList.keySet().iterator();
+			while ( versions.hasNext() ) {
+				version = (String) versions.next();
+				api = apiList.get(version);
+				TestLinkAPIResults results = api.ping();
+				if ( results == null ) {
+					throw new Exception("Unable to run ping method. Version=" + version);
+				}
+				printResults("testPing (Version=" + version + ") ", results);
 			}
-			printResults("testPing", results);
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			fail("Failed to run TestLink API ping method.");
+			fail("Failed to run TestLink API ping method. Version=" + version);
 		}
 	}
 	
@@ -121,14 +141,20 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
 	public void testGetProjects()
 	{
 		try {
-			TestLinkAPIResults results = api.getProjects();
-			if ( results == null ) {
-				throw new Exception("Unable to run getProject() method.");
+			Iterator versions = apiList.keySet().iterator();
+			while ( versions.hasNext() ) {
+				version = (String) versions.next();
+				api = apiList.get(version);
+		
+				TestLinkAPIResults results = api.getProjects();
+				if ( results == null ) {
+					throw new Exception("Unable to run getProject() method.");
+				}
+				printResults("testGetProjects (Version=" + version + "): ", results);
 			}
-			printResults("testGetProjects", results);
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			fail("Failed to run TestLink API getProjects() method.");
+			fail("Failed to run TestLink API getProjects() method. Version=" + version);
 		}
 	}
 	
@@ -139,14 +165,26 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
 	public void testGetFirstLevelTestSuitesForTestProject()
 	{
 		try {
-			TestLinkAPIResults results = api.getFirstLevelTestSuitesForTestProject(JUNIT_PLAN_PROJECT);
-			if ( results == null ) {
-				throw new Exception("Unable to run getFirstLevelTestSuitesForTestProject() method.");
+			Iterator versions = apiList.keySet().iterator();
+			while ( versions.hasNext() ) {
+				version = (String) versions.next();
+				api = apiList.get(version);
+				TestLinkAPIResults results = api.getFirstLevelTestSuitesForTestProject(
+					JUNIT_STATIC_PROJECT);
+				if ( results == null ) {
+					throw new Exception(
+						"Unable to run getFirstLevelTestSuitesForTestProject() method. Version="
+							+ version);
+				}
+				printResults(
+					"testGetFirstLevelTestSuitesForTestProject (Version=" + version + "): ",
+					results);
 			}
-			printResults("testGetFirstLevelTestSuitesForTestProject", results);
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			fail("Failed to run TestLink API getFirstLevelTestSuitesForTestProject() method.");
+			fail(
+				"Failed to run TestLink API getFirstLevelTestSuitesForTestProject() method. Version="
+					+ version);
 		}
 	}
 	
@@ -157,14 +195,22 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
 	public void testGetProjectTestPlans()
 	{
 		try {
-			TestLinkAPIResults results = api.getProjectTestPlans(JUNIT_PLAN_PROJECT);
-			if ( results == null ) {
-				throw new Exception("Unable to run getProjectTestPlans() method.");
+			Iterator versions = apiList.keySet().iterator();
+			while ( versions.hasNext() ) {
+				version = (String) versions.next();
+				api = apiList.get(version);
+		
+				TestLinkAPIResults results = api.getProjectTestPlans(JUNIT_STATIC_PROJECT);
+				if ( results == null ) {
+					throw new Exception("Unable to run getProjectTestPlans() method.");
+				}
+				printResults("testGetProjectTestPlans (Version=" + version + "): ",
+					results);
 			}
-			printResults("testGetProjectTestPlans", results);
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			fail("Failed to run TestLink API getProjectTestPlans() method.");
+			fail(
+				"Failed to run TestLink API getProjectTestPlans() method. Version=" + version);
 		}
 	}
 	
@@ -175,14 +221,25 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
 	public void testGetBuildsForTestPlan()
 	{
 		try {
-			TestLinkAPIResults results = api.getBuildsForTestPlan(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME);
-			if ( results == null ) {
-				throw new Exception("Unable to run getBuildsForTestPlan() method.");
+			Iterator versions = apiList.keySet().iterator();
+			while ( versions.hasNext() ) {
+				version = (String) versions.next();
+				api = apiList.get(version);
+		
+				TestLinkAPIResults results = api.getBuildsForTestPlan(JUNIT_STATIC_PROJECT,
+					JUNIT_STATIC_TEST_PLAN);
+				if ( results == null ) {
+					throw new Exception(
+						"Unable to run getBuildsForTestPlan() method. Version=" + version);
+				}
+				printResults("testGetBuildsForTestPlan (Version=" + version + "): ",
+					results);
 			}
-			printResults("testGetBuildsForTestPlan", results);
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			fail("Failed to run TestLink API getBuildsForTestPlan() method.");
+			fail(
+				"Failed to run TestLink API getBuildsForTestPlan() method. Version="
+					+ version);
 		}
 	}
 	
@@ -193,14 +250,25 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
 	public void testGetLatestBuildForTestPlan()
 	{
 		try {
-			TestLinkAPIResults results = api.getLatestBuildForTestPlan(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME);
-			if ( results == null ) {
-				throw new Exception("Unable to run getLatestBuildForTestPlan() method.");
+			
+			Iterator versions = apiList.keySet().iterator();
+			while ( versions.hasNext() ) {
+				version = (String) versions.next();
+				api = apiList.get(version);
+				TestLinkAPIResults results = api.getLatestBuildForTestPlan(
+					JUNIT_STATIC_PROJECT, JUNIT_STATIC_TEST_PLAN);
+				if ( results == null ) {
+					throw new Exception(
+						"Unable to run getLatestBuildForTestPlan() method.");
+				}
+				printResults("testGetLatestBuildForTestPlans (Version=" + version + "): ",
+					results);
 			}
-			printResults("testGetLatestBuildForTestPlans", results);
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			fail("Failed to run TestLink API getLatestBuildForTestPlan() method.");
+			fail(
+				"Failed to run TestLink API getLatestBuildForTestPlan() method. Version="
+					+ version);
 		}
 	}
 	
@@ -211,14 +279,24 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
 	public void testGetTestSuitesForTestPlan()
 	{
 		try {
-			TestLinkAPIResults results = api.getTestSuitesForTestPlan(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME);
-			if ( results == null ) {
-				throw new Exception("Unable to run getTestSuitesForTestPlan() method.");
+			
+			Iterator versions = apiList.keySet().iterator();
+			while ( versions.hasNext() ) {
+				version = (String) versions.next();
+				api = apiList.get(version);
+				TestLinkAPIResults results = api.getTestSuitesForTestPlan(
+					JUNIT_STATIC_PROJECT, JUNIT_STATIC_TEST_PLAN);
+				if ( results == null ) {
+					throw new Exception(
+						"Unable to run getTestSuitesForTestPlan() method. Version=" + version);
+				}
+				printResults("testGetTestSuitesForTestPlan", results);
 			}
-			printResults("testGetTestSuitesForTestPlan", results);
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			fail("Failed to run TestLink API getTestSuitesForTestPlan() method.");
+			fail(
+				"Failed to run TestLink API getTestSuitesForTestPlan() method. Version="
+					+ version);
 		}
 	}
 	
@@ -229,14 +307,22 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
 	public void testGetTestCaseIDByName()
 	{
 		try {
-			TestLinkAPIResults results = api.getTestCaseIDByName(JUNIT_PLAN_CASE);
-			if ( results == null ) {
-				throw new Exception("Unable to run getTestCaseIDByName() method.");
+			Iterator versions = apiList.keySet().iterator();
+			while ( versions.hasNext() ) {
+				version = (String) versions.next();
+				api = apiList.get(version);
+				TestLinkAPIResults results = api.getTestCaseIDByName(JUNIT_STATIC_TEST_PLAN);
+				if ( results == null ) {
+					throw new Exception(
+						"Unable to run getTestCaseIDByName() method. Version=" + version);
+				}
+				printResults("testGetTestCaseIDByName (Version=" + version + "): ",
+					results);
 			}
-			printResults("testGetTestCaseIDByName", results);
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			fail("Failed to run TestLink API getTestCaseIDByName() method.");
+			fail(
+				"Failed to run TestLink API getTestCaseIDByName() method. Version=" + version);
 		}
 	}
 	
@@ -247,11 +333,19 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
 	public void testGetLastExecutionResult()
 	{
 		try {
-			TestLinkAPIResults results = api.getLastExecutionResult(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME, JUNIT_PLAN_CASE);
-			if ( results == null ) {
-				throw new Exception("Unable to run getLastExecutionResult() method.");
+			Iterator versions = apiList.keySet().iterator();
+			while ( versions.hasNext() ) {
+				version = (String) versions.next();
+				api = apiList.get(version);
+				TestLinkAPIResults results = api.getLastExecutionResult(JUNIT_STATIC_PROJECT,
+					JUNIT_STATIC_TEST_PLAN, JUNIT_STATIC_CASE);
+				if ( results == null ) {
+					throw new Exception(
+						"Unable to run getLastExecutionResult() method. Version=" + version);
+				}
+				printResults("testGetLastExecutionResult (Version=" + version + "):",
+					results);
 			}
-			printResults("testGetLastExecutionResult", results);
 		} catch ( Exception e ) {
 			e.printStackTrace();
 			fail("Failed to run TestLink API getLastExecutionResult() method.");
@@ -265,14 +359,23 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
 	public void testGetTestCasesByPlanName()
 	{
 		try {
-			TestLinkAPIResults results = api.getCasesForTestPlan(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME);
-			if ( results == null ) {
-				throw new Exception("Unable to run getCasesForTestPlan() method.");
+			Iterator versions = apiList.keySet().iterator();
+			while ( versions.hasNext() ) {
+				version = (String) versions.next();
+				api = apiList.get(version);
+				TestLinkAPIResults results = api.getCasesForTestPlan(JUNIT_STATIC_PROJECT,
+					JUNIT_STATIC_TEST_PLAN);
+				if ( results == null ) {
+					throw new Exception(
+						"Unable to run getCasesForTestPlan() method. Version=" + version);
+				}
+				printResults("testGetTestCasesByPlanName (Version=" + version + "):",
+					results);
 			}
-			printResults("testGetTestCasesByPlanName", results);
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			fail("Failed to run TestLink API getCasesForTestPlan() method.");
+			fail(
+				"Failed to run TestLink API getCasesForTestPlan() method. Version=" + version);
 		}
 	}
 	
@@ -283,35 +386,38 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
 	public void testGetTestCasesManual()
 	{
 		try {
-			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_PLAN_PROJECT);
-			if ( projectID == null ) {
-				throw new TestLinkAPIException(
-					"Could not get project identifier for " + JUNIT_PLAN_PROJECT);
+			Iterator versions = apiList.keySet().iterator();
+			while ( versions.hasNext() ) {
+				version = (String) versions.next();
+				api = apiList.get(version);
+				Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_STATIC_PROJECT);
+				if ( projectID == null ) {
+					throw new TestLinkAPIException(
+						"Could not get project identifier for " + JUNIT_STATIC_PROJECT
+						+ ". Version=" + version);
+				}
+				Integer planID = TestLinkAPIHelper.getPlanID(api, projectID,
+					JUNIT_STATIC_TEST_PLAN);
+				if ( planID == null ) {
+					throw new TestLinkAPIException(
+						"Could not get plan identifier for " + JUNIT_STATIC_TEST_PLAN + ". Version="
+						+ version);
+				}
+				TestLinkAPIResults results = api.getCasesForTestPlan(planID, null, null,
+					null, null, null, null, TESTCASE_EXECUTION_TYPE_MANUAL);
+				if ( results == null ) {
+					throw new Exception(
+						"Unable to run getCasesForTestPlan() method. Version=" + version);
+				}
+				printResults("testGetTestCasesPassedManual (Version=" + version + "):",
+					results);
 			}
-			Integer planID = TestLinkAPIHelper.getPlanID(api, projectID, JUNIT_PLAN_NAME);
-			if ( planID == null ) {
-				throw new TestLinkAPIException("Could not get plan identifier for " + JUNIT_PLAN_NAME);
-			}
-			TestLinkAPIResults results = api.getCasesForTestPlan(
-					planID,
-					null,
-					null,
-					null,
-					null,
-					null,
-					null,
-					TESTCASE_EXECUTION_TYPE_MANUAL
-					);
-			if ( results == null ) {
-				throw new Exception("Unable to run getCasesForTestPlan() method.");
-			}
-			printResults("testGetTestCasesPassedManual", results);
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			fail("Failed to run TestLink API getCasesForTestPlan() method.");
+			fail(
+				"Failed to run TestLink API getCasesForTestPlan() method. Version=" + version);
 		}
 	}
-	
 	
 	/**
 	 * Test method getLastExecutionResult
@@ -320,32 +426,35 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
 	public void testGetTestCasesAuto()
 	{
 		try {
-			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_PLAN_PROJECT);
-			if ( projectID == null ) {
-				throw new TestLinkAPIException(
-					"Could not get project identifier for " + JUNIT_PLAN_PROJECT);
+			Iterator versions = apiList.keySet().iterator();
+			while ( versions.hasNext() ) {
+				version = (String) versions.next();
+				api = apiList.get(version);
+				Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_STATIC_PROJECT);
+				if ( projectID == null ) {
+					throw new TestLinkAPIException(
+						"Could not get project identifier for " + JUNIT_STATIC_PROJECT
+						+ ". Version=" + version);
+				}
+				Integer planID = TestLinkAPIHelper.getPlanID(api, projectID,
+					JUNIT_STATIC_TEST_PLAN);
+				if ( planID == null ) {
+					throw new TestLinkAPIException(
+						"Could not get plan identifier for " + JUNIT_STATIC_TEST_PLAN);
+				}
+				TestLinkAPIResults results = api.getCasesForTestPlan(planID, null, null,
+					null, null, null, null, TESTCASE_EXECUTION_TYPE_AUTO);
+				if ( results == null ) {
+					throw new Exception(
+						"Unable to run getCasesForTestPlan() method. Version=" + version);
+				}
+				printResults("testGetTestCasesPassedAuto (Version=" + version + "):",
+					results);
 			}
-			Integer planID = TestLinkAPIHelper.getPlanID(api, projectID, JUNIT_PLAN_NAME);
-			if ( planID == null ) {
-				throw new TestLinkAPIException("Could not get plan identifier for " + JUNIT_PLAN_NAME);
-			}
-			TestLinkAPIResults results = api.getCasesForTestPlan(
-					planID,
-					null,
-					null,
-					null,
-					null,
-					null,
-                    null,
-                    TESTCASE_EXECUTION_TYPE_AUTO
-					);
-			if ( results == null ) {
-				throw new Exception("Unable to run getCasesForTestPlan() method.");
-			}
-			printResults("testGetTestCasesPassedAuto", results);
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			fail("Failed to run TestLink API getCasesForTestPlan() method.");
+			fail(
+				"Failed to run TestLink API getCasesForTestPlan() method. Version=" + version);
 		}
 	}
 	
@@ -356,35 +465,36 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
 	public void testGetTestCasesFailed()
 	{
 		try {
-			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_PLAN_PROJECT);
-			if ( projectID == null ) {
-				throw new TestLinkAPIException(
-					"Could not get project identifier for " + JUNIT_PLAN_PROJECT);
+			Iterator versions = apiList.keySet().iterator();
+			while ( versions.hasNext() ) {
+				version = (String) versions.next();
+				api = apiList.get(version);
+				Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_STATIC_PROJECT);
+				if ( projectID == null ) {
+					throw new TestLinkAPIException(
+						"Could not get project identifier for " + JUNIT_STATIC_PROJECT
+						+ " Version=" + version);
+				}
+				Integer planID = TestLinkAPIHelper.getPlanID(api, projectID,
+					JUNIT_STATIC_TEST_PLAN);
+				if ( planID == null ) {
+					throw new TestLinkAPIException(
+						"Could not get plan identifier for " + JUNIT_STATIC_TEST_PLAN);
+				}
+				TestLinkAPIResults results = api.getCasesForTestPlan(planID, null, null,
+					null, null, null, TEST_FAILED, null);
+				if ( results == null ) {
+					throw new Exception(
+						"Unable to run getCasesForTestPlan() method. Version=" + version);
+				}
+				printResults("testGetTestCasesFailed. (Version=" + version + "):", results);
 			}
-			Integer planID = TestLinkAPIHelper.getPlanID(api, projectID, JUNIT_PLAN_NAME);
-			if ( planID == null ) {
-				throw new TestLinkAPIException("Could not get plan identifier for " + JUNIT_PLAN_NAME);
-			}
-			TestLinkAPIResults results = api.getCasesForTestPlan(
-					planID,
-					null,
-					null,
-					null,
-					null,
-					null,
-					TEST_FAILED,
-					null
-					);
-			if ( results == null ) {
-				throw new Exception("Unable to run getCasesForTestPlan() method.");
-			}
-			printResults("testGetTestCasesFailed", results);
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			fail("Failed to run TestLink API getCasesForTestPlan() method.");
+			fail(
+				"Failed to run TestLink API getCasesForTestPlan() method. Version=" + version);
 		}
 	}
-	
 	
 	/**
 	 * Test method getLastExecutionResult
@@ -393,42 +503,46 @@ public class TestLinkAPIGetterTest implements TestLinkAPIConst, TestConst
 	public void testGetTestCasesPassed()
 	{
 		try {
-			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_PLAN_PROJECT);
-			if ( projectID == null ) {
-				throw new TestLinkAPIException(
-					"Could not get project identifier for " + JUNIT_PLAN_PROJECT);
+			Iterator versions = apiList.keySet().iterator();
+			while ( versions.hasNext() ) {
+				version = (String) versions.next();
+				api = apiList.get(version);
+				Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_STATIC_PROJECT);
+				if ( projectID == null ) {
+					throw new TestLinkAPIException(
+						"Could not get project identifier for " + JUNIT_STATIC_PROJECT);
+				}
+				Integer planID = TestLinkAPIHelper.getPlanID(api, projectID,
+					JUNIT_STATIC_TEST_PLAN);
+				if ( planID == null ) {
+					throw new TestLinkAPIException(
+						"Could not get plan identifier for " + JUNIT_STATIC_TEST_PLAN + ". Version="
+						+ version);
+				}
+				TestLinkAPIResults results = api.getCasesForTestPlan(planID, null, null,
+					null, null, null, TEST_PASSED, null);
+				if ( results == null ) {
+					throw new Exception(
+						"Unable to run getCasesForTestPlan() method. Version=" + version);
+				}
+				printResults("testGetTestCasesPassed. (Version=" + version + "):", results);
 			}
-			Integer planID = TestLinkAPIHelper.getPlanID(api, projectID, JUNIT_PLAN_NAME);
-			if ( planID == null ) {
-				throw new TestLinkAPIException("Could not get plan identifier for " + JUNIT_PLAN_NAME);
-			}
-			TestLinkAPIResults results = api.getCasesForTestPlan(
-					planID,
-					null,
-					null,
-					null,
-					null,
-					null,
-					TEST_PASSED,
-					null
-					);
-			if ( results == null ) {
-				throw new Exception("Unable to run getCasesForTestPlan() method.");
-			}
-			printResults("testGetTestCasesPassed", results);
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			fail("Failed to run TestLink API getCasesForTestPlan() method.");
+			fail(
+				"Failed to run TestLink API getCasesForTestPlan() method. Version=" + version);
 		}
 	}
 	
-	
-	private void printResults(String method, TestLinkAPIResults results) {
-		System.out.println("\n----------------------------------------------------------------");
+	private void printResults(
+		String method,
+		TestLinkAPIResults results)
+	{
+		System.out.println(
+			"\n----------------------------------------------------------------");
 		System.out.println(method + " results: ");
 		System.out.println(results.toString());
 	}
-	
 	
 }
 

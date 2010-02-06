@@ -70,7 +70,7 @@ public class TestPlanTest implements TestLinkAPIConst,
 	@Before
 	public void setUp() throws Exception
 	{
-		api = new TestLinkAPIClient(userKey, apiURL, true);
+		api = new TestLinkAPIClient(userKey, api182URL, true);
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class TestPlanTest implements TestLinkAPIConst,
 	public void testTestProject()
 	{
 		try {
-			TestProject proj = new TestProject(api, JUNIT_PLAN_PROJECT);
+			TestProject proj = new TestProject(api, JUNIT_STATIC_PROJECT);
 			System.out.println(proj.toString());
 		} catch ( Exception e ) {
 			e.printStackTrace();
@@ -102,7 +102,7 @@ public class TestPlanTest implements TestLinkAPIConst,
 	public void testTestPlanLoader()
 	{
 		try {
-			planLoader = new TestPlanLoader(JUNIT_PLAN_PROJECT, api);
+			planLoader = new TestPlanLoader(JUNIT_STATIC_PROJECT, api);
 			Map plans = planLoader.getPlans();
 			System.out.println(planLoader.toString());
 			System.out.println(plans.toString());

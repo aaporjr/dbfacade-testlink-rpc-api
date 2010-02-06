@@ -24,6 +24,7 @@ package testlink.api.java.client.junit.client;
 import static org.junit.Assert.*;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import org.junit.After;
 import org.junit.Before;
@@ -50,10 +51,13 @@ import testlink.api.java.client.junit.constants.TestConst;
  * @author Daniel Padilla
  *
  */
-public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
+public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestConst
 {	
 	// The api instance
-	private TestLinkAPIClient api;
+	public static HashMap<String,
+	TestLinkAPIClient> apiList = new HashMap();
+	public static TestLinkAPIClient api = null;
+	public static String version;
 	
 	/**
 	 * @throws java.lang.Exception
@@ -68,7 +72,7 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 	@Before
 	public void setUp() throws Exception
 	{
-		api = new TestLinkAPIClient(userKey, apiURL, true);
+		api = new TestLinkAPIClient(userKey, api182URL, true);
 	}
 
 	/**
@@ -85,8 +89,8 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 	public void testCreateProject()
 	{
 		try {
-			Integer id = api.createTestProject(JUNIT_PROJECT, JUNIT_PREFIX,
-				JUNIT_PROJECT + " created by JUnit test.");
+			Integer id = api.createTestProject(JUNIT_DYNAMIC_PROJECT, JUNIT_DYNAMIC_PREFIX,
+				JUNIT_DYNAMIC_PROJECT + " created by JUnit test.");
 			if ( id == null ) {
 				throw new Exception("Unable to create project.");
 			}
@@ -119,11 +123,11 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 	public void testCreateTestSuite()
 	{
 		try {
-			Integer id = api.createTestSuite(JUNIT_PROJECT, JUNIT_SUITE,
+			Integer id = api.createTestSuite(JUNIT_DYNAMIC_PROJECT, JUNIT_DYNAMIC_SUITE,
 				"This suite was created by a JUnit test.");
 			if ( id == null ) {
 				throw new Exception(
-					"Failed to create a test suite for project " + JUNIT_SUITE); 
+					"Failed to create a test suite for project " + JUNIT_DYNAMIC_SUITE); 
 			}
 		} catch ( Exception e ) {
 			e.printStackTrace();
@@ -140,16 +144,16 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 		try {
 			Integer id = api.createTestCase(
 				"admin",
-				JUNIT_PROJECT, 
-				JUNIT_SUITE,
-				JUNIT_CASE, 
+				JUNIT_DYNAMIC_PROJECT, 
+				JUNIT_DYNAMIC_SUITE,
+				JUNIT_DYNAMIC_CASE, 
 				"JUnit created summary.",
 				"JUnit created steps.",
 				"JUnit created expected results.", 
 				HIGH);
 			if ( id == null || id.intValue() == 0 ) {
 				throw new Exception(
-					"Failed to create a test case for project " + JUNIT_CASE); 
+					"Failed to create a test case for project " + JUNIT_DYNAMIC_CASE); 
 			}
 		} catch ( Exception e ) {
 			e.printStackTrace();
@@ -164,13 +168,13 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 	public void testCreateTestCaseWithAllParameters()
 	{
 		try {
-			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_PROJECT);
-			Integer suiteID = TestLinkAPIHelper.getSuiteID(api, JUNIT_PROJECT, JUNIT_SUITE);
+			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_DYNAMIC_PROJECT);
+			Integer suiteID = TestLinkAPIHelper.getSuiteID(api, JUNIT_DYNAMIC_PROJECT, JUNIT_DYNAMIC_SUITE);
 			Integer id = api.createTestCase(
 				"admin",
 				projectID, 
 				suiteID,
-				JUNIT_CASE, 
+				JUNIT_DYNAMIC_CASE, 
 				"JUnit created summary.",
 				"JUnit created steps.",
 				"JUnit created expected results.", 
@@ -182,7 +186,7 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 				HIGH);
 			if ( id == null ) {
 				throw new Exception(
-					"Failed to create a test case for project " + JUNIT_CASE); 
+					"Failed to create a test case for project " + JUNIT_DYNAMIC_CASE); 
 			}
 		} catch ( Exception e ) {
 			e.printStackTrace();
@@ -197,13 +201,13 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 	public void testCreateTestCaseWithAllParametersAuto()
 	{
 		try {
-			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_PROJECT);
-			Integer suiteID = TestLinkAPIHelper.getSuiteID(api, JUNIT_PROJECT, JUNIT_SUITE);
+			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_DYNAMIC_PROJECT);
+			Integer suiteID = TestLinkAPIHelper.getSuiteID(api, JUNIT_DYNAMIC_PROJECT, JUNIT_DYNAMIC_SUITE);
 			Integer id = api.createTestCase(
 				"admin",
 				projectID, 
 				suiteID,
-				JUNIT_CASE, 
+				JUNIT_DYNAMIC_CASE, 
 				"JUnit created summary.",
 				"JUnit created steps.",
 				"JUnit created expected results.", 
@@ -215,7 +219,7 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 				MEDIUM);
 			if ( id == null ) {
 				throw new Exception(
-					"Failed to create a test case for project " + JUNIT_CASE); 
+					"Failed to create a test case for project " + JUNIT_DYNAMIC_CASE); 
 			}
 		} catch ( Exception e ) {
 			e.printStackTrace();
@@ -237,26 +241,26 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 	{
 		try {
 
-			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_PLAN_PROJECT);
+			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_STATIC_PROJECT);
 			if ( projectID == null ) {
-				projectID = api.createTestProject(JUNIT_PLAN_PROJECT, "mytest",
-						JUNIT_PLAN_PROJECT + " created by JUnit test.");
+				projectID = api.createTestProject(JUNIT_STATIC_PROJECT, "mytest",
+						JUNIT_STATIC_PROJECT + " created by JUnit test.");
 			} 
 			
-			Integer suiteID = TestLinkAPIHelper.getSuiteID(api, JUNIT_PLAN_PROJECT, JUNIT_PLAN_SUITE);
+			Integer suiteID = TestLinkAPIHelper.getSuiteID(api, JUNIT_STATIC_PROJECT, JUNIT_STATIC_SUITE);
 			if ( suiteID == null ) {
-				suiteID = api.createTestSuite(JUNIT_PLAN_PROJECT, JUNIT_PLAN_SUITE,
+				suiteID = api.createTestSuite(JUNIT_STATIC_PROJECT, JUNIT_STATIC_SUITE,
 				"This suite was created by a JUnit test.");
 			}
 			
-			Integer caseID = TestLinkAPIHelper.getCaseIDByName(api, projectID, suiteID, JUNIT_PLAN_CASE);
+			Integer caseID = TestLinkAPIHelper.getCaseIDByName(api, projectID, suiteID, JUNIT_STATIC_CASE);
 			
 			if ( caseID == null ) {
 				caseID = api.createTestCase(
 					"admin",
-					JUNIT_PLAN_PROJECT, 
-					JUNIT_PLAN_SUITE,
-					JUNIT_PLAN_CASE, 
+					JUNIT_STATIC_PROJECT, 
+					JUNIT_STATIC_SUITE,
+					JUNIT_STATIC_CASE, 
 					"JUnit created summary.",
 					"JUnit created steps.",
 					"JUnit created expected results.", 
@@ -267,7 +271,7 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 			 * TestLink API does not offer test plan creation so check that
 			 * the test plan has been manually created for future testing.
 			 */
-			Integer planID = TestLinkAPIHelper.getPlanID(api, projectID, JUNIT_PLAN_NAME);
+			Integer planID = TestLinkAPIHelper.getPlanID(api, projectID, JUNIT_STATIC_TEST_PLAN);
 			if ( planID == null || planID.intValue() == 0 ) {
 				throw new TestLinkAPIException("The JUnit test plan was not found.");
 			}
@@ -284,8 +288,8 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 	public void testCreateBuild()
 	{
 		try {
-			Integer id = api.createBuild(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME, JUNIT_BUILD,
-				JUNIT_BUILD + " created by JUnit test.");
+			Integer id = api.createBuild(JUNIT_STATIC_PROJECT, JUNIT_STATIC_TEST_PLAN, JUNIT_DYNAMIC_BUILD,
+				JUNIT_DYNAMIC_BUILD + " created by JUnit test.");
 			if ( id == null ) {
 				throw new Exception("Unable to create project.");
 			}
@@ -303,9 +307,9 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 		try {
 			Integer id = api.createTestCase(
 					"admin",
-					JUNIT_PLAN_PROJECT, 
-					JUNIT_PLAN_SUITE,
-					JUNIT_CASE, 
+					JUNIT_STATIC_PROJECT, 
+					JUNIT_STATIC_SUITE,
+					JUNIT_DYNAMIC_CASE, 
 					"JUnit created summary.",
 					"JUnit created steps.",
 					"JUnit created expected results.", 
@@ -313,7 +317,7 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 			if ( id == null ) {
 				throw new Exception("Unable to add test case to test plan suite.");
 			}
-			TestLinkAPIResults added = api.addTestCaseToTestPlan(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME, JUNIT_CASE);
+			TestLinkAPIResults added = api.addTestCaseToTestPlan(JUNIT_STATIC_PROJECT, JUNIT_STATIC_TEST_PLAN, JUNIT_DYNAMIC_CASE);
 			if ( added == null ) {
 				throw new Exception("Unable to add test case to test plan.");
 			}
@@ -331,9 +335,9 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 		try {
 			Integer id = api.createTestCase(
 					"admin",
-					JUNIT_PLAN_PROJECT, 
-					JUNIT_PLAN_SUITE,
-					JUNIT_PLAN_CASE, 
+					JUNIT_STATIC_PROJECT, 
+					JUNIT_STATIC_SUITE,
+					JUNIT_STATIC_CASE, 
 					"JUnit created summary.",
 					"JUnit created steps.",
 					"JUnit created expected results.", 
@@ -341,7 +345,7 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 			if ( id == null ) {
 				throw new Exception("Unable to add test case to test plan suite.");
 			}
-			TestLinkAPIResults added = api.addTestCaseToTestPlan(JUNIT_PLAN_PROJECT, JUNIT_PLAN_NAME, JUNIT_PLAN_CASE);
+			TestLinkAPIResults added = api.addTestCaseToTestPlan(JUNIT_STATIC_PROJECT, JUNIT_STATIC_TEST_PLAN, JUNIT_STATIC_CASE);
 			if ( added == null ) {
 				throw new Exception("Unable to add test case to test plan.");
 			}
@@ -360,9 +364,9 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 	{
 		try {
 			TestLinkAPIResults results = api.reportTestCaseResult(
-					JUNIT_PLAN_PROJECT,
-					JUNIT_PLAN_NAME,
-					JUNIT_CASE, 
+					JUNIT_STATIC_PROJECT,
+					JUNIT_STATIC_TEST_PLAN,
+					JUNIT_DYNAMIC_CASE, 
 					null,
 					"The test was by JUnit run on " + new Date().toString(),
 					TEST_PASSED);
@@ -382,9 +386,9 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 	{
 		try {
 			TestLinkAPIResults results = api.reportTestCaseResult(
-					JUNIT_PLAN_PROJECT,
-					JUNIT_PLAN_NAME,
-					JUNIT_PLAN_CASE, 
+					JUNIT_STATIC_PROJECT,
+					JUNIT_STATIC_TEST_PLAN,
+					JUNIT_STATIC_CASE, 
 					null,
 					"The test was by JUnit run on " + new Date().toString(),
 					TEST_PASSED);
@@ -405,12 +409,12 @@ public class TestLinkAPICreatorsTest implements TestLinkAPIConst, TestConst
 	public void testReportTestCaseResultByBuild()
 	{
 		try {
-			String caseVisibleID = TestLinkAPIHelper.getCaseVisibleID(api, JUNIT_PLAN_PROJECT, JUNIT_CASE);
+			String caseVisibleID = TestLinkAPIHelper.getCaseVisibleID(api, JUNIT_STATIC_PROJECT, JUNIT_DYNAMIC_CASE);
 			TestLinkAPIResults results = api.reportTestCaseResult(
-					JUNIT_PLAN_PROJECT,
-					JUNIT_PLAN_NAME,
+					JUNIT_STATIC_PROJECT,
+					JUNIT_STATIC_TEST_PLAN,
 					caseVisibleID, 
-					JUNIT_BUILD,
+					JUNIT_DYNAMIC_BUILD,
 					"The test was by JUnit run on " + new Date().toString(),
 					TEST_PASSED);
 			if ( results == null ) {
