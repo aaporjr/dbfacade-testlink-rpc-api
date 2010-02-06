@@ -1,4 +1,4 @@
-#summary The methods that are avaiable in the TestLink API Java Client.
+#summary The methods that are available in the TestLink API Java Client.
 
 = Introduction =
 
