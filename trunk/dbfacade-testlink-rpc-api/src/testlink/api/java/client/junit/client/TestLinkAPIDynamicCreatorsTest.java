@@ -21,10 +21,9 @@
 package testlink.api.java.client.junit.client;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.util.Date;
-import java.util.HashMap;
 
 import org.junit.After;
 import org.junit.Before;
@@ -53,11 +52,7 @@ import testlink.api.java.client.junit.constants.TestConst;
  */
 public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestConst
 {	
-	// The api instance
-	public static HashMap<String,
-	TestLinkAPIClient> apiList = new HashMap();
-	public static TestLinkAPIClient api = null;
-	public static String version;
+	private static VersionListTestRunner runner;
 	
 	/**
 	 * @throws java.lang.Exception
@@ -72,7 +67,7 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 	@Before
 	public void setUp() throws Exception
 	{
-		api = new TestLinkAPIClient(userKey, api182URL, true);
+		runner =  new VersionListTestRunner();
 	}
 
 	/**
@@ -88,14 +83,22 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 	@Test
 	public void testCreateProject()
 	{
-		try {
+		String method = "testCreateProject()";
+		TestLinkTest test = new TestLinkTest() {
+			public void runTest(String version, TestLinkAPIClient api) throws Exception {
 			Integer id = api.createTestProject(JUNIT_DYNAMIC_PROJECT, JUNIT_DYNAMIC_PREFIX,
 				JUNIT_DYNAMIC_PROJECT + " created by JUnit test.");
 			if ( id == null ) {
 				throw new Exception("Unable to create project.");
 			}
-		} catch ( Exception e ) {
-			fail("Failed to create a project.");
+			}
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure()) {
+			fail("Failed to run TestLink API " + method + " method. Version="
+					+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -105,14 +108,22 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 	@Test
 	public void testGetProjects()
 	{
-		try {
+		String method = "testGetProjects()";
+		TestLinkTest test = new TestLinkTest() {
+			public void runTest(String version, TestLinkAPIClient api) throws Exception {
 			TestLinkAPIResults results = api.getProjects();
 			if ( results == null || results.size() == 0 ) {
 				throw new Exception(
 					"Failed to get at least the project that would have been created by the test.");
 			}
-		} catch ( Exception e ) {
-			fail("Establishing a connection caused a failure");
+			}
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure()) {
+			fail("Failed to run TestLink API " + method + " method. Version="
+					+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -122,16 +133,23 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 	@Test
 	public void testCreateTestSuite()
 	{
-		try {
+		String method = "testCreateTestSuite()";
+		TestLinkTest test = new TestLinkTest() {
+			public void runTest(String version, TestLinkAPIClient api) throws Exception {
 			Integer id = api.createTestSuite(JUNIT_DYNAMIC_PROJECT, JUNIT_DYNAMIC_SUITE,
 				"This suite was created by a JUnit test.");
 			if ( id == null ) {
 				throw new Exception(
 					"Failed to create a test suite for project " + JUNIT_DYNAMIC_SUITE); 
 			}
-		} catch ( Exception e ) {
-			e.printStackTrace();
-			fail("Failed to create a test suite.");
+			}
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure()) {
+			fail("Failed to run TestLink API " + method + " method. Version="
+					+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -141,7 +159,9 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 	@Test
 	public void testCreateTestCase()
 	{
-		try {
+		String method = "testCreateTestCase()";
+		TestLinkTest test = new TestLinkTest() {
+			public void runTest(String version, TestLinkAPIClient api) throws Exception {
 			Integer id = api.createTestCase(
 				"admin",
 				JUNIT_DYNAMIC_PROJECT, 
@@ -155,9 +175,14 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 				throw new Exception(
 					"Failed to create a test case for project " + JUNIT_DYNAMIC_CASE); 
 			}
-		} catch ( Exception e ) {
-			e.printStackTrace();
-			fail("Failed to create a test suite.");
+			}
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure()) {
+			fail("Failed to run TestLink API " + method + " method. Version="
+					+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -167,7 +192,9 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 	@Test
 	public void testCreateTestCaseWithAllParameters()
 	{
-		try {
+		String method = "testCreateTestCaseWithAllParameters()";
+		TestLinkTest test = new TestLinkTest() {
+			public void runTest(String version, TestLinkAPIClient api) throws Exception {
 			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_DYNAMIC_PROJECT);
 			Integer suiteID = TestLinkAPIHelper.getSuiteID(api, JUNIT_DYNAMIC_PROJECT, JUNIT_DYNAMIC_SUITE);
 			Integer id = api.createTestCase(
@@ -188,9 +215,14 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 				throw new Exception(
 					"Failed to create a test case for project " + JUNIT_DYNAMIC_CASE); 
 			}
-		} catch ( Exception e ) {
-			e.printStackTrace();
-			fail("Failed to create a test suite.");
+			}
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure()) {
+			fail("Failed to run TestLink API " + method + " method. Version="
+					+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -200,7 +232,9 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 	@Test
 	public void testCreateTestCaseWithAllParametersAuto()
 	{
-		try {
+		String method = "testCreateTestCaseWithAllParametersAuto()";
+		TestLinkTest test = new TestLinkTest() {
+			public void runTest(String version, TestLinkAPIClient api) throws Exception {
 			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_DYNAMIC_PROJECT);
 			Integer suiteID = TestLinkAPIHelper.getSuiteID(api, JUNIT_DYNAMIC_PROJECT, JUNIT_DYNAMIC_SUITE);
 			Integer id = api.createTestCase(
@@ -221,9 +255,14 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 				throw new Exception(
 					"Failed to create a test case for project " + JUNIT_DYNAMIC_CASE); 
 			}
-		} catch ( Exception e ) {
-			e.printStackTrace();
-			fail("Failed to create a test suite.");
+			}
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure()) {
+			fail("Failed to run TestLink API " + method + " method. Version="
+					+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -239,7 +278,9 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 	@Test
 	public void testCreateTestPlan()
 	{
-		try {
+		String method = "testCreateTestPlan()";
+		TestLinkTest test = new TestLinkTest() {
+			public void runTest(String version, TestLinkAPIClient api) throws Exception {
 
 			Integer projectID = TestLinkAPIHelper.getProjectID(api, JUNIT_STATIC_PROJECT);
 			if ( projectID == null ) {
@@ -275,9 +316,14 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 			if ( planID == null || planID.intValue() == 0 ) {
 				throw new TestLinkAPIException("The JUnit test plan was not found.");
 			}
-		} catch ( Exception e ) {
-			e.printStackTrace();
-			fail("Failed to check test plan.");
+			}
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure()) {
+			fail("Failed to run TestLink API " + method + " method. Version="
+					+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -287,14 +333,22 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 	@Test
 	public void testCreateBuild()
 	{
-		try {
+		String method = "testCreateBuild()";
+		TestLinkTest test = new TestLinkTest() {
+			public void runTest(String version, TestLinkAPIClient api) throws Exception {
 			Integer id = api.createBuild(JUNIT_STATIC_PROJECT, JUNIT_STATIC_TEST_PLAN, JUNIT_DYNAMIC_BUILD,
 				JUNIT_DYNAMIC_BUILD + " created by JUnit test.");
 			if ( id == null ) {
 				throw new Exception("Unable to create project.");
 			}
-		} catch ( Exception e ) {
-			fail("Failed to create a build.");
+			}
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure()) {
+			fail("Failed to run TestLink API " + method + " method. Version="
+					+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -304,7 +358,9 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 	@Test
 	public void testAddTestCaseToTestPlan()
 	{
-		try {
+		String method = "testAddTestCaseToTestPlan()";
+		TestLinkTest test = new TestLinkTest() {
+			public void runTest(String version, TestLinkAPIClient api) throws Exception {
 			Integer id = api.createTestCase(
 					"admin",
 					JUNIT_STATIC_PROJECT, 
@@ -321,8 +377,14 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 			if ( added == null ) {
 				throw new Exception("Unable to add test case to test plan.");
 			}
-		} catch ( Exception e ) {
-			fail("Failed to create a build.");
+			}
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure()) {
+			fail("Failed to run TestLink API " + method + " method. Version="
+					+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -332,7 +394,9 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 	@Test
 	public void testAddTestPlanCaseToTestPlan()
 	{
-		try {
+		String method = "testAddTestPlanCaseToTestPlan()";
+		TestLinkTest test = new TestLinkTest() {
+			public void runTest(String version, TestLinkAPIClient api) throws Exception {
 			Integer id = api.createTestCase(
 					"admin",
 					JUNIT_STATIC_PROJECT, 
@@ -349,9 +413,14 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 			if ( added == null ) {
 				throw new Exception("Unable to add test case to test plan.");
 			}
-		} catch ( Exception e ) {
-			e.printStackTrace();
-			fail("Failed to create a build.");
+			}
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure()) {
+			fail("Failed to run TestLink API " + method + " method. Version="
+					+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -362,7 +431,9 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 	@Test
 	public void testReportTestCaseResult()
 	{
-		try {
+		String method = "testReportTestCaseResult()";
+		TestLinkTest test = new TestLinkTest() {
+			public void runTest(String version, TestLinkAPIClient api) throws Exception {
 			TestLinkAPIResults results = api.reportTestCaseResult(
 					JUNIT_STATIC_PROJECT,
 					JUNIT_STATIC_TEST_PLAN,
@@ -373,8 +444,14 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 			if ( results == null ) {
 				throw new Exception("Unable to add test case to test plan suite.");
 			}
-		} catch ( Exception e ) {
-			fail("Failed to create a build.");
+			}
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure()) {
+			fail("Failed to run TestLink API " + method + " method. Version="
+					+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -384,7 +461,9 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 	@Test
 	public void testReportTestPlanCaseResult()
 	{
-		try {
+		String method = "testReportTestPlanCaseResult()";
+		TestLinkTest test = new TestLinkTest() {
+			public void runTest(String version, TestLinkAPIClient api) throws Exception {
 			TestLinkAPIResults results = api.reportTestCaseResult(
 					JUNIT_STATIC_PROJECT,
 					JUNIT_STATIC_TEST_PLAN,
@@ -395,9 +474,14 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 			if ( results == null ) {
 				throw new Exception("Unable to add test case to test plan suite.");
 			}
-		} catch ( Exception e ) {
-			e.printStackTrace();
-			fail("Failed to create a build.");
+			}
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure()) {
+			fail("Failed to run TestLink API " + method + " method. Version="
+					+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -408,7 +492,9 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 	@Test
 	public void testReportTestCaseResultByBuild()
 	{
-		try {
+		String method = "testReportTestCaseResultByBuild()";
+		TestLinkTest test = new TestLinkTest() {
+			public void runTest(String version, TestLinkAPIClient api) throws Exception {
 			String caseVisibleID = TestLinkAPIHelper.getCaseVisibleID(api, JUNIT_STATIC_PROJECT, JUNIT_DYNAMIC_CASE);
 			TestLinkAPIResults results = api.reportTestCaseResult(
 					JUNIT_STATIC_PROJECT,
@@ -420,9 +506,15 @@ public class TestLinkAPIDynamicCreatorsTest implements TestLinkAPIConst, TestCon
 			if ( results == null ) {
 				throw new Exception("Unable to add test case to test plan suite.");
 			}
-		} catch ( Exception e ) {
-			fail("Failed to create a build.");
-		}
+			}
+			};
+
+			// Run test and record failure if it happens
+			RunExceptionResults results = runner.runTest(method, test);
+			if ( results == null || results.containsFailure()) {
+				fail("Failed to run TestLink API " + method + " method. Version="
+						+ ((results == null) ? null : results.getLatestFailedVersion()));
+			}
 	}
 	
 	

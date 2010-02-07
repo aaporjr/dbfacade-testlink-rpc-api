@@ -23,8 +23,6 @@ package testlink.api.java.client.junit.client;
 
 import static org.junit.Assert.fail;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.After;
@@ -52,11 +50,7 @@ import testlink.api.java.client.junit.constants.TestConst;
 public class TestLinkAPIRunMeFirstTest implements TestLinkAPIConst,
 	TestConst
 {	
-	// The api instance
-	public static HashMap<String,
-		TestLinkAPIClient> apiList = new HashMap();
-	public static TestLinkAPIClient api = null;
-	public static String version;
+	private static VersionListTestRunner runner;
 	
 	/**
 	 * @throws java.lang.Exception
@@ -71,12 +65,7 @@ public class TestLinkAPIRunMeFirstTest implements TestLinkAPIConst,
 	@Before
 	public void setUp() throws Exception
 	{
-		if ( apiList.size() < 1 ) {
-			TestLinkAPIClient api = new TestLinkAPIClient(userKey, api182URL, true);
-			apiList.put("TestLink1.8.2", api);
-			api = new TestLinkAPIClient(userKey, api185URL, true);
-			apiList.put("TestLink1.8.5", api);
-		}
+		runner = new VersionListTestRunner();
 	}
 
 	/**
@@ -92,20 +81,27 @@ public class TestLinkAPIRunMeFirstTest implements TestLinkAPIConst,
 	@Test
 	public void testAbout()
 	{
-		try {
-			Iterator versions = apiList.keySet().iterator();
-			while ( versions.hasNext() ) {
-				version = (String) versions.next();
-				api = apiList.get(version);
+		String method = "testAbout()";
+		TestLinkTest test = new TestLinkTest()
+		{
+			public void runTest(
+				String version,
+				TestLinkAPIClient api) throws Exception
+			{
 				TestLinkAPIResults results = api.about();
 				if ( results == null ) {
 					throw new Exception("Unable to run about method. Version=" + version);
 				}
 				printResults("testAbout (" + version + ") ", results);
 			}
-		} catch ( Exception e ) {
-			e.printStackTrace();
-			fail("Failed to run TestLink API about method.");
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure() ) {
+			fail(
+				"Failed to run TestLink API " + method + " method. Version="
+				+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -115,11 +111,13 @@ public class TestLinkAPIRunMeFirstTest implements TestLinkAPIConst,
 	@Test
 	public void createStandardTestProject()
 	{
-		try {
-			Iterator versions = apiList.keySet().iterator();
-			while ( versions.hasNext() ) {
-				version = (String) versions.next();
-				api = apiList.get(version);
+		String method = "createStandardTestProject()";
+		TestLinkTest test = new TestLinkTest()
+		{
+			public void runTest(
+				String version,
+				TestLinkAPIClient api) throws Exception
+			{
 				
 				boolean createProject = false;
 				try {
@@ -140,9 +138,14 @@ public class TestLinkAPIRunMeFirstTest implements TestLinkAPIConst,
 					}
 				}
 			}
-		} catch ( Exception e ) {
-			e.printStackTrace();
-			fail("Failed to create a project. Version=" + version);
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure() ) {
+			fail(
+				"Failed to run TestLink API " + method + " method. Version="
+				+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -152,11 +155,13 @@ public class TestLinkAPIRunMeFirstTest implements TestLinkAPIConst,
 	@Test
 	public void createStandardTestSuite()
 	{
-		try {
-			Iterator versions = apiList.keySet().iterator();
-			while ( versions.hasNext() ) {
-				version = (String) versions.next();
-				api = apiList.get(version);
+		String method = "createStandardTestSuite()";
+		TestLinkTest test = new TestLinkTest()
+		{
+			public void runTest(
+				String version,
+				TestLinkAPIClient api) throws Exception
+			{
 				
 				boolean createSuite = false;
 				try {
@@ -179,9 +184,14 @@ public class TestLinkAPIRunMeFirstTest implements TestLinkAPIConst,
 					}
 				}
 			}
-		} catch ( Exception e ) {
-			e.printStackTrace();
-			fail("Failed to create a test suite. Version=" + version);
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure() ) {
+			fail(
+				"Failed to run TestLink API " + method + " method. Version="
+				+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -191,11 +201,13 @@ public class TestLinkAPIRunMeFirstTest implements TestLinkAPIConst,
 	@Test
 	public void createStandardTestCase()
 	{
-		try {
-			Iterator versions = apiList.keySet().iterator();
-			while ( versions.hasNext() ) {
-				version = (String) versions.next();
-				api = apiList.get(version);
+		String method = "createStandardTestCase()";
+		TestLinkTest test = new TestLinkTest()
+		{
+			public void runTest(
+				String version,
+				TestLinkAPIClient api) throws Exception
+			{
 			
 				boolean createTestCase = false;
 				try {
@@ -219,9 +231,14 @@ public class TestLinkAPIRunMeFirstTest implements TestLinkAPIConst,
 					}
 				}
 			}
-		} catch ( Exception e ) {
-			e.printStackTrace();
-			fail("Failed to create a test case. Version=" + version);
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure() ) {
+			fail(
+				"Failed to run TestLink API " + method + " method. Version="
+				+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -237,11 +254,13 @@ public class TestLinkAPIRunMeFirstTest implements TestLinkAPIConst,
 	@Test
 	public void doesStandardTestPlanExist()
 	{
-		try {
-			Iterator versions = apiList.keySet().iterator();
-			while ( versions.hasNext() ) {
-				version = (String) versions.next();
-				api = apiList.get(version);
+		String method = "doesStandardTestPlanExist()";
+		TestLinkTest test = new TestLinkTest()
+		{
+			public void runTest(
+				String version,
+				TestLinkAPIClient api) throws Exception
+			{
 				Integer projectID = TestLinkAPIHelper.getProjectID(api,
 					JUNIT_STATIC_PROJECT);
 				Integer planID = TestLinkAPIHelper.getPlanID(api, projectID,
@@ -252,9 +271,15 @@ public class TestLinkAPIRunMeFirstTest implements TestLinkAPIConst,
 						+ "' was not found. Version=" + version);
 				}
 			}
-		} catch ( Exception e ) {
-			e.printStackTrace();
-			fail("Failed to check test plan. Version=" + version);
+		
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure() ) {
+			fail(
+				"Failed to run TestLink API " + method + " method. Version="
+				+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}
 	
@@ -264,42 +289,35 @@ public class TestLinkAPIRunMeFirstTest implements TestLinkAPIConst,
 	@Test
 	public void testAddTestCaseToTestPlan()
 	{
-		try {
-			String lastVersion=null;
-			boolean failed = false;
-			Iterator versions = apiList.keySet().iterator();
-			while ( versions.hasNext() ) {
-				try {
-					version = (String) versions.next();
-					api = apiList.get(version);
-					Integer id = api.createTestCase("admin", JUNIT_STATIC_PROJECT, 
-						JUNIT_STATIC_SUITE, JUNIT_DYNAMIC_CASE, "JUnit created summary.",
-						"JUnit created steps.", "JUnit created expected results.", HIGH);
-					if ( id == null ) {
-						throw new Exception(
-							"Unable to add test case to test plan suite. Version=" + version);
-					}
-					TestLinkAPIResults added = api.addTestCaseToTestPlan(
-						JUNIT_STATIC_PROJECT, JUNIT_STATIC_TEST_PLAN, JUNIT_DYNAMIC_CASE);
-					if ( added == null ) {
-						throw new Exception(
-							"Unable to add test case to test plan. Version=" + version);
-					}
-				} catch ( Exception e ) {
-					lastVersion = version;
-					e.printStackTrace();
-					failed = true;
+		String method = "testAddTestCaseToTestPlan()";
+		TestLinkTest test = new TestLinkTest()
+		{
+			public void runTest(
+				String version,
+				TestLinkAPIClient api) throws Exception
+			{
+				Integer id = api.createTestCase("admin", JUNIT_STATIC_PROJECT, 
+					JUNIT_STATIC_SUITE, JUNIT_DYNAMIC_CASE, "JUnit created summary.",
+					"JUnit created steps.", "JUnit created expected results.", HIGH);
+				if ( id == null ) {
+					throw new Exception(
+						"Unable to add test case to test plan suite. Version=" + version);
+				}
+				TestLinkAPIResults added = api.addTestCaseToTestPlan(JUNIT_STATIC_PROJECT,
+					JUNIT_STATIC_TEST_PLAN, JUNIT_DYNAMIC_CASE);
+				if ( added == null ) {
+					throw new Exception(
+						"Unable to add test case to test plan. Version=" + version);
 				}
 			}
-			
-			if ( failed ) {
-				throw new Exception(
-					"Unable to add test case to test plan. Last version to fail="
-						+ lastVersion);
-			}
-		} catch ( Exception e ) {
-			e.printStackTrace();
-			fail("Failed to create a build. Version=" + version);
+		};
+
+		// Run test and record failure if it happens
+		RunExceptionResults results = runner.runTest(method, test);
+		if ( results == null || results.containsFailure() ) {
+			fail(
+				"Failed to run TestLink API " + method + " method. Version="
+				+ ((results == null) ? null : results.getLatestFailedVersion()));
 		}
 	}	
 	
