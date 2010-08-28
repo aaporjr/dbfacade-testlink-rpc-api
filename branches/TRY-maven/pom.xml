@@ -1,0 +1,85 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<groupId>testlink.api</groupId>
+	<artifactId>dbfacade-testlink-rpc-api</artifactId>
+	<version>1.0</version>
+	
+	<developers>
+		<developer>
+			<name>Daniel Padilla</name>
+		</developer>
+		<developer>
+			<name>Bruno P. "Kinow" Kinoshita</name>
+		</developer>
+	</developers>
+	
+	<scm>
+		<connection>http://dbfacade-testlink-rpc-api.googlecode.com/svn/trunk/</connection>
+		<developerConnection>https://dbfacade-testlink-rpc-api.googlecode.com/svn/trunk/</developerConnection>
+		<url>http://code.google.com/p/dbfacade-testlink-rpc-api/source/checkout</url>
+		<tag>HEAD</tag>
+	</scm>
+	
+	<build>
+		
+		<sourceDirectory>
+			${basedir}/src/main/java
+		</sourceDirectory>
+		
+		<testSourceDirectory>
+			${basedir}/src/main/test
+		</testSourceDirectory>
+	
+		<plugins>
+			<plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-compiler-plugin</artifactId>
+		        <configuration>
+					<!-- http://maven.apache.org/plugins/maven-compiler-plugin/ -->
+					<source>1.5</source>
+					<target>1.5</target>
+        		</configuration>
+      		</plugin>
+		</plugins>
+	</build>
+	
+	<dependencies>	
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>ws-commons-util</groupId>
+			<artifactId>ws-commons-util</artifactId>
+			<version>1.0.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlrpc</groupId>
+			<artifactId>xmlrpc-client</artifactId>
+			<version>3.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlrpc</groupId>
+			<artifactId>xmlrpc-common</artifactId>
+			<version>3.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+	
+</project>
