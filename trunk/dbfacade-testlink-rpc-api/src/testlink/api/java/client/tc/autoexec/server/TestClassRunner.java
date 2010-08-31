@@ -28,10 +28,7 @@ import testlink.api.java.client.TestLinkAPIClient;
 import testlink.api.java.client.tc.autoexec.TestPlanPrepare;
 
 /**
- * Runs the ExecutionServer using the old class preparation
- * interface.
- * 
- * Th
+ * The class in in progress and not yet developed.
  * 
  * @author Daniel Padilla
  *
@@ -47,14 +44,7 @@ public class TestClassRunner
 	public static final String P_OPTIONAL_EXTERNAL_CONFIG_PATH = "-tlExternalPath";
 	public static final String P_PORT = "-tlPort";
 
-	/**
-     * The method uses the old interface for preparing TestLink cases so that they could be run automatically. 
-     * Look at TestClassRunner.java for the new way of running test classes that use annotations.
-     *
-     * @deprecated This method will removed in the near future.
-     */
 
-	@Deprecated
 	public static void main(
 		String[] args) throws Exception
 	{
