@@ -36,14 +36,14 @@ import testlink.api.java.client.tc.autoexec.TestPlanPrepare;
  * @author Daniel Padilla
  *
  */
-public class ExecutionRunner
+public class TestClassRunner
 {
 	public static final String P_REPORT_RESULTS_AFTER_TEST = "-tlReportflag";
 	public static final String P_DEFAULT_PROJECT_NAME = "-tlProject";
 	public static final String P_DEV_KEY = "-tlDevKey";
 	public static final String P_TESTLINK_URL = "-tlURL";
 	public static final String P_TEST_CASE_CREATION_USER = "-tlUser";
-	public static final String P_DEFAULT_TESTPLAN_PREP_CLASS = "-tlPrepClass";
+	public static final String P_TESTLINK_TEST_CLASS = "-tlTestClass";
 	public static final String P_OPTIONAL_EXTERNAL_CONFIG_PATH = "-tlExternalPath";
 	public static final String P_PORT = "-tlPort";
 
@@ -66,13 +66,13 @@ public class ExecutionRunner
 			int port = new Integer((String) argMap.get(P_PORT)).intValue();
 			String devKey = (String) argMap.get(P_DEV_KEY);
 			String url = (String) argMap.get(P_TESTLINK_URL) + "/lib/api/xmlrpc.php";
-			String prepClass = (String) argMap.get(P_DEFAULT_TESTPLAN_PREP_CLASS);
+			String testClass = (String) argMap.get(P_TESTLINK_TEST_CLASS);
 			String defaultTestCaseUser = (String) argMap.get(P_TEST_CASE_CREATION_USER);
 			String externalDir = (String) argMap.get(P_OPTIONAL_EXTERNAL_CONFIG_PATH);
 			
 			
 			TestLinkAPIClient apiClient = new TestLinkAPIClient(devKey, url);
-			TestPlanPrepare prep = (TestPlanPrepare) Class.forName(prepClass).newInstance();		
+			TestPlanPrepare prep = (TestPlanPrepare) Class.forName(testClass).newInstance();		
 					
 			ExecutionServer server = new ExecutionServer(
 					port,
@@ -101,9 +101,9 @@ public class ExecutionRunner
 					i++;
 					argMap.put(P_DEFAULT_PROJECT_NAME, args[i]);
 				}
-				if ( args[i].equals(P_DEFAULT_TESTPLAN_PREP_CLASS) ) {
+				if ( args[i].equals(P_TESTLINK_TEST_CLASS) ) {
 					i++;
-					argMap.put(P_DEFAULT_TESTPLAN_PREP_CLASS, args[i]);
+					argMap.put(P_TESTLINK_TEST_CLASS, args[i]);
 				}
 				if ( args[i].equals(P_DEV_KEY) ) {
 					i++;
