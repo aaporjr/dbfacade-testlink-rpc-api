@@ -26,6 +26,7 @@ import java.util.Map;
 
 import testlink.api.java.client.TestLinkAPIClient;
 import testlink.api.java.client.tc.autoexec.TestPlanPrepare;
+import testlink.api.java.client.tc.autoexec.annotation.handlers.LoadAnnotatedTestClass;
 
 /**
  * The class in in progress and not yet developed.
@@ -62,7 +63,7 @@ public class TestClassRunner
 			
 			
 			TestLinkAPIClient apiClient = new TestLinkAPIClient(devKey, url);
-			TestPlanPrepare prep = (TestPlanPrepare) Class.forName(testClass).newInstance();		
+			TestPlanPrepare prep = new LoadAnnotatedTestClass(testClass);		
 					
 			ExecutionServer server = new ExecutionServer(
 					port,
