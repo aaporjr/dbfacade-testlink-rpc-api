@@ -11,10 +11,10 @@ import testlink.api.java.client.tc.autoexec.TestPlanPrepare;
  * @author DPadilla
  *
  */
-public class LoadAnnotatedTestClass implements TestPlanPrepare {
+public class AnnotatedTestClassPreparator implements TestPlanPrepare {
 	private String testClass;
 	
-	public LoadAnnotatedTestClass(String testClass) {
+	public AnnotatedTestClassPreparator(String testClass) {
 		this.testClass = testClass;
 	}
 	

@@ -26,6 +26,7 @@ import java.util.Map;
 
 import testlink.api.java.client.TestLinkAPIClient;
 import testlink.api.java.client.tc.autoexec.TestPlanPrepare;
+import testlink.api.java.client.tc.autoexec.annotation.handlers.AnnotatedTestClassPreparator;
 
 /**
  * Runs the ExecutionServer using the old class preparation
@@ -43,18 +44,22 @@ public class ExecutionRunner
 	public static final String P_DEV_KEY = "-tlDevKey";
 	public static final String P_TESTLINK_URL = "-tlURL";
 	public static final String P_TEST_CASE_CREATION_USER = "-tlUser";
-	public static final String P_DEFAULT_TESTPLAN_PREP_CLASS = "-tlPrepClass";
+	public static final String P_TESTLINK_TEST_CLASS = "-tlTestClass";
+	public static final String P_TESTLINK_TEST_CLASS_TYPE = "-tlTestClassType";
 	public static final String P_OPTIONAL_EXTERNAL_CONFIG_PATH = "-tlExternalPath";
 	public static final String P_PORT = "-tlPort";
+	public static final String CLASS_TYPE_ANNOTATION = "Test Class that uses TestLink annotation";
+	public static final String CLASS_TYPE_PREP = "Test Plan Prepare Interface Implementer Class";
 
 	/**
-     * The method uses the old interface for preparing TestLink cases so that they could be run automatically. 
-     * Look at TestClassRunner.java for the new way of running test classes that use annotations.
-     *
-     * @deprecated This method will removed in the near future.
-     */
-
-	@Deprecated
+	 * The class has been changed to run with either a class
+	 * that implements the Test Plan Prepare Interface or
+	 * and class that uses TestLink annotation to perform
+	 * tests.
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(
 		String[] args) throws Exception
 	{
@@ -63,16 +68,33 @@ public class ExecutionRunner
 			// Get args
 			Map argMap = getArgs(args);
 			
-			int port = new Integer((String) argMap.get(P_PORT)).intValue();
+			String strPort = (String) argMap.get(P_PORT);
 			String devKey = (String) argMap.get(P_DEV_KEY);
 			String url = (String) argMap.get(P_TESTLINK_URL) + "/lib/api/xmlrpc.php";
-			String prepClass = (String) argMap.get(P_DEFAULT_TESTPLAN_PREP_CLASS);
+			String className = (String) argMap.get(P_TESTLINK_TEST_CLASS);
+			String classType = (String) argMap.get(P_TESTLINK_TEST_CLASS_TYPE);
 			String defaultTestCaseUser = (String) argMap.get(P_TEST_CASE_CREATION_USER);
 			String externalDir = (String) argMap.get(P_OPTIONAL_EXTERNAL_CONFIG_PATH);
 			
+			System.out.println("Parameter " + P_PORT + "=" + strPort);
+			System.out.println("Parameter " + P_DEV_KEY + "=" + devKey);
+			System.out.println("Parameter " + P_TESTLINK_URL + "=" + url + "/lib/api/xmlrpc.php");
+			System.out.println("Parameter " + P_TESTLINK_TEST_CLASS + "=" + className);
+			System.out.println("Parameter " + P_TESTLINK_TEST_CLASS_TYPE + "=" + classType);
+			System.out.println("Parameter " + P_TEST_CASE_CREATION_USER + "=" + defaultTestCaseUser);
+			System.out.println("Parameter " + P_OPTIONAL_EXTERNAL_CONFIG_PATH + "=" + externalDir);
 			
+			int port = new Integer(strPort).intValue();
 			TestLinkAPIClient apiClient = new TestLinkAPIClient(devKey, url);
-			TestPlanPrepare prep = (TestPlanPrepare) Class.forName(prepClass).newInstance();		
+			
+			// The plan is to make sure both types of classes run the same way
+			// all the logic in the annotated type class resides in the loader.
+			TestPlanPrepare prep;
+			if ( classType.equalsIgnoreCase(CLASS_TYPE_PREP) ) {
+				prep = (TestPlanPrepare) Class.forName(className).newInstance();	
+			} else {
+				prep = new AnnotatedTestClassPreparator(className);
+			}
 					
 			ExecutionServer server = new ExecutionServer(
 					port,
@@ -101,9 +123,13 @@ public class ExecutionRunner
 					i++;
 					argMap.put(P_DEFAULT_PROJECT_NAME, args[i]);
 				}
-				if ( args[i].equals(P_DEFAULT_TESTPLAN_PREP_CLASS) ) {
+				if ( args[i].equals(P_TESTLINK_TEST_CLASS) ) {
 					i++;
-					argMap.put(P_DEFAULT_TESTPLAN_PREP_CLASS, args[i]);
+					argMap.put(P_TESTLINK_TEST_CLASS, args[i]);
+				}
+				if ( args[i].equals(P_TESTLINK_TEST_CLASS_TYPE) ) {
+					i++;
+					argMap.put(P_TESTLINK_TEST_CLASS_TYPE, args[i]);
 				}
 				if ( args[i].equals(P_DEV_KEY) ) {
 					i++;
