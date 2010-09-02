@@ -18,15 +18,27 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package testlink.api.java.client.tc.autoexec.annotation;
+package testlink.api.java.client.tc.autoexec.annotation.testclass;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.List;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface IgnoreAutomatedTest {
-
+public class TestClassMethod implements TestClassMember {
+	private Method method;
+	public TestClassMethod(Method method) {
+		this.method= method;
+	}
+	
+	public String getName() {
+		return method.getName();
+	}
+	
+	public boolean isShadowedBy(List members) {
+		return false;
+	}
+	
+	public Annotation[] getAnnotations() {
+		return method.getAnnotations();
+	}
 }
