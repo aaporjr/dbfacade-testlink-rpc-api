@@ -26,7 +26,7 @@ import java.util.Map;
 
 import testlink.api.java.client.TestLinkAPIClient;
 import testlink.api.java.client.tc.autoexec.TestPlanPrepare;
-import testlink.api.java.client.tc.autoexec.annotation.handlers.AnnotatedTestClassPreparator;
+import testlink.api.java.client.tc.autoexec.annotation.testplanprep.AnnotatedTestClassPreparator;
 
 /**
  * Runs the ExecutionServer using the old class preparation

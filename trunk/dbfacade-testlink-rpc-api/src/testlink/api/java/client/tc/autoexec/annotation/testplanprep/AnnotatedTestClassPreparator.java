@@ -18,7 +18,7 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package testlink.api.java.client.tc.autoexec.annotation.handlers;
+package testlink.api.java.client.tc.autoexec.annotation.testplanprep;
 
 import testlink.api.java.client.TestLinkAPIClient;
 import testlink.api.java.client.TestLinkAPIException;
