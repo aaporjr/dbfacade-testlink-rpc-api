@@ -222,25 +222,9 @@ public class PlanTree extends TreeParentNode
 			}
 			return cases;
 		} else {
-			try {
-				
-				// Setup the apiClient
-				TestLinkPreferences pref = getPreferences();
-				TestLinkAPIClient apiClient = pref.getTestLinkAPIClient();
-		
-				// Prepare the plan after test cases are loaded
-				TestPlanPrepare prep = pref.getTestPlanPrepare();
-				prep.setTCUser(pref.getTestCaseCreator());
-				prep.setExternalPath(pref.getExternalPath());
-				prep.adjust(apiClient, this.plan);
-				isPreped=true;
-			} catch ( Exception e ) {
-				isPreped=false;
-				UserMsg.error(e,
-					"The test plan prepare class "
-					+ getPreferences().getTestPlanPrepareClass()
-					+ " was unable to prepare the plan.");
-			}			
+			// Local preparation is no longer possible
+			// so always return false.
+			isPreped=false;
 			return cases;
 		}
 	}

@@ -30,6 +30,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
@@ -40,6 +41,7 @@ import org.eclipse.ui.PlatformUI;
 
 import testlink.eclipse.plugin.handlers.ChooseProjectHandler;
 import testlink.eclipse.plugin.handlers.ChooseTestLinkProjectHandler;
+import testlink.eclipse.plugin.handlers.ComboWidget;
 import testlink.eclipse.plugin.handlers.SelectorHandler;
 import testlink.eclipse.plugin.handlers.SelectorWidget;
 import testlink.eclipse.plugin.preferences.PreferenceConstants;
@@ -62,7 +64,8 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 	SelectorWidget testLinkKey;
 	SelectorWidget testLinkURL;
 	SelectorWidget testLinkExternalPath;
-	SelectorWidget testLinkPrepClass;
+	SelectorWidget testLinkTestClassName;
+	ComboWidget testLinkTestClassType;
 	
 	// TestLink API Access
 	private String tlProject;
@@ -113,8 +116,10 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 			config);
 		setFromWorkingConfig(PreferenceConstants.P_TESTLINK_URL,
 			testLinkURL.getWidgetText(), config);
-		setFromWorkingConfig(PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS,
-			testLinkPrepClass.getWidgetText(), config);
+		setFromWorkingConfig(PreferenceConstants.P_TESTLINK_TEST_CLASS_TYPE,
+			testLinkTestClassType.getComboWidget(), config);
+		setFromWorkingConfig(PreferenceConstants.P_TESTLINK_TEST_CLASS,
+			testLinkTestClassName.getWidgetText(), config);
 		setFromWorkingConfig(PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE,
 			testLinkExternalPath.getWidgetText(), config);
 		
@@ -124,10 +129,8 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 			testLinkProject.getWidgetText(), pref.getDefaultProject());
 		setFromPreference(PreferenceConstants.P_DEV_KEY, testLinkKey.getWidgetText(),
 			pref.getDevKey());
-		setFromPreference(PreferenceConstants.P_TESTLINK_URL,
-			testLinkURL.getWidgetText(), pref.getTestLinkAPIURL());
-		setFromPreference(PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS,
-			testLinkPrepClass.getWidgetText(), pref.getTestPlanPrepareClass());
+		setFromPreference(PreferenceConstants.P_TESTLINK_URL, testLinkURL.getWidgetText(),
+			pref.getTestLinkAPIURL());
 		setFromPreference(PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE,
 			testLinkExternalPath.getWidgetText(), pref.getExternalPath());
 		
@@ -159,18 +162,13 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 			testLinkKey.getWidgetText().getText());
 		config.setAttribute(PreferenceConstants.P_TESTLINK_URL,
 			testLinkURL.getWidgetText().getText());
-		config.setAttribute(PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS,
-			testLinkPrepClass.getWidgetText().getText());
+		config.setAttribute(PreferenceConstants.P_TESTLINK_TEST_CLASS_TYPE,
+			testLinkTestClassType.getText());
+		config.setAttribute(PreferenceConstants.P_TESTLINK_TEST_CLASS,
+			testLinkTestClassName.getWidgetText().getText());
 		config.setAttribute(PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE,
 			testLinkExternalPath.getWidgetText().getText());
 
-		/*
-		 try {
-		 mapResources(config);
-		 } catch (CoreException e) {
-		 JUnitPlugin.log(e.getStatus());
-		 }
-		 */
 	}
 
 	/**
@@ -250,6 +248,7 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 		Composite comp)
 	{        
 		SelectorHandler projectHandler = new ChooseProjectHandler(getShell());
+		
 		project = new SelectorWidget(comp, "Eclipse Project:", "Select Eclipse Project",
 			projectHandler, this.getLaunchConfigurationDialog());
 		
@@ -267,16 +266,20 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 		testLinkExternalPath = new SelectorWidget(comp, "External Path:", null, null,
 			this.getLaunchConfigurationDialog());
           
-
+		String[] classTypes = new String[2];
+		classTypes[0] = PreferenceConstants.CLASS_TYPE_ANNOTATION;
+		classTypes[1] = PreferenceConstants.CLASS_TYPE_PREP;
+		testLinkTestClassType = new ComboWidget(comp, "Class Type:", classTypes,
+			this.getLaunchConfigurationDialog());
+		
 		/*
+		 * TODO:
+		 * 
 		 * Eventually we want to search for classes but for now leave it as text
 		 *
-		 *		SelectorHandler prepClassHandler = new SearchClassHandler(getShell());
-		 * testLinkPrepClass = new SelectorWidget(comp, "TestPlanPrepareClass implementer:",
-		 * "Select class", prepClassHandler, this.getLaunchConfigurationDialog());
 		 */
-		testLinkPrepClass = new SelectorWidget(comp, "TestPlanPrepareClass implementer:",
-				null, null, this.getLaunchConfigurationDialog());
+		testLinkTestClassName = new SelectorWidget(comp, "Class Full Name:", null, null,
+			this.getLaunchConfigurationDialog());
 
 	} 
 	
@@ -287,17 +290,31 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 	 */
 	private void setFromWorkingConfig(
 		String key,
-		Text text,
+		org.eclipse.swt.widgets.Scrollable widget,
 		ILaunchConfiguration config)
 	{
-		if ( text == null || key == null || config == null ) {
+		if ( widget == null || key == null || config == null ) {
 			return;
 		}
 		String value = ""; 
 		try {
 			value = config.getAttribute(key, ""); 
 		} catch ( CoreException ce ) {}
-		text.setText(value);
+		
+		if ( widget instanceof Text ) {
+			Text text = (Text) widget;
+			text.setText(value);
+		}
+		
+		if ( widget instanceof Combo ) {
+			Combo combo = (Combo) widget;
+			String[] items = combo.getItems();
+			for ( int i = 0; i < items.length; i++ ) {
+				if ( value.equalsIgnoreCase(items[i]) ) {
+					combo.select(i);
+				}
+			}
+		}
 	}
 	
 	/*

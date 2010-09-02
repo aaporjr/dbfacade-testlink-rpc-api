@@ -35,7 +35,6 @@ public class TestLinkPage extends FieldEditorPreferencePage
 		             "Dev Key - TestLink API Acces key. See TestLink API documentation.\n" +
 		             "TestLink URL - See TestLink API documentation.\n" +
 		             "User Login Name - Used to assign new test case.\n" +
-		             "Plan Prepare Class - See TestPlanPrepare interface javadoc.\n" +
 		             "Report Results - Default results reporting to TestLink flag.\n" +
 		             "External Path (Optional) - Made available to TestPlanPrepare.\n\n";             
 		setDescription(msg);
@@ -66,10 +65,6 @@ public class TestLinkPage extends FieldEditorPreferencePage
 				"User Login Name:", getFieldEditorParent()));
 		
 		addField(
-			new StringFieldEditor(PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS,
-			"Plan Prepare Class:", getFieldEditorParent()));
-		
-		addField(
 			new BooleanFieldEditor(PreferenceConstants.P_REPORT_RESULTS_AFTER_TEST,
 			"Enable TestLink API results reporting after test.", getFieldEditorParent()));
 		
@@ -77,16 +72,6 @@ public class TestLinkPage extends FieldEditorPreferencePage
 			new DirectoryFieldEditor(PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE, 
 			"External Path:",
 			getFieldEditorParent()));
-
-		/*
-		 addField(new RadioGroupFieldEditor(
-		 PreferenceConstants.P_CHOICE,
-		 "An example of a multiple-choice preference",
-		 1,
-		 new String[][] { { "&Choice 1", "choice1" }, {
-		 "C&hoice 2", "choice2" }
-		 }, getFieldEditorParent()));
-		 */
 	}
 
 	/* (non-Javadoc)

@@ -36,7 +36,6 @@ import org.eclipse.jdt.launching.IVMRunner;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
 
 import testlink.api.java.client.TestLinkAPIException;
-import testlink.api.java.client.tc.autoexec.server.ExecutionRunner;
 import testlink.eclipse.plugin.Activator;
 import testlink.eclipse.plugin.preferences.PreferenceConstants;
 
@@ -118,7 +117,7 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 	}
 
 	/**
-	 * Collects all VM and program arguments. Implementors can modify and add arguments.
+	 * Collects all JVM and program arguments. Implementors can modify and add arguments.
 	 *
 	 * @param configuration the configuration to collect the arguments for
 	 * @param vmArguments a {@link List} of {@link String} representing the resulting VM arguments
@@ -145,7 +144,9 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 			programArguments);
 		setParamFromConfig(PreferenceConstants.P_DEV_KEY, config, programArguments);
 		setParamFromConfig(PreferenceConstants.P_TESTLINK_URL, config, programArguments);
-		setParamFromConfig(PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS, config,
+		setParamFromConfig(PreferenceConstants.P_TESTLINK_TEST_CLASS_TYPE, config,
+				programArguments);
+		setParamFromConfig(PreferenceConstants.P_TESTLINK_TEST_CLASS, config,
 			programArguments);
 		setParamFromConfig(PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE, config,
 			programArguments);
@@ -153,7 +154,7 @@ public class TestLinkLaunchConfigurationDelegate extends AbstractJavaLaunchConfi
 		// Add the port
 		try {
 			int port = demandPort();
-			programArguments.add(ExecutionRunner.P_PORT);
+			programArguments.add(PreferenceConstants.P_PORT);
 			programArguments.add(new Integer(port).toString()); 
 		} catch ( Exception e ) {
 			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.OK,

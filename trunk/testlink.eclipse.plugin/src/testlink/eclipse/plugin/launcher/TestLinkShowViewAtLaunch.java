@@ -111,9 +111,9 @@ public class TestLinkShowViewAtLaunch
 					i++;
 					argMap.put(PreferenceConstants.P_DEFAULT_PROJECT_NAME, args[i]);
 				}
-				if ( args[i].equals(PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS) ) {
+				if ( args[i].equals(PreferenceConstants.P_TESTLINK_TEST_CLASS) ) {
 					i++;
-					argMap.put(PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS, args[i]);
+					argMap.put(PreferenceConstants.P_TESTLINK_TEST_CLASS, args[i]);
 				}
 				if ( args[i].equals(PreferenceConstants.P_DEV_KEY) ) {
 					i++;

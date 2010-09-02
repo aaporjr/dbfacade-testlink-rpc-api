@@ -24,7 +24,6 @@ public class TestLinkPreferences
 	private String devKey;
 	private String testLinkURL;	
 	private String testCaseCreator;
-	private String testPlanPrepareClass;
 	private String externalPath;
 	private TestLinkAPIClient testLinkAPIClient;
 
@@ -45,8 +44,6 @@ public class TestLinkPreferences
 			testLinkURL = prefStore.getString(PreferenceConstants.P_TESTLINK_URL);
 			testCaseCreator = prefStore.getString(
 				PreferenceConstants.P_TEST_CASE_CREATION_USER);
-			testPlanPrepareClass = prefStore.getString(
-				PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS);
 			externalPath = prefStore.getString(
 				PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE);
 			testLinkAPIClient = new TestLinkAPIClient(getDevKey(), getTestLinkAPIURL());	
@@ -62,8 +59,6 @@ public class TestLinkPreferences
 			testLinkURL = (String) alternateStore.get(PreferenceConstants.P_TESTLINK_URL);
 			testCaseCreator = (String) alternateStore.get(
 				PreferenceConstants.P_TEST_CASE_CREATION_USER);
-			testPlanPrepareClass = (String) alternateStore.get(
-				PreferenceConstants.P_DEFAULT_TESTPLAN_PREP_CLASS);
 			externalPath = (String) alternateStore.get(
 				PreferenceConstants.P_OPTIONAL_EXTERNAL_CONFIG_FILE);
 			testLinkAPIClient = new TestLinkAPIClient(getDevKey(), getTestLinkAPIURL());	
@@ -107,11 +102,6 @@ public class TestLinkPreferences
 		return testCaseCreator;
 	}
 	
-	public String getTestPlanPrepareClass()
-	{
-		return testPlanPrepareClass;
-	}
-	
 	public String getExternalPath()
 	{
 		return externalPath;
@@ -120,11 +110,5 @@ public class TestLinkPreferences
 	public TestLinkAPIClient getTestLinkAPIClient()
 	{
 		return testLinkAPIClient;
-	}
-	
-	public TestPlanPrepare getTestPlanPrepare() throws Exception
-	{
-		TestPlanPrepare tpp = (TestPlanPrepare) Class.forName(testPlanPrepareClass).newInstance();
-		return tpp;
 	}
 }
