@@ -249,6 +249,18 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 	{        
 		SelectorHandler projectHandler = new ChooseProjectHandler(getShell());
 		
+		/* TODO:
+		 * Eventually we want to search for classes but for now leave it as text
+		 */
+		testLinkTestClassName = new SelectorWidget(comp, "Class Name:", null, null,
+			this.getLaunchConfigurationDialog());
+
+		String[] classTypes = new String[2];
+		classTypes[0] = PreferenceConstants.CLASS_TYPE_ANNOTATION;
+		classTypes[1] = PreferenceConstants.CLASS_TYPE_PREP;
+		testLinkTestClassType = new ComboWidget(comp, "Class Type:", classTypes,
+			this.getLaunchConfigurationDialog());
+		
 		project = new SelectorWidget(comp, "Eclipse Project:", "Select Eclipse Project",
 			projectHandler, this.getLaunchConfigurationDialog());
 		
@@ -266,21 +278,6 @@ public class TestLinkLaunchConfigurationTab extends AbstractLaunchConfigurationT
 		testLinkExternalPath = new SelectorWidget(comp, "External Path:", null, null,
 			this.getLaunchConfigurationDialog());
           
-		String[] classTypes = new String[2];
-		classTypes[0] = PreferenceConstants.CLASS_TYPE_ANNOTATION;
-		classTypes[1] = PreferenceConstants.CLASS_TYPE_PREP;
-		testLinkTestClassType = new ComboWidget(comp, "Class Type:", classTypes,
-			this.getLaunchConfigurationDialog());
-		
-		/*
-		 * TODO:
-		 * 
-		 * Eventually we want to search for classes but for now leave it as text
-		 *
-		 */
-		testLinkTestClassName = new SelectorWidget(comp, "Class Full Name:", null, null,
-			this.getLaunchConfigurationDialog());
-
 	} 
 	
 	/*
